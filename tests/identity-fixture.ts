@@ -14,7 +14,10 @@ export async function identityFixture() {
     AUTH_JWT_ISSUER: 'https://issuer.test',
     AUTH_JWT_AUDIENCE: 'miniagentgit-test',
   }
-  async function token(subject = 'owner') {
+  async function token(
+    subject = 'owner',
+    overrides: Readonly<Record<string, unknown>> = {},
+  ) {
     const encode = (value: unknown) =>
       Buffer.from(JSON.stringify(value)).toString('base64url')
     const payload = `${encode({ alg: 'ES256', typ: 'JWT' })}.${encode({
@@ -22,6 +25,7 @@ export async function identityFixture() {
       iss: env.AUTH_JWT_ISSUER,
       aud: env.AUTH_JWT_AUDIENCE,
       exp: Math.floor(Date.now() / 1000) + 600,
+      ...overrides,
     })}`
     const signature = await webcrypto.subtle.sign(
       { name: 'ECDSA', hash: 'SHA-256' },

@@ -168,3 +168,14 @@ No API capability, token issuer, browser login or credential exchange is added.
 Payloads/routes are tested against the local workerd authority with ephemeral
 signed identities; Windows shell execution and hosted authentication are not
 qualified by those tests. See [product-site architecture](product-site.md).
+
+## Browser credential boundary
+
+The `/dashboard` shell uses DeepSpace's supported `getAuthToken()` adapter and
+checks `/api/me` before presenting a verified identity. Public pages send no
+protected requests. This does not create a token issuer or change any API route,
+JWT requirement, owner check or response envelope. The managed `/api/auth/*`
+bridge and real issuer/audience configuration are not yet wired/qualified; the
+unregistered application shows authentication unavailable. See
+[authentication architecture](authentication-architecture.md). CLI login is not
+an API Bearer credential.

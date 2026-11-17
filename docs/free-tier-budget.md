@@ -236,3 +236,17 @@ by the public foundation. This pass adds no runtime dependency or retained serve
 resource. Static asset delivery still depends on platform pricing/quotas; no new
 credit or storage entitlement is inferred. Production bundling remains gated by
 the unregistered app ID. No app registration/deployment or hosted tests ran.
+
+## Multi-user authentication budget
+
+All users continue to share one application deployment and its account-wide
+allowances. No user-wide Durable Object, database, broker, external auth service
+or polling loop was added. The protected shell probes identity only on its own
+route/session activation; public pages do not contact authentication endpoints.
+A route client bounds unsettled reads to four and token acquisition to one with
+four waiters. These browser bounds are not account-wide rate or allocation
+limits. Repository cardinality and aggregate tenant resource isolation remain
+unimplemented; separate repository rooms do not imply separate free quotas.
+Reported 500 credits, one slot and conservative 128 MiB upload planning inputs
+remain unchanged and do not establish SQLite/CPU/runtime quotas. No registration,
+deployment, hosted request or credit-consuming test was performed.

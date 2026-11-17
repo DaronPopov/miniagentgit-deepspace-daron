@@ -285,3 +285,13 @@ An exact GET /docs asset mapping serves the existing client shell for direct
 navigation under Wrangler's non-SPA asset-miss policy. Repository APIs, authority,
 SQLite, CI, JWT verification and app-ID gate are unchanged. Full boundaries and
 DOCS-001–DOCS-010 are in [product-site.md](product-site.md).
+
+## PASS 06D: route-scoped authentication
+
+The static `/dashboard` shell owns the SDK provider and its session client.
+Public routes remain provider-free. Protected reads verify the API principal,
+fence session changes and bound unsettled executions; no repository data is
+loaded by the shell. Canonical repository rooms and persistence code are unchanged.
+See [authentication architecture](authentication-architecture.md) for AUTH-001–010,
+real multi-user isolation evidence and the unconfigured hosted auth proxy/token
+trust boundary. Browser integration is locally tested; hosted login is not qualified.

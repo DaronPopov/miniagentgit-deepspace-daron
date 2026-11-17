@@ -61,3 +61,14 @@ valid payloads and real API responses. Chrome fixtures prove local geometry,
 clipboard events and unchanged placeholder strings. They do not establish Windows
 shell execution, production Vite routing or hosted auth. Authentication UI and
 credential acquisition remain separate work; this pass does not implement them.
+
+## PASS 06D authentication boundary
+
+The separate `auth-ui` feature composes `/dashboard` with SDK-managed session
+state and a protected route shell only. Public homepage and documentation keep
+their existing flow and provider-free initialization. No repository dashboard or
+mutation is added. The shell fails closed when registration is absent; hosted
+authentication also requires the managed proxy and trusted token configuration.
+See [authentication architecture](authentication-architecture.md) for session
+fencing, credential handling, tests and qualification limits. The preceding
+PASS 06C description records that pass's historical scope.

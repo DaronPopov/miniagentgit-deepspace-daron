@@ -32,6 +32,9 @@ export function createApp() {
     }),
   )
   app.get('/', (c) => c.env.ASSETS.fetch(c.req.raw))
+  app.get('/dashboard', (c) =>
+    c.env.ASSETS.fetch(new Request(new URL('/', c.req.url), c.req.raw)),
+  )
   app.get('/docs', (c) =>
     c.env.ASSETS.fetch(new Request(new URL('/', c.req.url), c.req.raw)),
   )

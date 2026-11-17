@@ -82,3 +82,14 @@ never supplies a real API credential. Use the operator-provided service origin
 and compatible Bearer JWT; CLI developer login is not that credential. See
 [product-site architecture](docs/product-site.md) and
 [PASS 06C results](docs/passes/pass06c-results.md) for validation and limitations.
+
+### Authentication shell
+
+`/dashboard` contains the route-scoped DeepSpace authentication boundary only;
+it does not load repositories or CI data. `/` and `/docs` remain public.
+The unregistered local application displays authentication unavailable. Hosted
+login also requires the official managed auth bridge and verified token trust
+configuration; it is not operational merely by having the shell. See
+[authentication architecture](docs/authentication-architecture.md) and
+[PASS 06D evidence](docs/passes/pass06d-results.md). Do not register or deploy as
+part of local validation.
