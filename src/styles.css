@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  background: #101b22;
+  color: #e7ecef;
+  font:
+    18px/1.6 system-ui,
+    sans-serif;
+}
+main {
+  max-width: 48rem;
+  margin: 12vh auto;
+  padding: 2rem;
+}
+h1 {
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 1.1;
+}
+a {
+  color: #a4ddd3;
+}
