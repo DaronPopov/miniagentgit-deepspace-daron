@@ -82,10 +82,11 @@ share application-level operations. No circular dependencies or cross-layer
 shortcuts. The health operation imports only its shared contract. The client
 imports no server code. Framework schema declarations are not domain types.
 
-The six Durable Object subclasses are framework-required integration wiring,
-not domain inheritance. No room endpoints are mounted; tasks and jobs reject
-execution. No repository persistence authority exists yet, and no code advances
-HEAD. Auth, repository commits/history, and MCP are outside this pass.
+The six original SDK Durable Objects and custom RepositoryRoom are framework
+lifecycle wiring, not domain inheritance. No room endpoints are mounted;
+tasks/jobs reject execution. RepositoryRoom initializes schema only, and no code
+advances HEAD. Identity verification is implemented; repository operations,
+browser login flows and MCP remain deferred.
 
 ## Validation and changes
 
@@ -121,3 +122,20 @@ Only its atomic storage operation may advance HEAD. Recheck authorization,
 idempotency, expected HEAD, and retained-data quotas inside one synchronous
 SQLite transaction; never await inside the callback. Do not assume generic
 record mutations are an atomic commit API or claim SQLite/R2 atomicity.
+
+## Bounded scheduling and diagnostics
+
+Follow COMMIT-001 through COMMIT-008 in [architecture](architecture.md) and the
+[commit pipeline](commit-pipeline.md). Rings, request lifecycle, scheduling policy,
+scheduler and their tests retain the **185-line** maximum; they are not framework
+adapters. The adapter allowlist is unchanged. Domain modules may import pure
+shared contracts as type-only imports; no framework dependencies are permitted.
+
+One explicit owner retains scheduler state; no global registry or per-request
+scheduler. Admission never overwrites; only diagnostics evict. Bound capacities,
+metadata, outstanding promises, timers and drain scheduling. Never retain source
+payloads or raw errors in telemetry. Preserve execution ownership until actual
+executor settlement, even if cancellation already settled the public caller.
+Do not replace a noncooperative executor on timeout or call diagnostic events a
+durable audit log. Use deferred promises/fake clocks rather than timing sleeps.
+No scheduler-only test proves SQLite commit atomicity or hosted lifecycle safety.

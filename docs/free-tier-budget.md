@@ -122,3 +122,34 @@ handling and creation admission. Before claiming hosted Free-plan operability:
 verify actual app quotas without assuming a Cloudflare plan, then authorize a
 small smoke workflow and inspect usage before/after. Unknown billing or quota
 behavior must fail closed rather than automatically upgrading or provisioning.
+
+## Pass 03 scheduling budget
+
+Planning inputs remain 500 available credits, one app slot, and conservative
+128 MiB uploaded-file allocation; no universal/current entitlement or SQLite
+quota is asserted. No billable runtime calls or cloud load tests were made.
+
+Implemented per scheduler: outstanding capacity 8 by default / 32 maximum
+(including active), event retention 64 / 256 maximum, and admission-to-completion
+deadline 5,000 ms / 30,000 ms maximum. These are constructor-configurable within
+bounds. One timer and one caller promise per accepted request; one coalesced
+drain microtask; no full-queue waiter, broker, alarm, retry loop or polling task.
+Full rejection uses QUOTA_EXCEEDED; no diagnostic eviction affects admission.
+
+Descriptors retain only bounded strings: at most 393 UTF-16 code units each
+(786 bytes of code units), or 25,152 bytes at 32 requests, before object, Promise,
+controller, timer and allocator overhead. Maximum event IDs use 137 code units
+plus sequence and enum fields; 256 events retain roughly 70 KiB of those string
+code units before overhead. These are representation budgets, not measured heap
+or platform memory guarantees. Frozen snapshots temporarily allocate bounded
+copies; callers retaining repeated snapshots/results are outside owner retention.
+No queued source payloads or uploaded files are retained. A future prepared-data
+resolver must separately bound payload storage and tie release to executor exit.
+
+Active cancellation can leave one bounded internal claim retained until executor
+settlement. On deadline the scheduler closes; queued public completions settle.
+No timer can interrupt blocking synchronous work. Durable quotas, rate limits,
+CPU enforcement, provider cost conversion and physical SQLite limits remain
+unimplemented/unknown as described above. The existing first commit workflow
+estimate is unchanged: scheduling adds local descriptor/event bookkeeping, not
+an extra HTTP service, app deployment, SQL write or storage upload.

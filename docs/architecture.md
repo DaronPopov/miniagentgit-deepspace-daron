@@ -171,3 +171,34 @@ References: [SDK auth](https://docs.deep.space/sdk-reference/worker/auth),
 [SQLite transactions](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transactionsync).
 Installed types are authoritative for DeepSpace 0.44.2. This is not hosted
 runtime, transaction atomicity, or production bundle verification.
+
+## Commit concurrency invariants (Pass 03)
+
+- **COMMIT-001 — Single authoritative HEAD owner:** only the repository
+  persistence authority may advance HEAD; scheduler/event code never does.
+- **COMMIT-002 — Bounded admission:** per owner, at most its configured capacity
+  of owned requests including the one active request. Implemented default 8,
+  maximum 32; no promise is allocated for a full-queue rejection.
+- **COMMIT-003 — No silent loss:** admission ring never overwrites. Diagnostic
+  eviction is independent. Cancellation explicitly settles and removes queued work.
+- **COMMIT-004 — Atomic expected-HEAD validation:** compare expected HEAD and
+  update HEAD with commit metadata in one future transaction. FIFO is insufficient;
+  transaction implementation/qualification remains deferred.
+- **COMMIT-005 — Bounded execution:** admission deadlines and abort signals bound
+  public waits on a responsive live event loop. Cancellation cannot interrupt
+  synchronous SQL or prove rollback. Noncooperative work retains its claim and
+  deadline closes admission rather than creating overlap.
+- **COMMIT-006 — No lock-held waiting:** no scheduler lock or database transaction
+  spans queue waiting, timer sleep, polling, external calls, or uploads.
+- **COMMIT-007 — Ephemeral scheduling versus durable commits:** rings are local
+  scheduling/diagnostics; persistent commits, replay results and HEAD remain
+  authority-owned. Restart can lose every in-memory acceptance and event.
+- **COMMIT-008 — Idempotent retry boundary:** pending request-ID duplicates are
+  rejected locally; durable actor/repository/key plus digest replay belongs in
+  the future atomic owner transaction, including after uncertain responses.
+
+The scheduler is an explicit instance factory, not a process-global authority.
+Pass 04 must retain exactly one instance in the canonical RepositoryRoom owner;
+this pass exposes no public scheduling endpoint or fake commit executor.
+[Commit pipeline](commit-pipeline.md) defines overflow, cancellation, deadlines,
+shutdown, exhaustion and restart semantics and the executor/clock failure model.

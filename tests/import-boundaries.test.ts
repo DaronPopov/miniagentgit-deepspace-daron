@@ -32,7 +32,11 @@ it('has no static relative import cycles or framework dependencies in domain cod
       const target = specifier.text
       if (file.startsWith('src/domain/')) {
         expect(
-          target.startsWith('./') || target.startsWith('../domain/'),
+          target.startsWith('./') ||
+            target.startsWith('../domain/') ||
+            (target.startsWith('../contracts/') &&
+              ts.isImportDeclaration(statement) &&
+              statement.importClause?.isTypeOnly === true),
           `${file}: ${target}`,
         ).toBe(true)
       }
