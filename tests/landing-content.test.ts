@@ -42,7 +42,10 @@ it('uses real documentation links and in-page anchors without protected API navi
   for (const link of documentation) {
     expect(html).toContain(`href="${link.href}"`)
     const file = link.href.split('/blob/main/')[1]
-    expect(file && existsSync(file), link.href).toBeTruthy()
+    expect(
+      link.href === '/docs' || (file && existsSync(file)),
+      link.href,
+    ).toBeTruthy()
   }
   expect(productLinks.github).toBe(
     'https://github.com/DaronPopov/miniagentgit-deepspace-daron',

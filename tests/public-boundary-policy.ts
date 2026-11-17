@@ -2,6 +2,12 @@ import { dirname, posix } from 'node:path'
 import ts from 'typescript'
 
 const root = 'src/features/product-site/'
+const onboarding = 'src/features/onboarding/'
+const shared = new Set(
+  ['header-shell', 'site-container', 'site-footer', 'site-icon'].map(
+    (name) => root + 'components/' + name,
+  ),
+)
 const forbidden = new Set([
   'fetch',
   'XMLHttpRequest',
@@ -49,7 +55,14 @@ export function publicViolations(
             path === 'src/features/product-site/components/site-icon.tsx' &&
             name.text === 'lucide-react'
           ) &&
-          (!name.text.startsWith('.') || !resolved.startsWith(root))
+          (!name.text.startsWith('.') ||
+            !(path.startsWith(onboarding) || path === 'src/pages/docs.tsx'
+              ? resolved.startsWith(onboarding) ||
+                shared.has(resolved) ||
+                (resolved === root + 'contracts/presentation' &&
+                  ts.isImportDeclaration(node) &&
+                  node.importClause?.isTypeOnly)
+              : resolved.startsWith(root)))
         )
           violations.push(`forbidden dependency: ${name.text}`)
       }
@@ -60,7 +73,14 @@ export function publicViolations(
     )
       violations.push('dynamic import')
     if (ts.isImportEqualsDeclaration(node)) violations.push('import assignment')
-    if (ts.isIdentifier(node) && forbidden.has(node.text))
+    if (
+      ts.isIdentifier(node) &&
+      forbidden.has(node.text) &&
+      !(
+        node.text === 'navigator' &&
+        path === onboarding + 'components/clipboard.ts'
+      )
+    )
       violations.push(`forbidden capability: ${node.text}`)
     if (ts.isClassDeclaration(node)) violations.push('class declaration')
     if (

@@ -199,3 +199,11 @@ vocabulary, static named imports, readonly metadata and decorative aria-hidden
 SVGs alongside retained text labels. No namespace imports, dynamic loaders,
 whole-library registries, icon-only actions or architecture-diagram replacement.
 The public import policy and focused tests enforce this narrow dependency path.
+
+Onboarding lives in `src/features/onboarding/`, not the product feature. Follow
+DOCS-001–DOCS-010 in [product-site.md](product-site.md). Reuse only the explicitly
+allowlisted public primitives/type contracts; preserve the reverse dependency
+boundary. Only its clipboard adapter may access navigator, and only for an
+explicit copy action. Copy the displayed string verbatim; never fetch/replace
+credentials or execute commands. Match actual routes/validators and label shell
+syntax accurately. All onboarding components, formatters and tests keep 185 LOC.

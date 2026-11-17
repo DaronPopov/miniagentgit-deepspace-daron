@@ -32,7 +32,7 @@ The static shell lives at `/`; `GET /api/health` reports stateless liveness.
 Protected repository APIs require a Bearer JWT verified against trusted public
 key, issuer and audience; `GET /api/me` reports its verified subject. CLI login
 does not authenticate HTTP users. No browser login flow, MCP, R2, branches,
-merges, Git wire compatibility or CI execution is implemented.
+merges or Git wire compatibility is implemented. Fixed non-executing CI is implemented.
 
 ## Commands
 
@@ -75,3 +75,10 @@ PASS 06B adds a public landing page with accurate local capability descriptions,
 accessible inline SVG commit/CI lifecycles and source-linked documentation. It
 needs no auth provider or backend data. See [PASS 06B results](docs/passes/pass06b-results.md)
 for local browser evidence and the unchanged production build limitation.
+
+The public `/docs` route provides an HTTP quick start with separately labelled
+Windows PowerShell and curl.exe examples. It requires no sign-in to read and
+never supplies a real API credential. Use the operator-provided service origin
+and compatible Bearer JWT; CLI developer login is not that credential. See
+[product-site architecture](docs/product-site.md) and
+[PASS 06C results](docs/passes/pass06c-results.md) for validation and limitations.

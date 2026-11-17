@@ -271,3 +271,17 @@ The reproducible local client-only measurement is
 `node scripts/measure-public-bundle.mjs`; it is not the gated production Vite
 bundle. See [PASS 06B.1 results](passes/pass06b1-results.md) for compatibility,
 locked dependency changes, before/after measurements and Chrome smoke evidence.
+
+## PASS 06C: public onboarding
+
+`src/pages/docs.tsx` composes the dedicated onboarding feature. Its static guide
+and eleven HTTP request descriptors generate separate Windows PowerShell and
+curl.exe command modes. Existing product primitives/tokens/icons are reused via
+an exact import allowlist; the product site links to `/docs` without importing
+onboarding. Only an explicit copy-button click invokes write-only clipboard
+access. No public initialization calls protected APIs or reads auth state.
+
+An exact GET /docs asset mapping serves the existing client shell for direct
+navigation under Wrangler's non-SPA asset-miss policy. Repository APIs, authority,
+SQLite, CI, JWT verification and app-ID gate are unchanged. Full boundaries and
+DOCS-001–DOCS-010 are in [product-site.md](product-site.md).

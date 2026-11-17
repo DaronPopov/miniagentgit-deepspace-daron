@@ -9,7 +9,9 @@ it('restricts public dependencies to React, internal presentation and the narrow
     .split('\0')
     .filter(
       (path) =>
-        path.startsWith('src/features/product-site/') && /\.tsx?$/.test(path),
+        (path.startsWith('src/features/product-site/') ||
+          path.startsWith('src/features/onboarding/')) &&
+        /\.tsx?$/.test(path),
     )
   expect(files.length).toBeGreaterThan(5)
   for (const file of files)
@@ -65,7 +67,11 @@ it('keeps the public route as thin feature composition and the browser entry pro
 it('bundles the public route for browsers without SDK, server or credential code', async () => {
   const { build } = await import('esbuild')
   const bundle = await build({
-    entryPoints: ['src/pages/index.tsx', 'src/styles.css'],
+    entryPoints: [
+      'src/pages/index.tsx',
+      'src/pages/docs.tsx',
+      'src/styles.css',
+    ],
     outdir: 'public-bundle-check',
     bundle: true,
     platform: 'browser',

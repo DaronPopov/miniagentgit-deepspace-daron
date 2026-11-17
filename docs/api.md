@@ -146,3 +146,25 @@ covers only the named fixed checks, with `typescript: "deferred"`. Correct failu
 by creating a new commit and validating its ID; never rewrite the old commit.
 HTTP disconnect does not cancel CI. Recovery on authorized CI access is described
 in [CI pipeline](ci-pipeline.md); status/list/receipt reads may trigger bounded work.
+
+## Public HTTP quick start
+
+`GET /docs` serves the existing static client shell and is public, as is the
+homepage. It performs no repository/API authentication request during rendering.
+The frontend quick start describes eleven existing HTTP operations using shared
+static request descriptors and two separately labelled command modes:
+
+- Windows PowerShell 5.1+ with Invoke-RestMethod and explicit UTF-8 JSON bodies.
+- PowerShell 7.3+ on Windows with curl.exe 7.76+, Standard native argument passing,
+  ConvertTo-Json and checked native exit status. These are not Bash/cmd commands.
+
+BASE_URL and BEARER_JWT are placeholders to replace only in the terminal. IDs are
+captured from actual success envelopes. Setup generates distinct creation/commit
+keys once; uncertain retries retain those keys and semantic input. HTTP 202 CI
+admission is not completion; HTTP 409 receipt retrieval means pending. Health is
+the plain JSON exception to the `{ok,value}` success envelope.
+
+No API capability, token issuer, browser login or credential exchange is added.
+Payloads/routes are tested against the local workerd authority with ephemeral
+signed identities; Windows shell execution and hosted authentication are not
+qualified by those tests. See [product-site architecture](product-site.md).

@@ -14,7 +14,7 @@ export const productLinks = {
 export const productNavigation = [
   { label: 'Capabilities', href: '#capabilities' },
   { label: 'Architecture', href: '#architecture' },
-  { label: 'Docs', href: '#documentation' },
+  { label: 'Docs', href: '/docs' },
   { label: 'GitHub', href: productLinks.github, icon: 'external' },
 ] as const satisfies readonly NavigationLink[]
 export const hero = {
@@ -106,7 +106,7 @@ export const capabilities = [
   },
 ] as const satisfies readonly FeatureDescription[]
 export const documentation = [
-  { label: 'HTTP API', href: productLinks.api, icon: 'api' },
+  { label: 'HTTP API', href: '/docs', icon: 'api' },
   {
     label: 'Architecture & ownership',
     href: productLinks.architecture,
