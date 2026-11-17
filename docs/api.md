@@ -179,3 +179,15 @@ bridge and real issuer/audience configuration are not yet wired/qualified; the
 unregistered application shows authentication unavailable. See
 [authentication architecture](authentication-architecture.md). CLI login is not
 an API Bearer credential.
+
+## PASS 06F hosted qualification
+
+The assigned deployment is https://miniagentgit-deepspace-daron.app.space.
+The browser auth bridge is now wired with the official managed redirect/callback,
+session and token paths. Existing OAuth-session exchange, verified `/api/me`,
+missing/invalid credential rejection, repository creation, commit/replay/reads and
+CI receipt retrieval passed against the deployment. Earlier local-only and
+unregistered-state descriptions above record prior pass evidence and are
+superseded by [PASS 06F results](passes/pass06f-results.md). Fresh interactive OAuth,
+browser sign-out and two hosted users are not inferred from the existing-session
+smoke. No repository or CI API contract changed.

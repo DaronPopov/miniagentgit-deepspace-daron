@@ -27,8 +27,10 @@ run_worker_first = ["/api/*", "/ws/*", "/internal/*", "/v1/*", "/_deepspace/*", 
 # subdomain label the next deploy claims; this id never changes — data,
 # secrets, and collaborators all key to it. Renames are safe.
 [vars]
-DEEPSPACE_APP_ID = "__APP_ID__"
+DEEPSPACE_APP_ID = "app_01M7N6X263TDDC26Y59Q1RK23P"
 APP_NAME = "MiniAgentGit"
+# Confirmed from a platform-signed JWT verified against the published JWKS.
+AUTH_JWT_AUDIENCE = "https://api-worker.deep.space"
 # Exact comma-separated native callback URIs. Set this before deploying an
 # Expo client, for example: "myapp://auth/callback".
 NATIVE_AUTH_REDIRECT_URIS = ""

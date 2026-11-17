@@ -250,3 +250,28 @@ unimplemented; separate repository rooms do not imply separate free quotas.
 Reported 500 credits, one slot and conservative 128 MiB upload planning inputs
 remain unchanged and do not establish SQLite/CPU/runtime quotas. No registration,
 deployment, hosted request or credit-consuming test was performed.
+
+## PASS 06F observed account and app
+
+On 2026-11-17 the production CLI reported Free tier, 500 available credits,
+0 used and no purchased/bonus credits before and after one registration/deploy
+and the bounded hosted smoke. There was initially no app; exactly one was
+registered and deployed. No upgrade, purchase, add-on, extra deployment slot,
+external integration or auto-provisioned binding was requested.
+
+The official files documentation currently describes 128 MiB for Free, while
+this app's actual `app files list --limit 1 --json` reports 0 used bytes and a
+1,073,741,824-byte limit. Keep the conservative **128 MiB** application planning
+budget; the observed discrepancy is not a promise or a SQLite entitlement.
+Approximately 421 KiB of client assets and a retained rollback bundle were
+uploaded; the files listing does not meter those as uploaded user files.
+SQLite, DO, request, CPU and deployment billing rates remain unverified. The
+usage summary shows no charge but is not proof of zero future or delayed cost.
+
+Only registration, one deploy and a small smoke workflow were authorized. No
+spending-cap or auto-upgrade control was exposed by the inspected CLI usage/help
+surfaces; no billing setting was changed. Existing local input, retained-data,
+scheduler and CI limits remain in force. There is no implemented app-wide ingress
+or repository-cardinality cap. Monitor account usage before expanding traffic;
+a paid/slot/credit refusal is a stop condition, not permission to buy or delete
+another application. See [PASS 06F results](passes/pass06f-results.md).

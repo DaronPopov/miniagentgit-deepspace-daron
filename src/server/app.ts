@@ -1,4 +1,8 @@
 import { Hono } from 'hono'
+import {
+  createManagedAuthRoutes,
+  type ManagedAuthEnvironment,
+} from './deepspace/managed-auth'
 import { resultResponse } from './api/result'
 import { workerErrorHandler } from 'deepspace/worker'
 import { createHealthRoutes } from './api/health'
@@ -7,7 +11,7 @@ import { createRepositoryRoutes } from './api/repositories'
 import { routeRepository } from './storage/routing'
 import type { AuthEnvironment } from './deepspace/auth'
 
-export interface Env extends AuthEnvironment {
+export interface Env extends AuthEnvironment, ManagedAuthEnvironment {
   REPOSITORY_ROOMS: DurableObjectNamespace
   ASSETS: Fetcher
   OWNER_USER_ID: string
@@ -15,6 +19,7 @@ export interface Env extends AuthEnvironment {
 
 export function createApp() {
   const app = new Hono<{ Bindings: Env }>()
+  app.route('/api/auth', createManagedAuthRoutes())
   app.route('/api', createHealthRoutes())
   app.route('/api', createPrincipalRoutes())
   app.route(

@@ -295,3 +295,17 @@ loaded by the shell. Canonical repository rooms and persistence code are unchang
 See [authentication architecture](authentication-architecture.md) for AUTH-001–010,
 real multi-user isolation evidence and the unconfigured hosted auth proxy/token
 trust boundary. Browser integration is locally tested; hosted login is not qualified.
+
+## PASS 06F deployment qualification
+
+The official production build now uses the assigned registered app ID without
+weakening its guard. One deployment serves the public static React frontend and
+canonical repository rooms. The browser-only managed auth adapter precedes the
+API fallback and implements the verified scaffold redirect/cookie/token routes;
+no generic SDK record, job, integration or realtime routes were exposed.
+JWT verification and repository/CI persistence are unchanged. Hosted smoke tests
+using an existing OAuth session exercised the actual token bridge, principal,
+immutable commit/replay and CI receipt. Prior unregistered/local-only statements
+are historical; see [PASS 06F evidence](passes/pass06f-results.md) for exact hosted
+qualification limits. Interactive OAuth and multi-user hosted evidence remain
+separate from local isolation tests.

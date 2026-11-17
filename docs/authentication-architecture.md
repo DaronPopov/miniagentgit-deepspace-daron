@@ -55,9 +55,11 @@ use shared presentation primitives. Only a verified `/api/me` response matching
 the session subject permits the signed-in display.
 
 Installed `deepspace@0.44.2` APIs actually used are `DeepSpaceAuthProvider`,
-`useAuth`, `useSession`, `signIn.social({ provider, callbackURL })`, `signOut`,
+`useAuth`, `useSession`, `signOut`,
 `getAuthToken` and `clearAuthToken`. Providers are the SDK-supported GitHub and
-Google values. Callback URLs are same-origin `/dashboard`. No custom OAuth flow,
+Google values. Sign-in now uses the same `/api/auth/social-redirect` navigation as
+the installed SDK AuthOverlay; the official code-exchange callback returns to
+same-origin `/dashboard`. No custom OAuth flow,
 JWT decoder, token issuer or authentication dependency was added.
 
 The SDK browser session uses managed cookies. Its supported `getAuthToken()`
@@ -79,15 +81,23 @@ API paths, no-store, omitted cookies, rejected redirects and no referrer.
 
 ## Hosted qualification boundary
 
-The application remains unregistered. The SDK app-ID guard is intact and the
-shell returns unavailable before mounting its provider without a valid registered
-identity. Real public key/issuer/audience compatibility has not been qualified.
-The current Hono application also does not wire the official scaffold's managed
-`/api/auth/*` proxy/cookie/callback bridge; those paths currently return 404.
-A valid app ID alone will not complete hosted login. Official scaffold behavior
-was inspected, but its origins, cookies and token exchange must be configured and
-qualified in a separately authorized hosted pass. No origin, audience, app ID or
-working production login was fabricated here.
+PASS 06F registered and deployed one application. `managed-auth.ts` implements the
+browser subset of the official 0.44.2 scaffold: provider redirect, one-time-code
+exchange, secure HttpOnly app cookie, sign-out expiration and session/token proxy.
+The proxy limits endpoint/method combinations, POST origin and token request
+bytes; it never proxies generic platform integrations or enables native auth.
+Configuration absence still fails closed. The official build guard remains in
+place and now accepts the assigned app ID.
+
+The deployed platform supplies its public signing key, issuer and auth-service
+URL. Audience `https://api-worker.deep.space` was obtained from a platform-signed
+JWT checked against the published JWKS, then confirmed by the hosted token
+endpoint and `/api/me`. It was not inferred from an app ID or decoded without
+verification. The public audience is stored as a Wrangler var; no signing key,
+credential or session was committed. Existing-session hosted repository/CI smoke
+tests pass. A fresh interactive provider OAuth round trip and browser sign-out
+remain unverified unless separately confirmed in PASS 06F evidence. See
+[PASS 06F results](passes/pass06f-results.md).
 
 Local tests exercise the actual SDK provider/hooks and credential retrieval with
 controlled session endpoints and locally signed test JWTs. The JWT-to-Hono path

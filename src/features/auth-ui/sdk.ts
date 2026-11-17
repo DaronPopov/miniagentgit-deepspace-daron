@@ -1,7 +1,6 @@
 import {
   clearAuthToken,
   getAuthToken,
-  signIn,
   signOut,
   useAuth,
   useSession,
@@ -32,11 +31,8 @@ export function useManagedSession() {
 }
 export async function managedSignIn(provider: Provider) {
   clearAuthToken()
-  const response = await signIn.social({
-    provider,
-    callbackURL: new URL('/dashboard', window.location.origin).href,
-  })
-  if (response.error) throw new Error('Sign-in unavailable')
+  // Same managed redirect used by the installed SDK's AuthOverlay.
+  window.location.assign(`/api/auth/social-redirect?provider=${provider}`)
 }
 export async function managedSignOut() {
   const response = await signOut()

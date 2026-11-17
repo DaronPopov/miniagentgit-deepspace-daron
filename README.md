@@ -17,7 +17,7 @@ The supported Node range is recorded in package.json.
 
 ```sh
 npm ci
-npm run validate # build currently blocked until owner registration
+npm run validate # types, lint, formatting, fingerprint, size, tests and build
 npm run dev -- --host 127.0.0.1
 ```
 
@@ -87,9 +87,10 @@ and compatible Bearer JWT; CLI developer login is not that credential. See
 
 `/dashboard` contains the route-scoped DeepSpace authentication boundary only;
 it does not load repositories or CI data. `/` and `/docs` remain public.
-The unregistered local application displays authentication unavailable. Hosted
-login also requires the official managed auth bridge and verified token trust
-configuration; it is not operational merely by having the shell. See
+The registered application is live at
+https://miniagentgit-deepspace-daron.app.space. PASS 06F wires the managed auth
+bridge and verifies existing-session Bearer identity, repository and CI APIs.
+Fresh interactive provider login/sign-out qualification is tracked separately
+in the PASS 06F report. See
 [authentication architecture](docs/authentication-architecture.md) and
-[PASS 06D evidence](docs/passes/pass06d-results.md). Do not register or deploy as
-part of local validation.
+[PASS 06D evidence](docs/passes/pass06d-results.md). Do not register another app or deploy as part of ordinary local validation.
