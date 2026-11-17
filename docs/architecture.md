@@ -335,3 +335,16 @@ new dependency exists. CLI scoped credentials remain rejected by the unchanged
 repository authentication policy; Codex/Claude compatibility is not claimed.
 See [agent-tool architecture](agent-tool-architecture.md) for the capability matrix,
 TOOL-001–010, exact APIs, limits and qualification blockers. The app stays undeployed.
+
+## PASS 08B: scoped agent HEAD admission
+
+The dedicated agent-tool policy now also accepts SDK-verified, origin-bound
+agent JWTs. Only exact signed-account/persisted-owner equality authorizes HEAD;
+no independent-agent-to-human delegation is invented. The original credential
+is reverified through an app-private binding-only GET/head path by the canonical
+RepositoryRoom before the existing readHead service runs. Ordinary user API
+policy, SQL, CI and ownership remain unchanged. See
+[agent-tool trust model](agent-tool-architecture.md#pass-08b-scoped-credential-trust-model-supersedes-the-08a-blocker).
+Codex/Claude panels explain local qualification but remain unavailable while
+undeployed; no installation command or actual coding-client/hosted compatibility
+claim is enabled. No additional tools or deployment were added.

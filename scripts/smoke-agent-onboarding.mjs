@@ -46,12 +46,31 @@ try {
         assert.equal(state.mode, mode)
         assert.equal(state.overflow, false)
         assert.equal(state.codes, mode === 'http' ? 1 : 0)
-        assert(
-          state.text.includes(
-            mode === 'http' ? 'currently undeployed' : 'planned',
-          ),
+        assert(state.text.includes('currently undeployed'))
+        if (mode !== 'http') {
+          assert(state.text.includes('locally qualified'))
+          assert(state.text.includes('miniagentgit.repository_head'))
+          assert(state.text.includes('isError'))
+          assert(state.text.includes('<TRUSTED_BASE_URL>/_deepspace/agent/mcp'))
+          assert(!state.text.includes('mcp add'))
+          assert(!state.text.includes('.app.space'))
+        }
+        const screenshot = join(
+          tmpdir(),
+          `miniagentgit-${mode}-${width}-${theme}.png`,
         )
-        modes.push({ mode, codes: state.codes, overflow: state.overflow })
+        await evaluate(
+          `document.querySelector('#agent-setup').scrollIntoView()`,
+        )
+        await settled()
+        const picture = await call('Page.captureScreenshot', { format: 'png' })
+        writeFileSync(screenshot, Buffer.from(picture.data, 'base64'))
+        modes.push({
+          mode,
+          codes: state.codes,
+          overflow: state.overflow,
+          screenshot,
+        })
       }
       for (const shell of ['powershell', 'curl']) {
         await evaluate(

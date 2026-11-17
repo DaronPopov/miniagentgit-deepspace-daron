@@ -49,6 +49,8 @@ export async function workerFixture(env: AuthEnvironment) {
   return {
     fetch: (path: string, init?: Parameters<Miniflare['dispatchFetch']>[1]) =>
       worker.dispatchFetch(`http://localhost${path}`, init),
+    fetchUrl: (url: string, init?: Parameters<Miniflare['dispatchFetch']>[1]) =>
+      worker.dispatchFetch(url, init),
     storage: (name: string) =>
       worker.unsafeGetDurableObjectStorage(
         'miniagentgit-local',

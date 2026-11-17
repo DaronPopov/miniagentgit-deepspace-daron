@@ -196,3 +196,121 @@ failure/isolation/atomicity evidence for each operation. Exercise actual Codex a
 Claude Code protocol/configuration/auth flows before changing public statuses.
 The native SDK transport should be evaluated before any custom MCP adapter;
 none is currently demonstrated necessary. Deployment remains a separate approval.
+
+## PASS 08B: scoped credential trust model (supersedes the 08A blocker)
+
+The earlier credential-incompatibility section records PASS 08A behavior.
+PASS 08B adds `agent-auth.ts`, used only by agent-tool transport and the new
+binding-only HEAD adapter. The existing `authenticate` implementation and all
+ordinary `/api/repositories/*`, `/api/me` and CI policies remain unchanged.
+
+Installed SDK 0.44.2 evidence:
+
+| Mechanism                 | Declaration / implementation      | Verified semantics                                                                                                                       |
+| ------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| verifyJwt                 | worker.d.ts:4793; worker.js:6352  | Signature, configured issuer/audience; signed sub becomes userId; scoped tokens refused by default                                       |
+| agentTokenIssuer          | worker.d.ts:4831; worker.js:10903 | Strip trailing slash from configured issuer and append /agent                                                                            |
+| verifyAgentToken          | worker.d.ts:4833; worker.js:10906 | Uses verifyJwt with /agent issuer, exact target origin audience and exact agent scope; missing scope is rejected too                     |
+| CLI session exchange      | cli.js:839, 1309                  | POST /api/auth/agent-token with session cookie and JSON target; credential returned separately from the user API token                   |
+| Portable account exchange | cli.js:1096                       | POST /api/auth/agents/app-token using private portable account credential; installed CLI restricts this branch to its staging auth plane |
+| CLI REST call / refresh   | cli.js:13021                      | Mint origin-bound token, send Authorization Bearer, remint/retry once on 401                                                             |
+
+SDK `VerifiedAuth` declares `userId` and verified `claims`; verifyJwt assigns
+`userId = claims.sub`. The [official agent-tool guide](https://docs.deep.space/guides/local-agent-tools.md)
+uses that authenticated account identity for app access. We bind **only the signed
+account subject** to the persisted repository owner by exact equality. Scope is
+not owner authorization. Alternate `userId`, owner, role or nested delegation
+claims and HTTP identity headers cannot change this subject. A separate agent
+account does not inherit a human owner's repositories; no independent delegation
+or account-linking relationship is invented. The domain `Principal.kind=user`
+represents this verified account identity, not a synthesized browser/user JWT.
+
+Trusted configuration remains AUTH_JWT_PUBLIC_KEY, AUTH_JWT_ISSUER and the existing
+AUTH_JWT_AUDIENCE. Agent verification uses the SDK's origin audience, never the
+ordinary user-token audience. It additionally requires finite, present and
+strictly unexpired exp, a nonblank nonanonymous sub and exact agent scope, with
+zero agent clock tolerance. No token decoding selects an identity before
+verification. Missing trusted configuration fails closed with 503; malformed,
+mis-scoped, expired, wrong-signature/issuer/audience credentials return 401.
+Only `Authorization: Bearer <JWT>` is admitted, capped at 8 KiB. Cookies, portable
+account phrases, management tokens and app-server tokens are not substitutes.
+The configured base issuer must be trusted; no caller can select a signing key.
+
+### Owner boundary and original bearer
+
+```mermaid
+flowchart LR
+  Client[User or scoped agent Bearer] --> Transport[Native SDK REST / MCP]
+  Transport --> Verify[Tool-only SDK credential verification]
+  Verify --> Binding[Canonical app-private DO binding / original Bearer]
+  Binding --> Owner[HEAD-only agent adapter / verify again]
+  Owner --> Service[Existing readHead / persisted owner equality]
+```
+
+The tool forwards the original Authorization value and original URL origin to
+`GET /_deepspace/agent/repositories/:id/head` through the existing Cloudflare
+DurableObject binding `fetch`. This is a binding-only path, **not** a newly
+mounted public route. The transport never forwards identity, Origin, cookie or
+forwarded-host headers. No JWT is minted/relabelled and no SDK generic RecordRoom
+trusted-header executor is used. The room verifies its actual canonical object
+identity before selecting its one existing runtime/service. The separate
+`agent-owner.ts` verifies the original credential again and calls the existing
+`service.readHead`; storage's `authorizedMetadata` compares the signed account
+subject to its persisted owner. Owner authorization cannot be skipped by calling
+the binding directly. The room's ordinary API paths still reject scoped tokens.
+
+Agent owner adapter accepts only exact GET/head, rejects query strings and keeps
+the 2,048-character URL bound. Other methods cannot write; public access to the
+binding-only URL is 404. Wrong-room dispatch is rejected. The original tool
+schema and URL/body/result caps, owner-response sanitization and SDK MCP errors
+are preserved. There remains exactly one tool and no generic internal API.
+
+Audience derives from actual routed Request.url origin, not Origin or forwarded
+headers. Hosted routing must preserve that canonical origin; local fixtures do
+not prove platform routing. Callers holding app-private namespace capabilities
+are already inside the Worker trust boundary; their requests must still carry
+valid, owner-matching signed credentials. No key or credential is stored in SQL.
+
+### Qualification and limits
+
+Locally verified: signed agent and established user credentials, SDK REST/MCP
+invocation, Alice/Bob/Charlie isolation, direct owner-boundary rejection, empty/
+committed/missing HEAD, restart persistence, full durable-table nonmutation,
+ordinary API rejection, strict credential failures and native SDK test-client
+isError handling. Reusing an unexpired Bearer for repeated HEAD reads is expected;
+no one-time credential or immediate revocation guarantee exists. Malformed and
+expired replays fail. No token reaches result/error/discovery output.
+
+The installed **DeepSpace CLI** additionally discovers/invokes the HEAD tool over
+a loopback HTTP bridge to real workerd. A local fixture simulates only the auth
+service's signing/exchange endpoint and session; the CLI's cookie exchange,
+origin target, Authorization formatting and one-time 401 refresh actually run.
+It uses a uniquely named, exclusively created local-test session file and removes
+that exact file; existing sessions are not read or replaced. This is not hosted
+authentication. The portable agent-account staging flow is source-inspected,
+not exercised against the platform or falsely presented as human delegation.
+
+The installed package does not contain auth-service signing implementation or a
+guaranteed token TTL. No arbitrary expiry duration, refresh guarantee or hosted
+issuance claim is made. Controlled test JWTs are short-lived and ephemeral.
+
+Codex 0.169.0 and Claude Code 2.1.322 local help confirm HTTP configuration flags;
+o actual Codex/Claude MCP session or hosted deployment is qualified. Public panels
+show **Unavailable** because the service is inactive, with transport/auth marked
+locally qualified separately. No installation/configuration command is enabled.
+See [PASS 08B results](passes/pass08b-results.md) for exact tests and UI evidence.
+
+### MCP-AUTH invariants
+
+- MCP-AUTH-001: scoped admission is confined to /\_deepspace/agent/\*.
+- MCP-AUTH-002: SDK verifies signature, issuer, origin audience and scope; the
+  adapter requires strict expiration and a nonanonymous subject.
+- MCP-AUTH-003/004: signed identity grants no repository permission until the
+  canonical authority checks persisted owner equality on every read.
+- MCP-AUTH-005: ordinary API authentication is unchanged and rejects agent tokens.
+- MCP-AUTH-006: caller owner/namespace/identity overrides are rejected or ignored.
+- MCP-AUTH-007: no token logging, synthetic identity header, SQL credential storage,
+  credential URL or frontend signing material is introduced.
+- MCP-AUTH-008: missing/invalid/ambiguous credentials fail closed.
+- MCP-AUTH-009: MCP isError remains distinct from tool success and transport errors.
+- MCP-AUTH-010: local protocol/auth evidence does not enable hosted/client claims.

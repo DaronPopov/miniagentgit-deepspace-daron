@@ -26,10 +26,16 @@ it('rejects unauthenticated, forged, expired, mis-scoped and untrusted tool acce
       (await verifyAgentToken({ publicKey, issuer }, agent, 'http://localhost'))
         .result?.userId,
     ).toBe('Alice')
+    expect(
+      (
+        await f.fetch(`${base}/tools`, {
+          headers: { authorization: `Bearer ${agent}` },
+        })
+      ).status,
+    ).toBe(200)
     for (const token of [
       undefined,
       'forged',
-      agent,
       await other.token('Alice'),
       await f.identity.token('Alice', { exp: 1 }),
       await f.identity.token('Alice', { iss: 'https://other.test' }),

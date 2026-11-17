@@ -134,3 +134,20 @@ existing tokens, 40rem layout breakpoint, system theme and visible focus.
 
 See [PASS 06H results](passes/pass06h-results.md) for unit/API compatibility,
 Chrome matrix and production bundle evidence. No deployment was performed.
+
+## PASS 08B: honest MCP connection panels
+
+Codex and Claude Code selections now show Unavailable while the app is inactive,
+with native HTTP MCP and credential admission separately described as locally
+qualified. Each panel names the single HEAD tool, authentication/owner rules,
+non-secret inactive endpoint pattern, activation/client/credential prerequisites,
+verification steps, limits and official client configuration documentation.
+No installation or config command is enabled: actual coding-client sessions,
+hosted issuance/renewal and an active trusted service remain unqualified.
+
+AGENT-UI-003 still permits copyable commands only for HTTP. MCP panels may render
+static inline endpoint/tool names, with wrapping at narrow viewports. They do not
+fetch credentials, mount SDK providers or call protected APIs. Capability labels
+separate available, locally-qualified, planned and unavailable states; metadata
+does not activate a transport. HTTP default selection, two shell generators,
+clipboard adapter, /docs continuation and public feature boundaries are retained.

@@ -8,6 +8,7 @@ import { createRepositoryRuntime } from '../../application/repository-runtime'
 import { createRepositoryAuthority } from '../storage/repository-authority'
 import { initializeDatabase } from '../storage/migrations'
 import { durableDatabase } from './database'
+import { createAgentOwnerRoutes } from './agent-owner'
 import { createOwnerRoutes } from '../api/repository-owner'
 import { resultResponse } from '../api/result'
 
@@ -17,14 +18,21 @@ interface RepositoryEnvironment extends AuthEnvironment {
 /** Exactly one scheduler/service pair per verified canonical owner instance. */
 export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
   private owner: ReturnType<typeof createOwnerRoutes> | undefined
+  private agentOwner: ReturnType<typeof createAgentOwnerRoutes> | undefined
   constructor(state: DurableObjectState, env: RepositoryEnvironment) {
     super(state, env)
     initializeDatabase(durableDatabase(state.storage))
   }
   async fetch(request: Request): Promise<Response> {
-    const id = new URL(request.url).pathname.match(
-      /^\/api\/repositories\/(repo_[a-z0-9]{16,32})(?:\/|$)/,
-    )?.[1]
+    const pathname = new URL(request.url).pathname
+    const agent = pathname.match(
+      /^\/_deepspace\/agent\/repositories\/(repo_[a-z0-9]{16,32})\/head$/,
+    )
+    const id =
+      agent?.[1] ??
+      pathname.match(
+        /^\/api\/repositories\/(repo_[a-z0-9]{16,32})(?:\/|$)/,
+      )?.[1]
     const name = repositoryOwnerName(id)
     if (
       !name.ok ||
@@ -61,7 +69,10 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
         retain: (promise) => this.ctx.waitUntil(promise),
       })
       this.owner = createOwnerRoutes(id, runtime.service, this.env, ci)
+      this.agentOwner = createAgentOwnerRoutes(id, runtime.service, this.env)
     }
-    return this.owner.fetch(request)
+    return agent && this.agentOwner
+      ? this.agentOwner.fetch(request)
+      : this.owner.fetch(request)
   }
 }

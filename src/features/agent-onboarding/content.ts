@@ -1,4 +1,5 @@
 import type { Integration, SetupStep } from './contracts'
+import { mcpConnection, agentPrerequisites, agentSteps } from './mcp-connection'
 
 export const httpSteps = [
   {
@@ -47,47 +48,37 @@ export const integrations = [
     id: 'codex',
     name: 'OpenAI Codex',
     icon: 'source',
-    purpose:
-      'Give your coding agent an immutable checkpoint and validation workflow.',
+    purpose: 'Inspect your private repository HEAD from OpenAI Codex.',
     capability: {
-      state: 'planned',
+      state: 'unavailable',
       message:
-        'Direct Codex integration is planned. No compatible MCP endpoint or local adapter is implemented and verified.',
+        'Application currently undeployed. Native MCP and agent credential admission are locally qualified; an actual Codex connection and hosted credential flow are not yet verified.',
     },
-    prerequisites: [
-      'A compatible MCP server or verified local adapter.',
-      'Verified Codex configuration and an authenticated connection to MiniAgentGit.',
-    ],
-    instructions: [
-      {
-        title: 'Use HTTP in the meantime',
-        description:
-          'Follow the supported HTTP workflow with your own agent tooling. There is no MiniAgentGit CLI package or direct Codex installer to run.',
-      },
-    ],
+    connection: mcpConnection,
+    clientGuide: {
+      label: 'Official Codex MCP configuration',
+      href: 'https://developers.openai.com/codex/mcp',
+    },
+    prerequisites: agentPrerequisites,
+    instructions: agentSteps,
   },
   {
     id: 'claude',
     name: 'Claude Code',
     icon: 'api',
-    purpose:
-      'Let an agent submit explicit changes and inspect commit-addressed validation.',
+    purpose: 'Inspect your private repository HEAD from Claude Code.',
     capability: {
-      state: 'planned',
+      state: 'unavailable',
       message:
-        'Direct Claude Code integration is planned. Its MCP setup and authentication flow have not been implemented and verified.',
+        'Application currently undeployed. Native MCP and agent credential admission are locally qualified; an actual Claude Code connection and hosted credential flow are not yet verified.',
     },
-    prerequisites: [
-      'An implemented MCP endpoint with verified protocol compatibility.',
-      'Tested Claude Code setup and supported credential handling.',
-    ],
-    instructions: [
-      {
-        title: 'Connect through HTTP instead',
-        description:
-          'Use the HTTP API instructions with your own agent tooling until a supported direct integration is available.',
-      },
-    ],
+    connection: mcpConnection,
+    clientGuide: {
+      label: 'Official Claude Code MCP configuration',
+      href: 'https://code.claude.com/docs/en/mcp',
+    },
+    prerequisites: agentPrerequisites,
+    instructions: agentSteps,
   },
   {
     id: 'http',
@@ -115,6 +106,9 @@ export const onboardingCopy = {
     'Choose an integration, check its availability, then follow the setup instructions. Your agent stays in control of each commit.',
   statusLabels: {
     planned: 'Planned',
+    available: 'Verified and available',
+    'locally-qualified': 'Locally qualified',
+    unavailable: 'Unavailable',
     'requires-configuration': 'Deployment required',
   },
   setupNote:

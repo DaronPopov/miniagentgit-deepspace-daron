@@ -4,7 +4,7 @@ import {
   readBoundedBodyText,
   registerAgentToolTransports,
 } from 'deepspace/worker'
-import { authenticate } from './auth'
+import { authenticateTool } from './agent-auth'
 import type { AuthEnvironment } from './auth'
 import { routeRepository } from '../storage/routing'
 import { resultResponse } from '../api/result'
@@ -41,7 +41,10 @@ async function readOwnerHead(
   try {
     const owner = routeRepository(env.REPOSITORY_ROOMS, id)
     if (!owner.ok) return owner
-    const url = new URL(`/api/repositories/${id}/head`, request.url)
+    const url = new URL(
+      `/_deepspace/agent/repositories/${id}/head`,
+      request.url,
+    )
     const response = await owner.value.fetch(
       new Request(url, {
         method: 'GET',
@@ -101,7 +104,7 @@ export function registerRepositoryTools<E extends ToolEnvironment>(
     resultCap: TOOL_RESULT_BYTES,
     describe: (env) => ({ id: env.DEEPSPACE_APP_ID, name: env.APP_NAME }),
     resolveTools: async (request, env) => {
-      const identity = await authenticate(request, env)
+      const identity = await authenticateTool(request, env)
       if (!identity.ok) return resultResponse(identity)
       return {
         [REPOSITORY_HEAD_TOOL]: {

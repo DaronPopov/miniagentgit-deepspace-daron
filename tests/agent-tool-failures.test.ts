@@ -57,7 +57,9 @@ it('preserves the bearer and canonical GET while sanitizing failed owner respons
   const forwarded = seen[0]
   if (!forwarded) throw new Error('Missing owner request')
   expect(forwarded.method).toBe('GET')
-  expect(new URL(forwarded.url).pathname).toBe(`/api/repositories/${id}/head`)
+  expect(new URL(forwarded.url).pathname).toBe(
+    `/_deepspace/agent/repositories/${id}/head`,
+  )
   expect([...forwarded.headers]).toEqual([['authorization', `Bearer ${token}`]])
   for (const bad of [
     () => Promise.reject(new Error('secret SQL capability')),

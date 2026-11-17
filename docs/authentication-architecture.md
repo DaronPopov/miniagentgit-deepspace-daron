@@ -122,3 +122,41 @@ billing and storage allowances. No per-user free allocation is claimed.
 References: [official authentication guide](https://docs.deep.space/guides/authentication.md),
 installed SDK declarations/implementation and the official
 `create-deepspace@0.44.2` base scaffold HTTP adapter.
+
+## PASS 08B: distinct tool credential policy
+
+The unchanged user API policy still uses `authenticate`/SDK verifyJwt and its
+configured user issuer/audience. Agent-scoped and app-scoped tokens remain
+rejected by ordinary API and ordinary owner paths, including HEAD and CI.
+
+Only /\_deepspace/agent/\* uses `authenticateTool`: established user Bearer JWTs
+remain accepted; SDK verifyAgentToken separately admits signed agent JWTs with
+base-issuer/agent, exact request-origin audience, exact agent scope and strictly
+unexpired finite exp. Blank/anonymous subjects and unrecognized credentials fail
+closed. It uses only trusted server public-key/issuer configuration; ordinary
+user-audience configuration must also remain present. SDK verification errors and
+decoded debug claims never escape. No user auth framework or token issuer changes.
+
+The credential's signed sub becomes the SDK VerifiedAuth.userId. Repository
+permission requires that exact subject to match the persisted owner. Additional
+owner/delegation claims do not grant access; a separate agent account has no
+implicit link to a human repository owner. The existing domain Principal describes
+the verified account, not a replacement user credential. No user JWT is minted.
+
+The original bearer is forwarded via the canonical app-private DurableObject
+binding to a separate HEAD-only agent path and verified again there. Existing
+`readHead` performs owner authorization in the same repository authority. No
+synthetic identity header, caller-selected namespace, public internal endpoint,
+SQL credential storage, owner-side bypass or second repository service exists.
+Actual Request.url determines origin; forwarded-host and identity headers do not.
+See [agent-tool trust model](agent-tool-architecture.md#pass-08b-scoped-credential-trust-model-supersedes-the-08a-blocker)
+for SDK signatures, paths, limits, issuer construction and internal mechanism.
+
+Local workerd tests cover valid user/scoped credentials, invalid signature,
+issuer/origin/scope/expiry, missing trusted configuration, forged identities,
+Alice/Bob/Charlie isolation, direct owner enforcement, credential-kind confusion,
+read-only persistence and MCP errors. Unexpired bearer replay can repeat a read;
+revocation and one-time credential semantics are not implemented. Local CLI token
+exchange/401 refresh uses a simulated signing service, not platform issuance.
+No hosted credential or Codex/Claude connection is claimed, no auth URLs or app
+configuration changed, and the registered application remains undeployed.

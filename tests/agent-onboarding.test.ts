@@ -20,8 +20,8 @@ it('keeps integration metadata readonly, serializable and truthful', () => {
   expectTypeOf<Integration>().toEqualTypeOf<Readonly<Integration>>()
   expect(JSON.parse(JSON.stringify(integrations))).toEqual(integrations)
   expect(integrations.map((item) => [item.id, item.capability.state])).toEqual([
-    ['codex', 'planned'],
-    ['claude', 'planned'],
+    ['codex', 'unavailable'],
+    ['claude', 'unavailable'],
     ['http', 'requires-configuration'],
   ])
   expect(httpSteps).toHaveLength(8)
@@ -41,16 +41,24 @@ it('renders native keyboard-operable radios and explicit selected state', () => 
   }
   expect(choose).not.toHaveBeenCalled()
 })
-it('never renders an installation command for planned integrations', () => {
+it('explains locally qualified MCP without installation commands for inactive integrations', () => {
   for (const integration of integrations.slice(0, 2)) {
     const html = renderToStaticMarkup(
       createElement(IntegrationPanel, { integration }),
     )
     expect(html).toContain(integration.name)
-    expect(html).toContain('Planned')
+    expect(html).toContain('Unavailable')
+    expect(html).toContain('locally qualified')
+    expect(html).toContain('Stateless HTTP MCP')
+    expect(html).toContain('miniagentgit.repository_head')
+    expect(html).toContain('&lt;TRUSTED_BASE_URL&gt;/_deepspace/agent/mcp')
+    expect(html).toContain('isError')
+    expect(html).toContain('Official ')
+    expect(html).toContain('same verified account subject')
+    expect(html).not.toContain('https://miniagentgit-deepspace-daron.app.space')
     expect(html).toContain('href="/docs#quick-start"')
     expect(html).not.toMatch(
-      /<pre|<code|Copy command|npx |npm install|mcp add|mcpServers/,
+      /<pre|Copy command|npx |npm install|mcp add|mcpServers/,
     )
   }
 })

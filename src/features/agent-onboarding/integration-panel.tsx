@@ -1,6 +1,7 @@
 import type { Integration } from './contracts'
 import { onboardingCopy } from './content'
 import { SiteIcon } from '../product-site/components/site-icon'
+import { ConnectionDetails } from './connection-details'
 import { HttpSetup } from './http-setup'
 
 export function IntegrationPanel({
@@ -27,6 +28,9 @@ export function IntegrationPanel({
       <p className="agent-availability" role="status">
         {integration.capability.message}
       </p>
+      {integration.connection && (
+        <ConnectionDetails connection={integration.connection} />
+      )}
       <h4>What you need</h4>
       <ul>
         {integration.prerequisites.map((item) => (
@@ -36,7 +40,7 @@ export function IntegrationPanel({
       <h3>
         {integration.id === 'http'
           ? 'Your first commit and validation'
-          : 'Connection path'}
+          : 'Setup and verification prerequisites'}
       </h3>
       <ol className="agent-steps">
         {integration.instructions.map((step) => (
@@ -46,6 +50,13 @@ export function IntegrationPanel({
           </li>
         ))}
       </ol>
+      {integration.clientGuide && (
+        <p>
+          <a href={integration.clientGuide.href}>
+            {integration.clientGuide.label}
+          </a>
+        </p>
+      )}
       {integration.id === 'http' &&
       integration.capability.state === 'requires-configuration' ? (
         <HttpSetup />

@@ -108,3 +108,19 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.agent-connection dl {
+  margin-block: var(--site-space-4) var(--site-space-6);
+}
+.agent-connection dt {
+  font-weight: 600;
+  margin-block-start: var(--site-space-3);
+}
+.agent-connection dd {
+  margin-inline-start: 0;
+  color: var(--site-muted);
+}
+.agent-connection code {
+  overflow-wrap: anywhere;
+  font-family: var(--site-font-code);
+}

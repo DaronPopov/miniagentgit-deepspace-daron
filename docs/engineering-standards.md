@@ -233,3 +233,15 @@ trusted identity headers or the generic RecordRoom executor. Tool failure messag
 and output shapes are allowlisted and bounded. All new files retain 185 LOC,
 including the 138-line framework adapter: no new 300-line allowance is needed.
 Public integrations stay planned until actual client and credential qualification.
+
+## Scoped tool credential boundary (PASS 08B)
+
+The tool-only SDK policy and binding-only HEAD adapter live in
+`src/server/deepspace/{agent-auth,agent-owner}.ts`; both retain the default 185-line
+cap, without an adapter exception. Ordinary API/owner authentication remains
+unchanged. Forward only the original bearer to the canonical owner, verify it
+again on the dedicated agent path, and use existing readHead/persisted ownership.
+Never use synthetic identity headers or a generic SDK record executor. Agent
+scope is not owner permission. Follow MCP-AUTH-001–010 in agent-tool architecture.
+Onboarding can describe this local qualification while keeping inactive client
+connections unavailable and installation commands disabled.
