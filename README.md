@@ -2,7 +2,11 @@
 
 Foundation for a cloud-native, headless version control service for AI coding
 agents. Pass 01 supplies a minimal DeepSpace app and engineering checks.
-Repository commits, history, authentication flows, and MCP are not implemented.
+Repository commits, history, browser login flows, and MCP are not implemented.
+Pass 02 prepares typed operation seams and a fail-closed `GET /api/me` identity
+adapter; no repository operation endpoint is published. It requires trusted
+JWT public key, issuer, and verified audience configuration. See
+[architecture](docs/architecture.md) and [free-tier budget](docs/free-tier-budget.md).
 
 ## Develop
 

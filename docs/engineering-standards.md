@@ -21,12 +21,20 @@ actual count, and maximum. Violations and read/Git failures exit nonzero.
 
 Explicit classification:
 
-| Paths                                              | Maximum |
-| -------------------------------------------------- | ------- |
-| `tests/**`, `**/*.test.ts(x)`, `**/*.spec.ts(x)`   | 185     |
-| `worker.ts`, `vite.config.ts`, `vitest.config.ts`  | 300     |
-| `src/server/**` (HTTP and DeepSpace adapters only) | 300     |
-| Other tracked `.ts` and `.tsx` files               | 185     |
+| Paths                                               | Maximum |
+| --------------------------------------------------- | ------- |
+| `tests/**`, `**/*.test.ts(x)`, `**/*.spec.ts(x)`    | 185     |
+| `worker.ts`, `vite.config.ts`, `vitest.config.ts`   | 300     |
+| Explicit API/framework adapter allowlist in checker | 300     |
+| Other tracked `.ts` and `.tsx` files                | 185     |
+
+The checker uses exact adapter paths, never a blanket `src/server/**` or
+`src/server/api/**` allowance. Current adapters: `src/server/app.ts`,
+`src/server/api/{health,principal,request}.ts`, and
+`src/server/deepspace/{auth,repository-room}.ts`. Ordinary server business logic,
+`src/server/storage/**` (including schema and routing), and unclassified new
+adapters remain at 185. Adding an adapter to the allowlist requires a cohesive
+transport/framework responsibility and a matching documentation update.
 
 Exact generated exclusions are `src/router.ts` and `src/modals.tsx`. Vendor
 roots are `node_modules/`, `vendor/`, `third_party/`, and build output `dist/`.
@@ -90,3 +98,26 @@ Keep generated files, node_modules, build output, credentials, and local
 DeepSpace/Wrangler state out of Git. Use platform-managed secrets in later
 passes. Review staged files for credentials before committing. Do not register
 or deploy as part of ordinary validation.
+
+## Free-tier invariant and transaction ownership
+
+**FREE-TIER-001** is mandatory: one DeepSpace Free-plan deployment for this
+bounded service. Follow [free-tier-budget.md](free-tier-budget.md) and
+[architecture.md](architecture.md). Treat currently reported allowances as
+changeable; budget uploads at 128 MiB until actual app quotas are verified.
+Provider quotas for SQLite, objects, requests, CPU, and billing remain unknown.
+Do not import Cloudflare Free-plan entitlements as DeepSpace entitlements.
+No registration, deploy, fabricated ID, paid integration, credit-consuming
+runtime test, cron, or unnecessary workload without explicit authorization.
+
+Keep text inputs and query pages bounded. Configuration can lower the frozen
+application ceilings; raising them requires budget review. Use typed
+QUOTA_EXCEEDED results. Request/commit/page validation is implemented; persisted
+storage counters, admission, and rate limits remain planned until operations
+exist. Never claim a configured limit is durable enforcement.
+
+One repository has one canonical persistence owner in the app-private namespace.
+Only its atomic storage operation may advance HEAD. Recheck authorization,
+idempotency, expected HEAD, and retained-data quotas inside one synchronous
+SQLite transaction; never await inside the callback. Do not assume generic
+record mutations are an atomic commit API or claim SQLite/R2 atomicity.

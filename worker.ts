@@ -8,10 +8,13 @@ import {
   YjsRoom,
 } from 'deepspace/worker'
 import type { DOManifest } from 'deepspace/worker'
+export { RepositoryRoom } from './src/server/deepspace/repository-room'
+
 import { schemas } from './src/schemas'
 import { createApp, type Env } from './src/server/app'
 
 export const __DO_MANIFEST__ = [
+  { binding: 'REPOSITORY_ROOMS', className: 'RepositoryRoom', sqlite: true },
   { binding: 'RECORD_ROOMS', className: 'AppRecordRoom', sqlite: true },
   { binding: 'YJS_ROOMS', className: 'AppYjsRoom', sqlite: true },
   { binding: 'CANVAS_ROOMS', className: 'AppCanvasRoom', sqlite: true },

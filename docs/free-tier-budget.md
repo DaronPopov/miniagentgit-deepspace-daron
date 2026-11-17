@@ -1,0 +1,124 @@
+# Free-tier resource budget
+
+## FREE-TIER-001
+
+MiniAgentGit must remain operable as a bounded takehome demo on **one DeepSpace
+Free-plan deployment**. This is a design invariant, not a certification that
+hosted operation or future pricing is guaranteed. No paid integrations, external
+AI calls, background polling, cron tasks, or unnecessary background workloads.
+No registration, deployment, or credit-consuming test without explicit user
+authorization. Preserve the official production build gate and `__APP_ID__`.
+
+## Allowance evidence and separate limits
+
+Investigated 2026-11-17 using official docs and installed DeepSpace 0.44.2 types
+and implementation. Earlier read-only account checks in this conversation
+reported Free, 500 available credits, zero used, zero apps, and no renewal date.
+The dashboard advertised 500 credits/month; the SDK's `DEPLOYED_APPS_DEFAULTS`
+sets Free to one app. These are currently reported allowances, not promised
+future pricing or a verified renewal schedule. No further account calls or
+billable operations were needed for this amendment.
+
+| Resource                   | DeepSpace evidence / app entitlement                                                                               | Decision                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Deployment slots           | Currently reported one; server overrides may differ                                                                | One app for all repositories; no preview app per repository                      |
+| Credits                    | 500 monthly advertised; account had 500 remaining, renewal null                                                    | No assumption that compute/storage are unmetered; no paid integrations           |
+| Uploaded files             | Official guide says 128 MiB per app; actual app quota unknown                                                      | Conservative 128 MiB ceiling; planned workflow uses zero uploads                 |
+| Deploy assets / releases   | Separate allocation from uploaded files; SDK account storage table says Free 1 GiB and repo store constant 256 MiB | Not repository content quota; actual app/account entitlement unknown             |
+| SQLite database bytes      | Repository SQLite is inside its Durable Object; no DeepSpace Free per-repo or per-account SQLite cap found         | Unknown; 8 MiB logical repository budget planned, not physical DB guarantee      |
+| SQLite rows / operations   | No DeepSpace Free row/read/write allowance or credit conversion found                                              | Unknown; bound query pages and transactions before enabling writes               |
+| Durable Objects            | Manifest permits SQLite DOs; provider-owned Workers for Platforms namespace                                        | DeepSpace Free object count, active-object cost, request/duration quotas unknown |
+| HTTP and DO requests       | No DeepSpace Free daily/monthly/rate entitlement found                                                             | Unknown; no load tests; planned bounded admission/rate limit                     |
+| CPU and memory             | No per-app DeepSpace Free CPU allowance or compute-to-credit conversion found                                      | Unknown effective CPU; bound input and queries, then measure after authorization |
+| R2 / optional blob storage | Standard files gateway has active-content restrictions and owner quota                                             | Do not use for repository text now; no new R2 binding                            |
+
+Sources: [DeepSpace architecture](https://docs.deep.space/concepts/architecture),
+[file storage](https://docs.deep.space/guides/file-uploads#file-size-and-storage-limits),
+[custom bindings](https://docs.deep.space/guides/custom-bindings),
+[account usage command](https://docs.deep.space/cli-reference/commands#app-usage),
+and [dashboard](https://dashboard.deep.space/billing). The file-storage guide
+also specifies 25 MiB per upload request and multipart support; those provider
+capabilities do not authorize their use here. SDK constants are implementation
+hints, not a substitute for actual quota responses. Never combine the uploaded
+file, release, database, and account allocations into one purported allowance.
+
+Cloudflare's direct Workers Free plan lists 100,000 requests/day, 10 ms CPU per
+HTTP invocation, and 128 MB isolate memory. **DeepSpace Free is not Cloudflare
+Workers Free**: DeepSpace operates the hosting account, so these are upstream
+reference values, not our entitlement. [Workers limits](https://developers.cloudflare.com/workers/platform/limits/)
+
+Upstream SQLite DO docs list 100 bound SQL parameters, 100 columns, and an 8 MB
+row/string/blob ceiling. The page's table lists 10 GB/object, while its full-disk
+section distinguishes 1 GB Free and 10 GB Paid; account-plan limits also differ.
+DeepSpace's underlying plan/configuration is unverified. No such maximum is
+claimed for this app. [DO limits](https://developers.cloudflare.com/durable-objects/platform/limits/)
+
+## Application budgets and enforcement status
+
+`src/application/resource-limits.ts` defines frozen defaults. `configureLimits`
+accepts positive safe-integer overrides only at or below these defaults. Future
+composition roots must pass the resulting limits explicitly; no hidden process
+configuration or mutable global counters. Raising ceilings requires a reviewed
+budget revision, not an arbitrary environment variable.
+
+| Budget                              | Default                        | Implemented status                                                                         |
+| ----------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
+| JSON request body                   | 256 KiB                        | `readJsonRequest` checks media type and uses SDK streamed byte limiter before JSON parsing |
+| One file's UTF-8 text               | 32 KiB                         | Enforced by `validateCommit`                                                               |
+| Changes per commit                  | 16                             | Enforced by `validateCommit`                                                               |
+| Total put text per commit           | 128 KiB                        | Enforced by `validateCommit`                                                               |
+| Commit message                      | 1 KiB                          | Enforced by `validateCommit`                                                               |
+| Page size                           | 25                             | Enforced by `validatePage`                                                                 |
+| Files per repository                | 128                            | Configured; durable post-change count enforcement PLANNED                                  |
+| Commits per repository              | 100                            | Configured; atomic counter enforcement PLANNED                                             |
+| Logical repository bytes            | 8 MiB                          | Configured; retained content/manifest/idempotency accounting PLANNED                       |
+| Repositories per app                | Demo target 4                  | PLANNED app-wide creation admission; not a configured/enforced counter                     |
+| Concurrent mutations / request rate | No exposed mutations           | Durable bounded admission/rate control PLANNED before public writes                        |
+| CPU / physical DB bytes / credits   | Unknown effective platform cap | Measurement and provider observability PLANNED; no local enforcement claim                 |
+
+Quota failures are typed `{ ok: false, error: { code: 'QUOTA_EXCEEDED',
+resource, maximum, actual? } }`. `actual` is omitted when the SDK body limiter
+reports only the threshold; never invent a measured count. Invalid config or
+measurements yield `INVALID_INPUT`. These validators are executable and tested,
+but no repository endpoint is published yet: they are future operation-boundary
+requirements, not a claim that unimplemented persistence is protected today.
+
+Accept only well-formed text without NUL for file content; this is a text API,
+not a complete binary-content detector. Paths use a deliberately narrow printable
+ASCII subset and exclude traversal, empty segments, escapes, and Windows paths.
+No archives, binary uploads, arbitrary globbing, unbounded diff/history traversal,
+or automatic retries. Exact credit cost and physical database amplification
+remain unknown. Lower input limits alone cannot guarantee a CPU or credit cap.
+
+## First end-to-end commit workflow estimate (not implemented)
+
+Assume one app, one repository, one actor, two UTF-8 files of 4 KiB each,
+one 128-byte message, and six sequential calls: create repository, read HEAD,
+create commit, list tree, read one file, read history. Assume no retries, no UI
+asset fetches, no auth-provider round trips, no subscriptions, and no R2 writes.
+
+- 6 external HTTP requests and approximately 6 owner dispatches. Actual internal
+  platform authentication and metering subrequests are not measured.
+- 8 KiB new content; two manifest entries; one commit row; one HEAD row; one
+  idempotency row; one repository row (8 rows after the workflow). Creation
+  retry bookkeeping may add a separate row once its design is implemented.
+- Reserve 4 KiB logical metadata for the first commit plus 8 KiB contents:
+  approximately 12 KiB logical data. Assume up to 4x for SQLite pages/indexes/WAL
+  as a planning reserve: approximately 48 KiB, **not measured physical usage**.
+- With full text replacement at the 128 KiB commit ceiling, 100 commits could
+  exceed 12.5 MiB before metadata. Therefore the planned 8 MiB retained-data
+  cap must reject writes earlier; the per-commit limit is not a total budget.
+- Four demo repositories at the planned 8 MiB logical cap reserve 32 MiB logical
+  data, roughly 128 MiB under the same unverified 4x assumption. This is SQLite,
+  not uploaded-file usage, and must not be described as fitting a known SQLite
+  entitlement. Initial schema overhead in empty objects is additional.
+- Uploaded-file allocation spent: 0 bytes. Background tasks/subscriptions: 0.
+  CPU time, SQL rows scanned/written by indexes, billed requests, and credits
+  per workflow: **unknown until an explicitly authorized hosted measurement**.
+
+Before enabling public writes: enforce persisted quotas and concurrency in the
+same owner transaction as HEAD advancement; add bounded retry/idempotency
+handling and creation admission. Before claiming hosted Free-plan operability:
+verify actual app quotas without assuming a Cloudflare plan, then authorize a
+small smoke workflow and inspect usage before/after. Unknown billing or quota
+behavior must fail closed rather than automatically upgrading or provisioning.

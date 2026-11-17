@@ -10,6 +10,12 @@ const integrationFiles = new Set([
   'worker.ts',
   'vite.config.ts',
   'vitest.config.ts',
+  'src/server/app.ts',
+  'src/server/api/health.ts',
+  'src/server/api/principal.ts',
+  'src/server/api/request.ts',
+  'src/server/deepspace/auth.ts',
+  'src/server/deepspace/repository-room.ts',
 ])
 
 export function permittedLines(path) {
@@ -22,7 +28,7 @@ export function permittedLines(path) {
   }
   // Tests take precedence even inside integration directories.
   if (path.startsWith('tests/') || /\.(test|spec)\.tsx?$/.test(path)) return 185
-  if (integrationFiles.has(path) || path.startsWith('src/server/')) return 300
+  if (integrationFiles.has(path)) return 300
   return 185
 }
 
