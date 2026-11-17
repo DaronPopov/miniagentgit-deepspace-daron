@@ -1,0 +1,56 @@
+{
+  "@cloudflare/vite-plugin": {
+    "current": "1.69.1",
+    "wanted": "1.70.0",
+    "latest": "1.70.0",
+    "location": "node_modules/@cloudflare/vite-plugin"
+  },
+  "@types/node": {
+    "current": "24.19.2",
+    "wanted": "24.19.2",
+    "latest": "26.6.6",
+    "location": "node_modules/@types/node"
+  },
+  "esbuild": {
+    "current": "0.27.7",
+    "wanted": "0.27.7",
+    "latest": "0.28.2",
+    "location": "node_modules/esbuild"
+  },
+  "eslint": {
+    "current": "9.39.5",
+    "wanted": "9.39.5",
+    "latest": "10.15.0",
+    "location": "node_modules/eslint"
+  },
+  "miniflare": {
+    "current": "5.20261110.0-beta",
+    "wanted": "5.20261110.0-beta",
+    "latest": "4.20260730.0",
+    "location": "node_modules/miniflare"
+  },
+  "prettier": {
+    "current": "3.8.3",
+    "wanted": "3.8.3",
+    "latest": "3.10.1",
+    "location": "node_modules/prettier"
+  },
+  "react-router": {
+    "current": "7.18.5",
+    "wanted": "7.18.5",
+    "latest": "8.5.1",
+    "location": "node_modules/react-router"
+  },
+  "typescript": {
+    "current": "5.9.3",
+    "wanted": "5.9.3",
+    "latest": "7.0.2",
+    "location": "node_modules/typescript"
+  },
+  "vitest": {
+    "current": "4.1.12",
+    "wanted": "4.1.12",
+    "latest": "5.1.0",
+    "location": "node_modules/vitest"
+  }
+}

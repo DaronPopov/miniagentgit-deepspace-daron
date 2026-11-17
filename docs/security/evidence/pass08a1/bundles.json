@@ -1,0 +1,1313 @@
+{
+  "environments": [
+    {
+      "environment": "miniagentgit_deepspace_daron",
+      "outputs": [
+        {
+          "file": "index.js",
+          "imports": ["node:events", "node:stream", "cloudflare:workers"],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "\u0000rolldown/runtime.js",
+              "renderedLength": 328
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/process/hrtime.mjs",
+              "renderedLength": 571
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/tty/read-stream.mjs",
+              "renderedLength": 231
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/tty/write-stream.mjs",
+              "renderedLength": 856
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/_internal/utils.mjs",
+              "renderedLength": 586
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/process/node-version.mjs",
+              "renderedLength": 104
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/process/process.mjs",
+              "renderedLength": 5133
+            },
+            {
+              "id": "node_modules/@cloudflare/unenv-preset/dist/runtime/node/process.mjs",
+              "renderedLength": 3216
+            },
+            {
+              "id": "\u0000virtual:cloudflare/nodejs-global-inject/@cloudflare/unenv-preset/node/process",
+              "renderedLength": 114
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/mock/noop.mjs",
+              "renderedLength": 114
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/console.mjs",
+              "renderedLength": 1455
+            },
+            {
+              "id": "node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs",
+              "renderedLength": 526
+            },
+            {
+              "id": "\u0000virtual:cloudflare/nodejs-global-inject/@cloudflare/unenv-preset/node/console",
+              "renderedLength": 120
+            },
+            {
+              "id": "node_modules/unenv/dist/runtime/node/internal/perf_hooks/performance.mjs",
+              "renderedLength": 5342
+            },
+            {
+              "id": "node_modules/@cloudflare/unenv-preset/dist/runtime/polyfill/performance.mjs",
+              "renderedLength": 808
+            },
+            {
+              "id": "node_modules/lib0/map.js",
+              "renderedLength": 1836
+            },
+            {
+              "id": "node_modules/lib0/set.js",
+              "renderedLength": 135
+            },
+            {
+              "id": "node_modules/lib0/array.js",
+              "renderedLength": 1576
+            },
+            {
+              "id": "node_modules/lib0/observable.js",
+              "renderedLength": 1720
+            },
+            {
+              "id": "node_modules/lib0/math.js",
+              "renderedLength": 783
+            },
+            {
+              "id": "node_modules/lib0/binary.js",
+              "renderedLength": 330
+            },
+            {
+              "id": "node_modules/lib0/number.js",
+              "renderedLength": 391
+            },
+            {
+              "id": "node_modules/lib0/string.js",
+              "renderedLength": 1899
+            },
+            {
+              "id": "node_modules/lib0/encoding.js",
+              "renderedLength": 16053
+            },
+            {
+              "id": "node_modules/lib0/error.js",
+              "renderedLength": 452
+            },
+            {
+              "id": "node_modules/lib0/decoding.js",
+              "renderedLength": 11008
+            },
+            {
+              "id": "node_modules/lib0/webcrypto.js",
+              "renderedLength": 121
+            },
+            {
+              "id": "node_modules/lib0/random.js",
+              "renderedLength": 332
+            },
+            {
+              "id": "node_modules/lib0/time.js",
+              "renderedLength": 113
+            },
+            {
+              "id": "node_modules/lib0/promise.js",
+              "renderedLength": 511
+            },
+            {
+              "id": "node_modules/lib0/conditions.js",
+              "renderedLength": 235
+            },
+            {
+              "id": "node_modules/lib0/storage.js",
+              "renderedLength": 934
+            },
+            {
+              "id": "node_modules/lib0/trait/equality.js",
+              "renderedLength": 872
+            },
+            {
+              "id": "node_modules/lib0/object.js",
+              "renderedLength": 1866
+            },
+            {
+              "id": "node_modules/lib0/function.js",
+              "renderedLength": 1824
+            },
+            {
+              "id": "node_modules/lib0/environment.js",
+              "renderedLength": 2866
+            },
+            {
+              "id": "node_modules/lib0/buffer.js",
+              "renderedLength": 1610
+            },
+            {
+              "id": "node_modules/lib0/pair.js",
+              "renderedLength": 384
+            },
+            {
+              "id": "node_modules/lib0/prng.js",
+              "renderedLength": 2290
+            },
+            {
+              "id": "node_modules/lib0/schema.js",
+              "renderedLength": 25871
+            },
+            {
+              "id": "node_modules/lib0/dom.js",
+              "renderedLength": 1067
+            },
+            {
+              "id": "node_modules/lib0/symbol.js",
+              "renderedLength": 158
+            },
+            {
+              "id": "node_modules/lib0/logging.common.js",
+              "renderedLength": 1030
+            },
+            {
+              "id": "node_modules/lib0/logging.js",
+              "renderedLength": 2244
+            },
+            {
+              "id": "node_modules/lib0/iterator.js",
+              "renderedLength": 765
+            },
+            {
+              "id": "node_modules/yjs/dist/yjs.mjs",
+              "renderedLength": 200907
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/buffer_utils.js",
+              "renderedLength": 1386
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/util/errors.js",
+              "renderedLength": 1790
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/util/base64url.js",
+              "renderedLength": 308
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/validate.js",
+              "renderedLength": 3208
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/key.js",
+              "renderedLength": 7181
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/key_descriptor.js",
+              "renderedLength": 200
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/jwe_algorithms.js",
+              "renderedLength": 2536
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/jws_algorithms.js",
+              "renderedLength": 1650
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/jws_verify.js",
+              "renderedLength": 3601
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/jwt_claims_set.js",
+              "renderedLength": 4931
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/jwt/verify.js",
+              "renderedLength": 375
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/key_algorithm.js",
+              "renderedLength": 371
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/lib/asn1.js",
+              "renderedLength": 3260
+            },
+            {
+              "id": "node_modules/jose/dist/webapi/key/import.js",
+              "renderedLength": 280
+            },
+            {
+              "id": "node_modules/@ai-sdk/provider/dist/index.js",
+              "renderedLength": 11177
+            },
+            {
+              "id": "node_modules/zod/v4/core/util.js",
+              "renderedLength": 19011
+            },
+            {
+              "id": "node_modules/zod/v4/core/core.js",
+              "renderedLength": 2990
+            },
+            {
+              "id": "node_modules/zod/v4/core/errors.js",
+              "renderedLength": 3648
+            },
+            {
+              "id": "node_modules/zod/v4/core/parse.js",
+              "renderedLength": 5269
+            },
+            {
+              "id": "node_modules/zod/v4/core/regexes.js",
+              "renderedLength": 10591
+            },
+            {
+              "id": "node_modules/zod/v4/core/checks.js",
+              "renderedLength": 13255
+            },
+            {
+              "id": "node_modules/zod/v4/core/doc.js",
+              "renderedLength": 943
+            },
+            {
+              "id": "node_modules/zod/v4/core/versions.js",
+              "renderedLength": 91
+            },
+            {
+              "id": "node_modules/zod/v4/core/schemas.js",
+              "renderedLength": 72305
+            },
+            {
+              "id": "node_modules/zod/v4/core/memoizer.js",
+              "renderedLength": 6986
+            },
+            {
+              "id": "node_modules/zod/v4/locales/en.js",
+              "renderedLength": 3846
+            },
+            {
+              "id": "node_modules/zod/v4/core/registries.js",
+              "renderedLength": 1186
+            },
+            {
+              "id": "node_modules/zod/v4/core/api.js",
+              "renderedLength": 17632
+            },
+            {
+              "id": "node_modules/zod/v4/core/to-json-schema.js",
+              "renderedLength": 18014
+            },
+            {
+              "id": "node_modules/zod/v4/core/json-schema-processors.js",
+              "renderedLength": 24896
+            },
+            {
+              "id": "node_modules/zod/v4/classic/checks.js",
+              "renderedLength": 899
+            },
+            {
+              "id": "node_modules/zod/v4/classic/errors.js",
+              "renderedLength": 1490
+            },
+            {
+              "id": "node_modules/zod/v4/classic/parse.js",
+              "renderedLength": 764
+            },
+            {
+              "id": "node_modules/zod/v4/classic/schemas.js",
+              "renderedLength": 45647
+            },
+            {
+              "id": "node_modules/zod/v4/classic/iso.js",
+              "renderedLength": 601
+            },
+            {
+              "id": "node_modules/zod/v4/classic/from-json-schema.js",
+              "renderedLength": 23414
+            },
+            {
+              "id": "node_modules/@ai-sdk/provider-utils/dist/index.js",
+              "renderedLength": 35369
+            },
+            {
+              "id": "node_modules/hono/dist/http-exception.js",
+              "renderedLength": 1682
+            },
+            {
+              "id": "node_modules/hono/dist/request/constants.js",
+              "renderedLength": 80
+            },
+            {
+              "id": "node_modules/hono/dist/utils/buffer.js",
+              "renderedLength": 250
+            },
+            {
+              "id": "node_modules/hono/dist/utils/body.js",
+              "renderedLength": 3717
+            },
+            {
+              "id": "node_modules/hono/dist/utils/url.js",
+              "renderedLength": 6564
+            },
+            {
+              "id": "node_modules/hono/dist/request.js",
+              "renderedLength": 6342
+            },
+            {
+              "id": "node_modules/hono/dist/utils/html.js",
+              "renderedLength": 1024
+            },
+            {
+              "id": "node_modules/hono/dist/context.js",
+              "renderedLength": 9991
+            },
+            {
+              "id": "node_modules/hono/dist/compose.js",
+              "renderedLength": 1664
+            },
+            {
+              "id": "node_modules/hono/dist/helper/route/index.js",
+              "renderedLength": 1534
+            },
+            {
+              "id": "node_modules/hono/dist/router.js",
+              "renderedLength": 475
+            },
+            {
+              "id": "node_modules/hono/dist/utils/constants.js",
+              "renderedLength": 141
+            },
+            {
+              "id": "node_modules/hono/dist/utils/mount.js",
+              "renderedLength": 2415
+            },
+            {
+              "id": "node_modules/hono/dist/hono-base.js",
+              "renderedLength": 10094
+            },
+            {
+              "id": "node_modules/hono/dist/router/utils.js",
+              "renderedLength": 92
+            },
+            {
+              "id": "node_modules/hono/dist/router/reg-exp-router/matcher.js",
+              "renderedLength": 535
+            },
+            {
+              "id": "node_modules/hono/dist/router/reg-exp-router/node.js",
+              "renderedLength": 3142
+            },
+            {
+              "id": "node_modules/hono/dist/router/reg-exp-router/trie.js",
+              "renderedLength": 1894
+            },
+            {
+              "id": "node_modules/hono/dist/router/reg-exp-router/router.js",
+              "renderedLength": 2904
+            },
+            {
+              "id": "node_modules/hono/dist/router/smart-router/router.js",
+              "renderedLength": 1223
+            },
+            {
+              "id": "node_modules/hono/dist/router/trie-router/node.js",
+              "renderedLength": 4520
+            },
+            {
+              "id": "node_modules/hono/dist/router/trie-router/router.js",
+              "renderedLength": 334
+            },
+            {
+              "id": "node_modules/hono/dist/router/trie-router/index.js",
+              "renderedLength": 0
+            },
+            {
+              "id": "node_modules/hono/dist/hono.js",
+              "renderedLength": 607
+            },
+            {
+              "id": "node_modules/hono/dist/index.js",
+              "renderedLength": 0
+            },
+            {
+              "id": "node_modules/smol-toml/dist/stringify.js",
+              "renderedLength": 1675
+            },
+            {
+              "id": "node_modules/smol-toml/dist/index.js",
+              "renderedLength": 1631
+            },
+            {
+              "id": "node_modules/deepspace/dist/worker.js",
+              "renderedLength": 205060
+            },
+            {
+              "id": "src/domain/result.ts",
+              "renderedLength": 168
+            },
+            {
+              "id": "src/domain/validation.ts",
+              "renderedLength": 1127
+            },
+            {
+              "id": "src/domain/ownership.ts",
+              "renderedLength": 250
+            },
+            {
+              "id": "src/ci-source-fingerprint.json",
+              "renderedLength": 214
+            },
+            {
+              "id": "src/domain/commit-hashing.ts",
+              "renderedLength": 1014
+            },
+            {
+              "id": "src/application/ci/pipelines.ts",
+              "renderedLength": 588
+            },
+            {
+              "id": "src/application/ci/limits.ts",
+              "renderedLength": 952
+            },
+            {
+              "id": "src/domain/ci/diagnostics.ts",
+              "renderedLength": 683
+            },
+            {
+              "id": "src/domain/ci/source-policy.ts",
+              "renderedLength": 1503
+            },
+            {
+              "id": "src/application/ci/validation.ts",
+              "renderedLength": 3546
+            },
+            {
+              "id": "src/application/ci/service.ts",
+              "renderedLength": 3822
+            },
+            {
+              "id": "src/server/storage/database.ts",
+              "renderedLength": 483
+            },
+            {
+              "id": "src/application/authorization.ts",
+              "renderedLength": 301
+            },
+            {
+              "id": "src/server/storage/repository-reads.ts",
+              "renderedLength": 2367
+            },
+            {
+              "id": "src/server/storage/ci/rows.ts",
+              "renderedLength": 1616
+            },
+            {
+              "id": "src/application/ci/receipt.ts",
+              "renderedLength": 1300
+            },
+            {
+              "id": "src/server/storage/ci/writes.ts",
+              "renderedLength": 673
+            },
+            {
+              "id": "src/server/storage/ci/admission.ts",
+              "renderedLength": 2080
+            },
+            {
+              "id": "src/server/storage/ci/execution.ts",
+              "renderedLength": 2800
+            },
+            {
+              "id": "src/server/storage/ci/snapshot.ts",
+              "renderedLength": 2278
+            },
+            {
+              "id": "src/server/storage/ci/receipt-read.ts",
+              "renderedLength": 2344
+            },
+            {
+              "id": "src/server/storage/ci/store.ts",
+              "renderedLength": 2301
+            },
+            {
+              "id": "src/application/resource-limits.ts",
+              "renderedLength": 1600
+            },
+            {
+              "id": "src/application/validate-commit.ts",
+              "renderedLength": 2597
+            },
+            {
+              "id": "src/domain/bounded-ring.ts",
+              "renderedLength": 1532
+            },
+            {
+              "id": "src/domain/event-ring.ts",
+              "renderedLength": 1789
+            },
+            {
+              "id": "src/application/scheduler-policy.ts",
+              "renderedLength": 2251
+            },
+            {
+              "id": "src/application/scheduled-request.ts",
+              "renderedLength": 295
+            },
+            {
+              "id": "src/application/commit-scheduler.ts",
+              "renderedLength": 3970
+            },
+            {
+              "id": "src/application/repository-runtime.ts",
+              "renderedLength": 3502
+            },
+            {
+              "id": "src/application/validate-inputs.ts",
+              "renderedLength": 1081
+            },
+            {
+              "id": "src/application/prepare-commit.ts",
+              "renderedLength": 1379
+            },
+            {
+              "id": "src/server/storage/repository-create.ts",
+              "renderedLength": 1735
+            },
+            {
+              "id": "src/server/storage/commit-transaction.ts",
+              "renderedLength": 3057
+            },
+            {
+              "id": "src/server/storage/repository-authority.ts",
+              "renderedLength": 3770
+            },
+            {
+              "id": "src/server/storage/ci/schema.ts",
+              "renderedLength": 2487
+            },
+            {
+              "id": "src/server/storage/schema.ts",
+              "renderedLength": 1386
+            },
+            {
+              "id": "src/server/storage/migrations.ts",
+              "renderedLength": 1450
+            },
+            {
+              "id": "src/server/deepspace/database.ts",
+              "renderedLength": 291
+            },
+            {
+              "id": "src/server/api/request.ts",
+              "renderedLength": 1662
+            },
+            {
+              "id": "src/server/api/result.ts",
+              "renderedLength": 563
+            },
+            {
+              "id": "src/server/api/ci.ts",
+              "renderedLength": 2327
+            },
+            {
+              "id": "src/server/deepspace/auth.ts",
+              "renderedLength": 959
+            },
+            {
+              "id": "src/server/api/repository-owner.ts",
+              "renderedLength": 4013
+            },
+            {
+              "id": "src/server/deepspace/repository-room.ts",
+              "renderedLength": 1333
+            },
+            {
+              "id": "node_modules/deepspace/dist/schema.js",
+              "renderedLength": 1019
+            },
+            {
+              "id": "src/schemas/users-schema.ts",
+              "renderedLength": 372
+            },
+            {
+              "id": "src/schemas.ts",
+              "renderedLength": 47
+            },
+            {
+              "id": "src/server/storage/routing.ts",
+              "renderedLength": 227
+            },
+            {
+              "id": "src/features/agent-tools/contracts.ts",
+              "renderedLength": 1352
+            },
+            {
+              "id": "src/features/agent-tools/repository-head.ts",
+              "renderedLength": 684
+            },
+            {
+              "id": "src/features/agent-tools/schemas.ts",
+              "renderedLength": 1620
+            },
+            {
+              "id": "src/server/deepspace/agent-tools.ts",
+              "renderedLength": 2633
+            },
+            {
+              "id": "src/server/deepspace/managed-auth.ts",
+              "renderedLength": 3278
+            },
+            {
+              "id": "src/application/health.ts",
+              "renderedLength": 110
+            },
+            {
+              "id": "src/server/api/health.ts",
+              "renderedLength": 158
+            },
+            {
+              "id": "src/server/api/principal.ts",
+              "renderedLength": 321
+            },
+            {
+              "id": "src/server/api/repositories.ts",
+              "renderedLength": 1885
+            },
+            {
+              "id": "src/server/app.ts",
+              "renderedLength": 977
+            },
+            {
+              "id": "worker.ts",
+              "renderedLength": 1219
+            },
+            {
+              "id": "\u0000virtual:cloudflare/worker-entry",
+              "renderedLength": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "client",
+      "outputs": [
+        {
+          "file": "assets/index-CDl1i3Wc.js",
+          "imports": [],
+          "dynamicImports": [
+            "assets/dashboard-DHFWMKxp.js",
+            "assets/docs-xXIXZ3aN.js",
+            "assets/pages-OVE9Tbk1.js"
+          ],
+          "modules": [
+            {
+              "id": "\u0000rolldown/runtime.js",
+              "renderedLength": 1155
+            },
+            {
+              "id": "\u0000vite/modulepreload-polyfill.js",
+              "renderedLength": 1185
+            },
+            {
+              "id": "node_modules/react/cjs/react.production.js",
+              "renderedLength": 15979
+            },
+            {
+              "id": "node_modules/react/index.js",
+              "renderedLength": 156
+            },
+            {
+              "id": "node_modules/scheduler/cjs/scheduler.production.js",
+              "renderedLength": 9044
+            },
+            {
+              "id": "node_modules/scheduler/index.js",
+              "renderedLength": 168
+            },
+            {
+              "id": "node_modules/react-dom/cjs/react-dom.production.js",
+              "renderedLength": 6250
+            },
+            {
+              "id": "node_modules/react-dom/index.js",
+              "renderedLength": 448
+            },
+            {
+              "id": "node_modules/react-dom/cjs/react-dom-client.production.js",
+              "renderedLength": 529536
+            },
+            {
+              "id": "node_modules/react-dom/client.js",
+              "renderedLength": 453
+            },
+            {
+              "id": "node_modules/@generouted/react-router/dist/chunk-4AVDOY23.js",
+              "renderedLength": 2561
+            },
+            {
+              "id": "node_modules/@generouted/react-router/dist/chunk-DZAGGWNQ.js",
+              "renderedLength": 0
+            },
+            {
+              "id": "node_modules/react-router/dist/development/chunk-6KYCQHYJ.mjs",
+              "renderedLength": 208730
+            },
+            {
+              "id": "node_modules/react/cjs/react-jsx-runtime.production.js",
+              "renderedLength": 851
+            },
+            {
+              "id": "node_modules/react/jsx-runtime.js",
+              "renderedLength": 180
+            },
+            {
+              "id": "\u0000vite/preload-helper.js",
+              "renderedLength": 3236
+            },
+            {
+              "id": "node_modules/@generouted/react-router/dist/index-lazy.js",
+              "renderedLength": 2482
+            },
+            {
+              "id": "src/styles.css",
+              "renderedLength": 0
+            },
+            {
+              "id": "src/main.tsx",
+              "renderedLength": 346
+            },
+            {
+              "id": "index.html",
+              "renderedLength": 0
+            }
+          ]
+        },
+        {
+          "file": "assets/code-panel-DsapW8ia.js",
+          "imports": [
+            "assets/index-CDl1i3Wc.js",
+            "assets/site-icon-BT8yXKOs.js"
+          ],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "src/features/product-site/components/header-shell.tsx",
+              "renderedLength": 1251
+            },
+            {
+              "id": "src/features/product-site/content/landing.ts",
+              "renderedLength": 3828
+            },
+            {
+              "id": "src/features/product-site/components/site-footer.tsx",
+              "renderedLength": 844
+            },
+            {
+              "id": "src/features/onboarding/examples/requests.ts",
+              "renderedLength": 4650
+            },
+            {
+              "id": "src/features/onboarding/examples/commands.ts",
+              "renderedLength": 2852
+            },
+            {
+              "id": "src/features/onboarding/components/clipboard.ts",
+              "renderedLength": 293
+            },
+            {
+              "id": "src/features/onboarding/components/code-panel.tsx",
+              "renderedLength": 1560
+            }
+          ]
+        },
+        {
+          "file": "assets/dashboard-DHFWMKxp.js",
+          "imports": [
+            "assets/index-CDl1i3Wc.js",
+            "assets/site-icon-BT8yXKOs.js"
+          ],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "src/features/auth-ui/configuration.ts",
+              "renderedLength": 160
+            },
+            {
+              "id": "node_modules/@better-auth/core/dist/env/env-impl.mjs",
+              "renderedLength": 1455
+            },
+            {
+              "id": "node_modules/@better-auth/core/dist/utils/error-codes.mjs",
+              "renderedLength": 237
+            },
+            {
+              "id": "node_modules/better-call/dist/error.mjs",
+              "renderedLength": 3324
+            },
+            {
+              "id": "node_modules/@better-auth/core/dist/error/index.mjs",
+              "renderedLength": 243
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/utils/url.mjs",
+              "renderedLength": 3158
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/parser.mjs",
+              "renderedLength": 3086
+            },
+            {
+              "id": "node_modules/@better-auth/core/dist/utils/url.mjs",
+              "renderedLength": 295
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/fetch-plugins.mjs",
+              "renderedLength": 429
+            },
+            {
+              "id": "node_modules/nanostores/atom/index.js",
+              "renderedLength": 2297
+            },
+            {
+              "id": "node_modules/nanostores/lifecycle/index.js",
+              "renderedLength": 2460
+            },
+            {
+              "id": "node_modules/nanostores/deep-map/path.js",
+              "renderedLength": 563
+            },
+            {
+              "id": "node_modules/nanostores/listen-keys/index.js",
+              "renderedLength": 624
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/equality.mjs",
+              "renderedLength": 961
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/query-atom.mjs",
+              "renderedLength": 414
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/broadcast-channel.mjs",
+              "renderedLength": 1361
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/focus-manager.mjs",
+              "renderedLength": 1018
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/online-manager.mjs",
+              "renderedLength": 1146
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/session-refresh.mjs",
+              "renderedLength": 3711
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/session-atom.mjs",
+              "renderedLength": 5020
+            },
+            {
+              "id": "node_modules/defu/dist/defu.mjs",
+              "renderedLength": 1743
+            },
+            {
+              "id": "node_modules/@better-fetch/fetch/dist/index.js",
+              "renderedLength": 24790
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/config.mjs",
+              "renderedLength": 3871
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/utils/is-atom.mjs",
+              "renderedLength": 256
+            },
+            {
+              "id": "node_modules/@better-auth/core/dist/utils/string.mjs",
+              "renderedLength": 474
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/proxy.mjs",
+              "renderedLength": 2311
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/react/react-store.mjs",
+              "renderedLength": 725
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/react/index.mjs",
+              "renderedLength": 662
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/package.mjs",
+              "renderedLength": 92
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/version.mjs",
+              "renderedLength": 99
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/access/access.mjs",
+              "renderedLength": 2519
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/organization/error-codes.mjs",
+              "renderedLength": 5168
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/client/query.mjs",
+              "renderedLength": 3834
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/organization/access/statement.mjs",
+              "renderedLength": 1113
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/organization/permission.mjs",
+              "renderedLength": 578
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/organization/client.mjs",
+              "renderedLength": 3009
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/two-factor/error-code.mjs",
+              "renderedLength": 857
+            },
+            {
+              "id": "node_modules/deepspace/node_modules/better-auth/dist/plugins/two-factor/client.mjs",
+              "renderedLength": 1166
+            },
+            {
+              "id": "node_modules/deepspace/dist/index.js",
+              "renderedLength": 7982
+            },
+            {
+              "id": "src/features/auth-ui/session-state.ts",
+              "renderedLength": 538
+            },
+            {
+              "id": "src/features/auth-ui/sdk.ts",
+              "renderedLength": 873
+            },
+            {
+              "id": "src/features/auth-ui/api-credential.ts",
+              "renderedLength": 1746
+            },
+            {
+              "id": "src/features/auth-ui/request-pipeline.ts",
+              "renderedLength": 1896
+            },
+            {
+              "id": "src/features/auth-ui/session-client.ts",
+              "renderedLength": 2505
+            },
+            {
+              "id": "src/features/auth-ui/auth-shell.tsx",
+              "renderedLength": 2465
+            },
+            {
+              "id": "src/features/auth-ui/auth-controls.tsx",
+              "renderedLength": 915
+            },
+            {
+              "id": "src/features/auth-ui/auth-session.tsx",
+              "renderedLength": 2445
+            },
+            {
+              "id": "src/features/auth-ui/auth-boundary.tsx",
+              "renderedLength": 357
+            },
+            {
+              "id": "src/pages/dashboard.tsx",
+              "renderedLength": 123
+            }
+          ]
+        },
+        {
+          "file": "assets/docs-xXIXZ3aN.js",
+          "imports": [
+            "assets/code-panel-DsapW8ia.js",
+            "assets/site-icon-BT8yXKOs.js",
+            "assets/index-CDl1i3Wc.js"
+          ],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "src/features/onboarding/content/guide.ts",
+              "renderedLength": 6542
+            },
+            {
+              "id": "src/features/onboarding/components/command-mode.tsx",
+              "renderedLength": 1711
+            },
+            {
+              "id": "src/features/onboarding/components/documentation-page.tsx",
+              "renderedLength": 4375
+            },
+            {
+              "id": "src/pages/docs.tsx",
+              "renderedLength": 118
+            }
+          ]
+        },
+        {
+          "file": "assets/pages-OVE9Tbk1.js",
+          "imports": [
+            "assets/index-CDl1i3Wc.js",
+            "assets/site-icon-BT8yXKOs.js",
+            "assets/code-panel-DsapW8ia.js"
+          ],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "src/features/agent-onboarding/content.ts",
+              "renderedLength": 4103
+            },
+            {
+              "id": "src/features/agent-onboarding/integration-selector.tsx",
+              "renderedLength": 1350
+            },
+            {
+              "id": "src/features/agent-onboarding/http-setup.tsx",
+              "renderedLength": 2088
+            },
+            {
+              "id": "src/features/agent-onboarding/integration-panel.tsx",
+              "renderedLength": 2201
+            },
+            {
+              "id": "src/features/agent-onboarding/agent-onboarding.tsx",
+              "renderedLength": 1025
+            },
+            {
+              "id": "src/features/product-site/content/security.ts",
+              "renderedLength": 922
+            },
+            {
+              "id": "src/features/product-site/components/site-section.tsx",
+              "renderedLength": 572
+            },
+            {
+              "id": "src/features/product-site/components/hero.tsx",
+              "renderedLength": 2031
+            },
+            {
+              "id": "src/features/product-site/components/feature-grid.tsx",
+              "renderedLength": 728
+            },
+            {
+              "id": "src/features/product-site/content/workflows.ts",
+              "renderedLength": 1725
+            },
+            {
+              "id": "src/features/product-site/components/commit-workflow.tsx",
+              "renderedLength": 900
+            },
+            {
+              "id": "src/features/product-site/components/ci-explanation.tsx",
+              "renderedLength": 716
+            },
+            {
+              "id": "src/features/product-site/content/diagrams.ts",
+              "renderedLength": 2188
+            },
+            {
+              "id": "src/features/product-site/components/lifecycle-diagram.tsx",
+              "renderedLength": 2528
+            },
+            {
+              "id": "src/features/product-site/components/architecture-diagrams.tsx",
+              "renderedLength": 394
+            },
+            {
+              "id": "src/features/product-site/components/documentation-links.tsx",
+              "renderedLength": 682
+            },
+            {
+              "id": "src/features/product-site/components/product-foundation.tsx",
+              "renderedLength": 2211
+            },
+            {
+              "id": "src/pages/index.tsx",
+              "renderedLength": 195
+            }
+          ]
+        },
+        {
+          "file": "assets/site-icon-BT8yXKOs.js",
+          "imports": ["assets/index-CDl1i3Wc.js"],
+          "dynamicImports": [],
+          "modules": [
+            {
+              "id": "src/features/product-site/components/site-container.tsx",
+              "renderedLength": 256
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/toKebabCase.mjs",
+              "renderedLength": 227
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/toLucideIconData.mjs",
+              "renderedLength": 355
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/toCamelCase.mjs",
+              "renderedLength": 403
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/toPascalCase.mjs",
+              "renderedLength": 212
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/mergeClasses.mjs",
+              "renderedLength": 267
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/build/defaultAttributes.mjs",
+              "renderedLength": 308
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/build/buildLucideIconNode.mjs",
+              "renderedLength": 2597
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/build/buildLucideIconForReact.mjs",
+              "renderedLength": 416
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/shared/src/utils/hasA11yProp.mjs",
+              "renderedLength": 229
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/context.mjs",
+              "renderedLength": 181
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/Icon.mjs",
+              "renderedLength": 1343
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/createLucideIcon.mjs",
+              "renderedLength": 528
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/arrow-right.mjs",
+              "renderedLength": 296
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/book-open.mjs",
+              "renderedLength": 416
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/database.mjs",
+              "renderedLength": 414
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/external-link.mjs",
+              "renderedLength": 416
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/file-code-corner.mjs",
+              "renderedLength": 574
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/git-branch.mjs",
+              "renderedLength": 408
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/git-commit-horizontal.mjs",
+              "renderedLength": 500
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/git-compare-arrows.mjs",
+              "renderedLength": 621
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/shield-check.mjs",
+              "renderedLength": 453
+            },
+            {
+              "id": "node_modules/lucide-react/dist/esm/icons/terminal.mjs",
+              "renderedLength": 282
+            },
+            {
+              "id": "src/features/product-site/components/site-icon.tsx",
+              "renderedLength": 546
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "dist/client/assets/code-panel-DsapW8ia.js",
+      "bytes": 11284,
+      "gzipBytes": 4276,
+      "sha256": "dedd641575bb1acff149a9f8ed89c85e04bbad3571ae80325790fe7286c2e0fc"
+    },
+    {
+      "file": "dist/client/assets/dashboard-DHFWMKxp.js",
+      "bytes": 55005,
+      "gzipBytes": 18893,
+      "sha256": "3ea5447874e05448e2ff10f24443f777a5c7cb526d78a21fc97ed8c4807e75f6"
+    },
+    {
+      "file": "dist/client/assets/docs-xXIXZ3aN.js",
+      "bytes": 9246,
+      "gzipBytes": 3780,
+      "sha256": "be242dcce20cc0c53de375d2163fd1550e81f09a493a745e1037cd5acbd707d7"
+    },
+    {
+      "file": "dist/client/assets/index-CDl1i3Wc.js",
+      "bytes": 315119,
+      "gzipBytes": 98927,
+      "sha256": "54e114109e79f0a1c55123cf836b7173afe1ec756f67b154bc60316366728afe"
+    },
+    {
+      "file": "dist/client/assets/index-oxnw67VE.css",
+      "bytes": 13080,
+      "gzipBytes": 2671,
+      "sha256": "ee0eb3e222989bbbf94e4888934f6568cd310289ed45bced741ecfae47cec2a3"
+    },
+    {
+      "file": "dist/client/assets/pages-OVE9Tbk1.js",
+      "bytes": 16101,
+      "gzipBytes": 5141,
+      "sha256": "0e7e726d30b3f533e0f236a9616e5f451d1008947de2217291f4a8b82149be66"
+    },
+    {
+      "file": "dist/client/assets/site-icon-BT8yXKOs.js",
+      "bytes": 5845,
+      "gzipBytes": 2645,
+      "sha256": "0ee92296e5e0ccdc3fc6f45e4cab53b45b31728e877b206390bc5aa474cd9498"
+    },
+    {
+      "file": "dist/client/index.html",
+      "bytes": 397,
+      "gzipBytes": 265,
+      "sha256": "dcc5d46eedd35b12b2860b39bee17aca37486ec59471d527bf6775e7fcad68c8"
+    },
+    {
+      "file": "dist/miniagentgit_deepspace_daron/index.js",
+      "bytes": 1001641,
+      "gzipBytes": 235343,
+      "sha256": "40e3dccd07c6f51e6086abafd0d64bd744e2d63676af3b712ce4e1dd221baef3"
+    }
+  ]
+}
