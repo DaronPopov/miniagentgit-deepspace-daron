@@ -1,3 +1,10 @@
+import { enqueueCi } from './ci-enqueue'
+import { validDispatch } from '../../application/ci/stages'
+import {
+  reconcileStageDeadlines,
+  reserveDispatch,
+} from '../storage/ci/dispatch'
+import { runStage } from '../storage/ci/stages'
 import { DurableObject } from 'cloudflare:workers'
 import type { AuthEnvironment } from './auth'
 import { repositoryOwnerName } from '../../domain/ownership'
@@ -13,6 +20,8 @@ import { createOwnerRoutes } from '../api/repository-owner'
 import { resultResponse } from '../api/result'
 
 interface RepositoryEnvironment extends AuthEnvironment {
+  readonly DEEPSPACE_APP_ID: string
+  readonly JOB_ROOMS?: DurableObjectNamespace
   readonly REPOSITORY_ROOMS: DurableObjectNamespace
 }
 /** Exactly one scheduler/service pair per verified canonical owner instance. */
@@ -23,6 +32,30 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
     super(state, env)
     initializeDatabase(durableDatabase(state.storage))
   }
+  async alarm() {
+    const deadline = reconcileStageDeadlines(
+      durableDatabase(this.ctx.storage),
+      Date.now(),
+    )
+    if (deadline !== undefined) await this.ctx.storage.setAlarm(deadline)
+  }
+
+  async executeCiStage(dispatch: unknown) {
+    if (
+      !this.env.JOB_ROOMS ||
+      !this.env.DEEPSPACE_APP_ID ||
+      !validDispatch(dispatch)
+    )
+      return 'stale'
+    const name = repositoryOwnerName(dispatch.repositoryId)
+    if (
+      !name.ok ||
+      !this.ctx.id.equals(this.env.REPOSITORY_ROOMS.idFromName(name.value))
+    )
+      return 'stale'
+    return runStage(durableDatabase(this.ctx.storage), dispatch)
+  }
+
   async fetch(request: Request): Promise<Response> {
     const pathname = new URL(request.url).pathname
     const agent = pathname.match(
@@ -58,13 +91,31 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
         retainExecution: (promise) => this.ctx.waitUntil(promise),
       })
       const limits = ciLimits()
+      const jobs = this.env.JOB_ROOMS
       const ci = createCiEngine({
+        dispatch:
+          jobs &&
+          (async (job) => {
+            const dispatch = reserveDispatch(
+              durableDatabase(this.ctx.storage),
+              job.id,
+              Date.now(),
+            )
+            if (!dispatch) return
+            try {
+              await this.alarm()
+              await enqueueCi(jobs, dispatch)
+            } catch {
+              // The reserved dispatch remains discoverable for authorized replay.
+            }
+          }),
         limits,
         store: createCiStore(
           durableDatabase(this.ctx.storage),
           id,
           limits,
           Date.now,
+          jobs !== undefined,
         ),
         retain: (promise) => this.ctx.waitUntil(promise),
       })

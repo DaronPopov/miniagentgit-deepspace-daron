@@ -24,6 +24,7 @@ export function createCiStore(
   id: string,
   limits: CiLimits,
   now: () => number,
+  staged = false,
 ): CiStore {
   function access<T>(
     context: RepositoryContext,
@@ -39,7 +40,7 @@ export function createCiStore(
   return Object.freeze<CiStore>({
     admit: (context, commit, pipeline, jobId) =>
       access(context, () =>
-        admitCi(db, id, commit, pipeline, jobId, now(), limits),
+        admitCi(db, id, commit, pipeline, jobId, now(), limits, staged),
       ),
     get: (context, job) =>
       access(context, () => {

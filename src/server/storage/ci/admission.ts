@@ -1,3 +1,4 @@
+import { stageBounds } from '../../../application/ci/stages'
 import type { CiPipeline, CiJob } from '../../../contracts/ci'
 import type { CiLimits } from '../../../application/ci/limits'
 import type { Result } from '../../../domain/result'
@@ -18,6 +19,7 @@ export function admitCi(
   id: string,
   now: number,
   limits: CiLimits,
+  staged: boolean,
 ): Result<CiJob> {
   if (
     !commitId(commit).ok ||
@@ -47,7 +49,10 @@ export function admitCi(
     db.all(`SELECT COUNT(*) AS stored, COALESCE(SUM(storage_bytes),0) AS bytes,
     COALESCE(SUM(CASE WHEN state IN ('queued','running') THEN 1 ELSE 0 END),0) AS pending FROM ci_jobs`)[0]
   if (!counts) throw new Error('Missing CI counters')
-  const reservation = 1024 + limits.receiptBytes
+  const reservation =
+    1024 +
+    limits.receiptBytes +
+    (staged && pipeline.version === 2 ? stageBounds.checkpointBytes : 0)
   for (const [resource, actual, maximum] of [
     ['ciOutstanding', numberColumn(counts, 'pending') + 1, limits.outstanding],
     ['ciStoredJobs', numberColumn(counts, 'stored') + 1, limits.storedJobs],
@@ -64,7 +69,7 @@ export function admitCi(
       }
   db.run(
     `INSERT INTO ci_jobs(id,repository_id,commit_id,pipeline_id,fingerprint,pipeline_version,state,generation,attempts,created_ms,updated_ms,deadline_ms,code,storage_bytes)
-    VALUES (?,?,?,?,?,?,'queued',0,0,?,?,0,'none',?)`,
+    VALUES (?,?,?,?,?,?,'queued',0,0,?,?,?,'none',?)`,
     id,
     repository,
     commit,
@@ -73,8 +78,11 @@ export function admitCi(
     pipeline.version,
     now,
     now,
+    staged ? now + stageBounds.elapsedMs : 0,
     reservation,
   )
+  if (staged && pipeline.version === 2)
+    db.run('INSERT INTO ci_stages(job_id) VALUES (?)', id)
   const job = findJob(db, id)
   if (!job) throw new Error('CI acceptance not persisted')
   return success(job)

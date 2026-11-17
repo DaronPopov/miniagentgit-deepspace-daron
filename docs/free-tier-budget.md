@@ -275,3 +275,13 @@ scheduler and CI limits remain in force. There is no implemented app-wide ingres
 or repository-cardinality cap. Monitor account usage before expanding traffic;
 a paid/slot/credit refusal is a stop condition, not permission to buy or delete
 another application. See [PASS 06F results](passes/pass06f-results.md).
+
+## PASS 09A stage scheduling budget
+
+A staged CI job reserves at most 4 KiB of checkpoint data in the existing
+repository CI storage budget and has at most two dispatch reservations. The
+normal passing path uses two JobRoom alarm invocations, two stage RPC calls
+and a repository-local deadline alarm. No periodic cross-repository scan runs.
+The stage path may read a bounded snapshot twice. See
+[durable CI stages](ci-durable-stages.md) for deadline and accounting details
+and [PASS 09A results](passes/pass09a-results.md) for local evidence.

@@ -8,6 +8,8 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const output = 'src/ci-source-fingerprint.json'
 const roots = [
   'src/application/ci/validation.ts',
+  'src/server/storage/ci/stages.ts',
+  'src/server/storage/ci/dispatch.ts',
   'src/application/ci/pipelines.ts',
   'src/application/ci/receipt.ts',
   'src/server/storage/ci/snapshot.ts',

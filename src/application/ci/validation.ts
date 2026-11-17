@@ -22,7 +22,7 @@ export function failedValidation(code: CiCode): CiValidation {
   }
 }
 /** Only fixed server code runs. No import/eval/config/module resolution of input. */
-export async function validateSnapshot(
+export async function validateIntegrity(
   snapshot: CiSnapshot,
   limits: CiLimits,
   signal: AbortSignal,
@@ -110,10 +110,43 @@ export async function validateSnapshot(
   if ((await sha256(snapshot.canonicalCommit)) !== snapshot.commitId)
     diagnostics.add('manifest', 'commit_digest')
   if (diagnostics.failed()) return fail('integrity_failed')
+  return {
+    state: 'passed',
+    code: 'none',
+    checks: { manifest: 'passed', source: 'skipped', typescript: 'deferred' },
+    diagnostics: [],
+    truncated: false,
+    files,
+    bytes,
+    work,
+  }
+}
+
+export function validateSource(
+  snapshot: CiSnapshot,
+  limits: CiLimits,
+  signal: AbortSignal,
+  integrity: CiValidation,
+  workMaximum = limits.workBytes,
+): CiValidation {
+  const diagnostics = diagnosticCollector(
+    limits.diagnostics,
+    limits.diagnosticBytes,
+  )
+  let work = integrity.work
+  const fail = (code: CiCode): CiValidation => ({
+    ...integrity,
+    ...failedValidation(code),
+    files: integrity.files,
+    bytes: integrity.bytes,
+    diagnostics: diagnostics.snapshot(),
+    truncated: diagnostics.truncated(),
+    work: Math.min(work, workMaximum),
+  })
   for (const entry of snapshot.entries) {
     if (signal.aborted) return fail('cancelled')
-    if (!charge(new TextEncoder().encode(entry.content ?? '').length))
-      return fail('work_limit')
+    work += new TextEncoder().encode(entry.content ?? '').length
+    if (work > workMaximum) return fail('work_limit')
     sourcePolicy(entry, limits.lines, diagnostics)
   }
   if (signal.aborted) return fail('cancelled')
@@ -127,8 +160,25 @@ export async function validateSnapshot(
     },
     diagnostics: diagnostics.snapshot(),
     truncated: diagnostics.truncated(),
-    files,
-    bytes,
+    files: integrity.files,
+    bytes: integrity.bytes,
     work,
   }
+}
+
+export async function validateSnapshot(
+  snapshot: CiSnapshot,
+  limits: CiLimits,
+  signal: AbortSignal,
+  workMaximum = limits.workBytes,
+): Promise<CiValidation> {
+  const integrity = await validateIntegrity(
+    snapshot,
+    limits,
+    signal,
+    workMaximum,
+  )
+  return integrity.state === 'passed'
+    ? validateSource(snapshot, limits, signal, integrity, workMaximum)
+    : integrity
 }

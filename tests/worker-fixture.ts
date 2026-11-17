@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path'
 import type { AuthEnvironment } from '../src/server/deepspace/auth'
 
 /** Actual bundled server worker + workerd SQLite DOs; no Vite/frontend or deploy. */
-export async function workerFixture(env: AuthEnvironment) {
+export async function workerFixture(env: AuthEnvironment, jobs = false) {
   const appId = readFileSync(resolve('wrangler.toml'), 'utf8').match(
     /^DEEPSPACE_APP_ID = "([^"]+)"/m,
   )?.[1]
@@ -42,6 +42,9 @@ export async function workerFixture(env: AuthEnvironment) {
     },
     durableObjects: {
       REPOSITORY_ROOMS: { className: 'RepositoryRoom', useSQLite: true },
+      ...(jobs
+        ? { JOB_ROOMS: { className: 'AppJobRoom', useSQLite: true } }
+        : {}),
     },
     resourcePersistencePath: join(directory, 'objects'),
   }

@@ -2,7 +2,6 @@
 import {
   CanvasRoom,
   CronRoom,
-  JobRoom,
   PresenceRoom,
   RecordRoom,
   YjsRoom,
@@ -38,10 +37,6 @@ export class AppCronRoom extends CronRoom<Env> {
     throw new Error('No scheduled tasks configured')
   }
 }
-export class AppJobRoom extends JobRoom<Env> {
-  protected async onJob(): Promise<never> {
-    throw new Error('No background jobs configured')
-  }
-}
+export { AppJobRoom } from './src/server/deepspace/ci-job-room'
 
 export default createApp()

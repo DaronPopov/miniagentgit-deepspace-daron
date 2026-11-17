@@ -348,3 +348,11 @@ policy, SQL, CI and ownership remain unchanged. See
 Codex/Claude panels explain local qualification but remain unavailable while
 undeployed; no installation command or actual coding-client/hosted compatibility
 claim is enabled. No additional tools or deployment were added.
+
+## PASS 09A durable CI stages
+
+The canonical RepositoryRoom owns CI stage cursors and terminal receipts.
+AppJobRoom schedules a fixed internal executor through its app-private
+namespace and calls RepositoryRoom over binding-only RPC. The original HTTP
+authority and scoped agent HEAD route keep their separate authentication rules.
+See [durable CI stages](ci-durable-stages.md) for the lifecycle and migration.

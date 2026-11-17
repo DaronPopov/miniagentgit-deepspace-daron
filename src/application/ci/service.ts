@@ -10,6 +10,7 @@ import type { CiLimits } from './limits'
 import { failedValidation, validateSnapshot } from './validation'
 
 export interface CiEngineOptions {
+  readonly dispatch?: (job: CiJob) => Promise<void>
   readonly store: CiStore
   readonly limits?: Partial<CiLimits>
   readonly now?: () => number
@@ -110,9 +111,12 @@ export function createCiEngine(options: CiEngineOptions) {
       return invalid('Invalid CI request')
     const activated = activate(context)
     if (!activated.ok) return activated
-    const definition = await pipeline
+    const definition = options.dispatch
+      ? await ciPipeline(limits, true)
+      : await pipeline
     const id = await ciJobIdentity(context.repositoryId, commit, definition)
     const result = store.admit(context, commit, definition, id)
+    if (result.ok && options.dispatch) await options.dispatch(result.value)
     if (result.ok) kick(context)
     return result
   }
@@ -122,7 +126,8 @@ export function createCiEngine(options: CiEngineOptions) {
     let result = store.get(context, id)
     if (
       result.ok &&
-      result.value.state === 'running' &&
+      (result.value.state === 'running' ||
+        (result.value.state === 'queued' && result.value.deadline > 0)) &&
       now() >= result.value.deadline
     ) {
       result = store.stop(context, id, 'expired', result.value.generation)

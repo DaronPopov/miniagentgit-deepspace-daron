@@ -14,7 +14,7 @@ export function recoverCi(
 ): Result<null> {
   const jobs = db
     .all(
-      "SELECT * FROM ci_jobs WHERE state='running' ORDER BY seq LIMIT ?",
+      "SELECT * FROM ci_jobs WHERE state='running' AND id NOT IN (SELECT job_id FROM ci_stages) ORDER BY seq LIMIT ?",
       limits.outstanding,
     )
     .map(jobRow)
@@ -50,10 +50,14 @@ export function claimCi(
   now: number,
   limits: CiLimits,
 ): Result<CiJob | null> {
-  if (db.all("SELECT id FROM ci_jobs WHERE state='running' LIMIT 1")[0])
+  if (
+    db.all(
+      "SELECT id FROM ci_jobs WHERE state='running' AND id NOT IN (SELECT job_id FROM ci_stages) LIMIT 1",
+    )[0]
+  )
     return success(null)
   const row = db.all(
-    "SELECT * FROM ci_jobs WHERE state='queued' ORDER BY seq LIMIT 1",
+    "SELECT * FROM ci_jobs WHERE state='queued' AND id NOT IN (SELECT job_id FROM ci_stages) ORDER BY seq LIMIT 1",
   )[0]
   if (!row) return success(null)
   const job = jobRow(row)
@@ -133,7 +137,7 @@ export function stopCi(
   if (generation !== undefined && job.generation !== generation)
     return conflict(null, 'Stale CI execution generation')
   if (terminal(job)) return success(job)
-  if (reason === 'expired' && (job.state !== 'running' || now < job.deadline))
+  if (reason === 'expired' && (!job.deadline || now < job.deadline))
     return conflict(null, 'CI deadline not reached')
   return success(
     writeTerminal(

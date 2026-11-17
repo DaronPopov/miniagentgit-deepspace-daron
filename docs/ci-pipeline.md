@@ -161,3 +161,10 @@ References: [Cloudflare lifecycle](https://developers.cloudflare.com/durable-obj
 The final PASS 05 unminified server-worker test bundle measured 1,451,037 bytes
 (34,056 bytes above baseline). This is a local esbuild output measurement, not
 the gated production Vite bundle or a provider compressed-size measurement.
+
+## PASS 09A alarm-driven execution
+
+[Durable CI stages](ci-durable-stages.md) describes the current version 2
+dispatch, checkpoint and deadline rules. The sections above document the PASS 05
+executor and receipt compatibility. The existing HTTP routes serve both
+execution paths.

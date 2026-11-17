@@ -18,7 +18,7 @@ export function initializeDatabase(db: Database) {
         : version
           ? numberColumn(version, 'version')
           : 0
-    if (current > 3) throw new Error('Unsupported repository schema')
+    if (current > 4) throw new Error('Unsupported repository schema')
     for (const statement of REPOSITORY_SCHEMA) db.run(statement)
     if (current < 2) {
       db.run(
@@ -47,6 +47,26 @@ export function initializeDatabase(db: Database) {
     if (current < 3) {
       initializeCiSchema(db)
       db.run('INSERT INTO repository_migrations(version) VALUES (3)')
+    }
+    if (current < 4) {
+      db.run(`CREATE TABLE ci_stages (
+        job_id TEXT PRIMARY KEY REFERENCES ci_jobs(id),
+        sequence INTEGER NOT NULL DEFAULT 0 CHECK(sequence BETWEEN 0 AND 2),
+        integrity_ms INTEGER,
+        integrity_duration_ms INTEGER,
+        source_duration_ms INTEGER,
+        completed_ms INTEGER,
+        checkpoint TEXT NOT NULL DEFAULT '',
+        CHECK(length(CAST(checkpoint AS BLOB)) <= 4096)
+      )`)
+      db.run('DROP TRIGGER ci_legal_transition')
+      db.run(`CREATE TRIGGER ci_legal_transition BEFORE UPDATE ON ci_jobs WHEN NOT (
+        (OLD.state='queued' AND NEW.state IN ('running','cancelled','expired','interrupted')) OR
+        (OLD.state='running' AND NEW.state IN ('queued','passed','failed','cancelled','expired','interrupted')) OR
+        (OLD.state='running' AND NEW.state='running' AND OLD.attempts=1 AND
+          EXISTS (SELECT 1 FROM ci_stages WHERE job_id=OLD.id))
+      ) BEGIN SELECT RAISE(ABORT,'invalid CI transition'); END`)
+      db.run('INSERT INTO repository_migrations(version) VALUES (4)')
     }
   })
 }
