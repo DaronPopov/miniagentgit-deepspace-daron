@@ -1,3 +1,4 @@
+import { SiteIcon } from './site-icon'
 import { hero, productLinks } from '../content/landing'
 
 export function Hero() {
@@ -10,11 +11,13 @@ export function Hero() {
         <div className="site-actions">
           <a className="site-button" href="#architecture">
             {hero.primary}
+            <SiteIcon name="next" />
           </a>
           <a
             className="site-button site-button-secondary"
             href={productLinks.api}
           >
+            <SiteIcon name="api" />
             {hero.secondary}
           </a>
         </div>

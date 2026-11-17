@@ -1,0 +1,44 @@
+.site-icon {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex-shrink: 0;
+  vertical-align: -0.2em;
+}
+.site-icon-label,
+.site-icon-title {
+  display: flex;
+  align-items: center;
+  gap: var(--site-space-2);
+  min-inline-size: 0;
+}
+.site-icon-title {
+  align-items: flex-start;
+}
+.site-icon-title .site-icon {
+  color: var(--site-accent);
+  margin-block-start: var(--site-space-1);
+}
+.site-brand,
+.site-navigation a,
+.site-button {
+  gap: var(--site-space-2);
+}
+.site-brand .site-icon {
+  color: var(--site-accent);
+}
+.site-navigation .site-icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+.site-documentation a {
+  align-items: center;
+}
+.site-documentation .site-icon-label .site-icon {
+  color: var(--site-accent);
+}
+.site-navigation {
+  column-gap: var(--site-space-2);
+}
+.site-navigation a {
+  gap: var(--site-space-1);
+}

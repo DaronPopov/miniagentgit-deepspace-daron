@@ -1,3 +1,4 @@
+import { SiteIcon } from './site-icon'
 import { footer, productLinks } from '../content/landing'
 import { SiteContainer } from './site-container'
 
@@ -11,7 +12,10 @@ export function SiteFooter() {
             <br />
             {footer.description}
           </p>
-          <a href={productLinks.github}>{footer.source}</a>
+          <a className="site-icon-label" href={productLinks.github}>
+            {footer.source}
+            <SiteIcon name="external" />
+          </a>
         </div>
       </SiteContainer>
     </footer>

@@ -208,7 +208,8 @@ provider, SSR or Dynamic Worker is introduced. Presentation metadata is separate
 from repository/commit/identity/CI contracts and carries no authorization rules.
 
 - **UI-001:** routes compose features; no backend logic in public route modules.
-- **UI-002:** public feature imports only React and its own presentation modules;
+- **UI-002:** public feature imports React and its own presentation modules; only the
+  dedicated SiteIcon boundary may additionally import static named Lucide icons;
   server, SQL, Durable Object, Hono and server-only SDK dependencies are forbidden.
 - **UI-003:** readonly typed props, explicit local state when needed; no state
   is needed for the foundation.
@@ -254,3 +255,20 @@ not production Vite routing, hosted authentication or deployment. See
 [PASS 06B results](passes/pass06b-results.md) for viewport and bundle measurements.
 The page distinguishes verified local functionality, unknown hosted operation,
 and upcoming work; it advertises no Git wire protocol or arbitrary execution.
+
+## PASS 06B.1: bounded icon presentation
+
+The existing page, content order, links and two SVG architecture lifecycles remain
+unchanged. Trusted display metadata can select one of ten semantic icon names;
+SiteIcon maps those names to ten static named imports from lucide-react 1.74.0.
+No icon namespace, dynamic loader, remote asset or generalized registry exists.
+The narrow public import policy permits that package only in SiteIcon. Icons are
+aria-hidden and nonfocusable; existing visible labels carry accessible names.
+CurrentColor, token spacing, 20px optical size (16px in compact navigation), and
+1.75 stroke width preserve the existing light/dark visual language. No new
+provider, app state, request, backend operation or deployment is introduced.
+
+The reproducible local client-only measurement is
+`node scripts/measure-public-bundle.mjs`; it is not the gated production Vite
+bundle. See [PASS 06B.1 results](passes/pass06b1-results.md) for compatibility,
+locked dependency changes, before/after measurements and Chrome smoke evidence.

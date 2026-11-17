@@ -4,7 +4,7 @@ import ts from 'typescript'
 import { expect, it } from 'vitest'
 import { publicViolations } from './public-boundary-policy'
 
-it('restricts every public feature dependency to React or its own presentation modules', () => {
+it('restricts public dependencies to React, internal presentation and the narrow Lucide boundary', () => {
   const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' })
     .split('\0')
     .filter(

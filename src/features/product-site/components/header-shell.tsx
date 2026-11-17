@@ -1,3 +1,4 @@
+import { SiteIcon } from './site-icon'
 import type { NavigationLink } from '../contracts/presentation'
 import { SiteContainer } from './site-container'
 
@@ -13,6 +14,7 @@ export function HeaderShell({
       <SiteContainer>
         <div className="site-header-row">
           <a className="site-brand" href="/" aria-label={`${brand} home`}>
+            <SiteIcon name="repository" />
             {brand}
           </a>
           <nav aria-label="Primary navigation">
@@ -24,6 +26,7 @@ export function HeaderShell({
                     aria-current={link.current ? 'page' : undefined}
                   >
                     {link.label}
+                    {link.icon && <SiteIcon name={link.icon} />}
                   </a>
                 </li>
               ))}

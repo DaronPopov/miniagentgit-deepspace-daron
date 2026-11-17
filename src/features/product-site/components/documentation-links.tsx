@@ -1,3 +1,4 @@
+import { SiteIcon } from './site-icon'
 import { documentation } from '../content/landing'
 
 export function DocumentationLinks() {
@@ -6,8 +7,11 @@ export function DocumentationLinks() {
       {documentation.map((link) => (
         <li key={link.href}>
           <a href={link.href}>
-            {link.label}
-            <span aria-hidden="true"> ↗</span>
+            <span className="site-icon-label">
+              <SiteIcon name={link.icon} />
+              {link.label}
+            </span>
+            <SiteIcon name="external" />
           </a>
         </li>
       ))}

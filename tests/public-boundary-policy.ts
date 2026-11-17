@@ -35,9 +35,20 @@ export function publicViolations(
     if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
       const name = node.moduleSpecifier
       if (name && ts.isStringLiteral(name)) {
+        if (
+          name.text === 'lucide-react' &&
+          (!ts.isImportDeclaration(node) ||
+            !node.importClause?.namedBindings ||
+            !ts.isNamedImports(node.importClause.namedBindings))
+        )
+          violations.push('Lucide requires static named imports')
         const resolved = posix.normalize(`${dirname(path)}/${name.text}`)
         if (
           name.text !== 'react' &&
+          !(
+            path === 'src/features/product-site/components/site-icon.tsx' &&
+            name.text === 'lucide-react'
+          ) &&
           (!name.text.startsWith('.') || !resolved.startsWith(root))
         )
           violations.push(`forbidden dependency: ${name.text}`)

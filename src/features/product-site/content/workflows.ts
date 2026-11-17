@@ -3,24 +3,28 @@ import type { FeatureDescription } from '../contracts/presentation'
 export const workflow = [
   {
     id: 'prepare',
+    icon: 'source',
     title: 'Name the expected state',
     description:
       'Submit bounded text changes, an expected HEAD, and an idempotency key.',
   },
   {
     id: 'admit',
+    icon: 'validation',
     title: 'Authorize and admit',
     description:
       'Verify identity and persisted ownership, then enter the repository’s bounded commit scheduler.',
   },
   {
     id: 'persist',
+    icon: 'persistence',
     title: 'Compare and persist',
     description:
       'The authority rechecks permission and expected HEAD, then atomically stores immutable data and advances HEAD.',
   },
   {
     id: 'recover',
+    icon: 'concurrency',
     title: 'Resolve the outcome',
     description:
       'On conflict, read current state and prepare again. After an uncertain response, retry the same request and key.',
@@ -36,18 +40,21 @@ export const validation = {
   checks: [
     {
       id: 'integrity',
+      icon: 'validation',
       title: 'Manifest integrity',
       description:
         'Recalculate content hashes and verify paths, ordering, byte counts, and snapshot metadata.',
     },
     {
       id: 'policy',
+      icon: 'source',
       title: 'Fixed source policy',
       description:
         'Check supported text paths, size and line limits, malformed text, whitespace, and final newlines.',
     },
     {
       id: 'receipts',
+      icon: 'commit',
       title: 'Versioned outcomes',
       description:
         'Pipeline fingerprints identify the check implementation and policy. Duplicate requests reuse the same job or receipt.',

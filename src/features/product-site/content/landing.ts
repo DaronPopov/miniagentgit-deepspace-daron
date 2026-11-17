@@ -17,7 +17,7 @@ export const productNavigation = [
   { label: 'Capabilities', href: '#capabilities' },
   { label: 'Architecture', href: '#architecture' },
   { label: 'Docs', href: '#documentation' },
-  { label: 'GitHub', href: productLinks.github },
+  { label: 'GitHub', href: productLinks.github, icon: 'external' },
 ] as const satisfies readonly NavigationLink[]
 export const hero = {
   eyebrow: 'Git-inspired infrastructure · For coding agents',
@@ -75,36 +75,42 @@ export const sections = {
 export const capabilities = [
   {
     id: 'snapshots',
+    icon: 'source',
     title: 'Immutable text snapshots',
     description:
       'SHA-256 content and manifests keep committed text addressable without changing earlier snapshots.',
   },
   {
     id: 'atomic',
+    icon: 'persistence',
     title: 'Transactional HEAD updates',
     description:
       'Commit metadata, replay outcomes, resource counters, and HEAD advance in one synchronous SQLite transaction.',
   },
   {
     id: 'conflicts',
+    icon: 'concurrency',
     title: 'Expected-HEAD conflicts',
     description:
       'A stale expected HEAD is rejected. Queue order alone is never treated as proof of correctness.',
   },
   {
     id: 'replay',
+    icon: 'commit',
     title: 'Durable successful replay',
     description:
       'Retry the same semantic request and idempotency key to recover a successful outcome after an uncertain response.',
   },
   {
     id: 'scheduling',
+    icon: 'repository',
     title: 'Repository-scoped scheduling',
     description:
       'Bounded FIFO admission and one active commit executor per repository keep work and ownership explicit.',
   },
   {
     id: 'testing',
+    icon: 'validation',
     title: 'Local integration evidence',
     description:
       'Real SQLite rollback and concurrency tests sit alongside authenticated HTTP tests in local workerd Durable Objects.',
@@ -113,18 +119,21 @@ export const capabilities = [
 export const philosophy = [
   {
     id: 'free-tier',
+    icon: 'repository',
     title: 'One app, fewer moving parts',
     description:
       'Free-tier-first design: one intended deployment, bounded text storage, and no paid integrations, external brokers, or background polling service.',
   },
   {
     id: 'limits',
+    icon: 'persistence',
     title: 'Budgets are part of the contract',
     description:
       'Admission, input, diagnostics, work, and retained records have application limits. Reported plan allowances are planning inputs, not verified runtime quotas.',
   },
   {
     id: 'scope',
+    icon: 'repository',
     title: 'Git-inspired, deliberately scoped',
     description:
       'This is not Git wire-protocol compatibility. Branches, merges, binaries, and MCP support are not implemented.',
@@ -138,11 +147,19 @@ export const verification = {
     'Upcoming: onboarding, browser authentication integration, and an authenticated repository/CI dashboard.',
 } as const
 export const documentation = [
-  { label: 'HTTP API', href: productLinks.api },
-  { label: 'Architecture & ownership', href: productLinks.architecture },
-  { label: 'CI pipeline', href: productLinks.ci },
-  { label: 'Free-tier budget', href: productLinks.budget },
-  { label: 'Local test evidence', href: productLinks.evidence },
+  { label: 'HTTP API', href: productLinks.api, icon: 'api' },
+  {
+    label: 'Architecture & ownership',
+    href: productLinks.architecture,
+    icon: 'repository',
+  },
+  { label: 'CI pipeline', href: productLinks.ci, icon: 'validation' },
+  { label: 'Free-tier budget', href: productLinks.budget, icon: 'persistence' },
+  {
+    label: 'Local test evidence',
+    href: productLinks.evidence,
+    icon: 'documentation',
+  },
 ] as const satisfies readonly NavigationLink[]
 export const footer = {
   brand: 'MiniAgentGit',

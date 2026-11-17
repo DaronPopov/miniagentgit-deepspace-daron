@@ -179,7 +179,8 @@ adapter is added to the explicit 300-line allowlist. No new LOC exceptions.
 
 Follow UI-001–UI-008 in [architecture](architecture.md). Thin public routes compose
 `src/features/product-site/`; presentation components import only React and their
-own feature. Backend/domain contracts, SDK hooks, credential adapters and future
+own feature, with static named Lucide imports isolated to the approved SiteIcon
+boundary. Backend/domain contracts, SDK hooks, credential adapters and future
 authenticated features must not leak into the public dependency graph. Place
 future onboarding, auth-ui and dashboard responsibilities in separate bounded
 features, not the public layout. No hidden fetch, socket, effects, module store,
@@ -191,3 +192,10 @@ No runtime theme dependency, external font request or component library. All
 frontend source/components/content/hooks/tests retain 185 LOC; no new adapter
 classification or size exception. Public boundary tests use tracked files, so
 stage new modules before validation.
+
+PASS 06B.1 permits `lucide-react` only in
+`src/features/product-site/components/site-icon.tsx`. Use the finite semantic
+vocabulary, static named imports, readonly metadata and decorative aria-hidden
+SVGs alongside retained text labels. No namespace imports, dynamic loaders,
+whole-library registries, icon-only actions or architecture-diagram replacement.
+The public import policy and focused tests enforce this narrow dependency path.

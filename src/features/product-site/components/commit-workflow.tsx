@@ -1,3 +1,4 @@
+import { SiteIcon } from './site-icon'
 import { workflow } from '../content/workflows'
 
 export function CommitWorkflow() {
@@ -9,7 +10,10 @@ export function CommitWorkflow() {
             0{index + 1}
           </span>
           <div>
-            <h3>{step.title}</h3>
+            <h3 className="site-icon-title">
+              <SiteIcon name={step.icon} />
+              <span>{step.title}</span>
+            </h3>
             <p className="site-muted">{step.description}</p>
           </div>
         </li>
