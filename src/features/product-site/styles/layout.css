@@ -1,0 +1,101 @@
+.product-site {
+  min-block-size: 100vh;
+}
+.site-container {
+  inline-size: min(100% - 2 * var(--site-space-4), var(--site-width));
+  margin-inline: auto;
+}
+.site-header {
+  border-block-end: var(--site-border-width) solid var(--site-border);
+  background: var(--site-surface);
+}
+.site-header-row,
+.site-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--site-space-4);
+}
+.site-header-row {
+  justify-content: space-between;
+  padding-block: var(--site-space-4);
+}
+.site-brand {
+  color: var(--site-text);
+  font-weight: 700;
+  text-decoration: none;
+}
+.site-navigation {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.site-navigation a,
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+}
+.site-intro {
+  padding-block: var(--site-space-12) var(--site-space-8);
+}
+.site-intro h1 {
+  max-inline-size: 20ch;
+}
+.site-section {
+  padding-block: var(--site-space-8);
+  scroll-margin-block-start: var(--site-space-4);
+}
+.site-muted {
+  color: var(--site-muted);
+}
+.site-eyebrow {
+  font-size: var(--site-text-small);
+  font-weight: 600;
+}
+.site-code {
+  margin: var(--site-space-6) 0 0;
+  border: var(--site-border-width) solid var(--site-border);
+  border-radius: var(--site-radius);
+  background: var(--site-surface-code);
+  overflow-wrap: anywhere;
+}
+.site-code figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--site-space-3);
+  padding: var(--site-space-3) var(--site-space-4);
+  border-block-end: var(--site-border-width) solid var(--site-border);
+  font-size: var(--site-text-small);
+}
+.site-code p {
+  padding: var(--site-space-4);
+  font-family: var(--site-font-code);
+  font-size: var(--site-text-small);
+}
+.site-skip-link {
+  position: absolute;
+  inset-block-start: var(--site-space-2);
+  inset-inline-start: var(--site-space-2);
+  transform: translateY(-200%);
+  padding: var(--site-space-3) var(--site-space-4);
+  background: var(--site-surface);
+  border: var(--site-border-width) solid var(--site-border);
+  border-radius: var(--site-radius);
+  z-index: 1;
+}
+.site-skip-link:focus {
+  transform: none;
+}
+/* Ordinary CSS media queries: 40rem expands gutters; 64rem expands rhythm. */
+@media (min-width: 40rem) {
+  .site-container {
+    inline-size: min(100% - 2 * var(--site-space-8), var(--site-width));
+  }
+}
+@media (min-width: 64rem) {
+  .site-intro {
+    padding-block-start: var(--site-space-16);
+  }
+}

@@ -1,20 +1,47 @@
+@import './features/product-site/styles/tokens.css';
+@import './features/product-site/styles/layout.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
-  background: #101b22;
-  color: #e7ecef;
-  font:
-    18px/1.6 system-ui,
-    sans-serif;
+  background: var(--site-background);
+  color: var(--site-text);
+  font: var(--site-text-body) / 1.6 var(--site-font-body);
 }
-main {
-  max-width: 48rem;
-  margin: 12vh auto;
-  padding: 2rem;
+h1,
+h2,
+p {
+  margin-block: 0 var(--site-space-4);
+}
+h1,
+h2 {
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
 }
 h1 {
-  font-size: clamp(2rem, 8vw, 4rem);
-  line-height: 1.1;
+  font-size: var(--site-text-title);
+}
+h2 {
+  font-size: var(--site-text-section);
+}
+p {
+  max-inline-size: var(--site-prose-width);
 }
 a {
-  color: #a4ddd3;
+  color: var(--site-accent);
+  text-underline-offset: 0.2em;
+}
+:focus-visible {
+  outline: 3px solid var(--site-focus);
+  outline-offset: 4px;
+}
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
 }

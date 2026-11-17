@@ -226,3 +226,13 @@ automatic retry loop or extra deployment is introduced. Aggregate repository
 cardinality, incoming request rate, physical storage/CPU/memory and provider cost
 remain unbounded at app level or unknown. Requests drive recovery after runtime
 termination; waitUntil alone does not guarantee background progress.
+
+## PASS 06A public foundation
+
+The frontend adds only static browser modules and local CSS/system fonts, within
+the existing single application. No auth provider, SDK data hook, API request,
+socket, remote asset/font, background workload or additional deployment is mounted
+by the public foundation. This pass adds no runtime dependency or retained server
+resource. Static asset delivery still depends on platform pricing/quotas; no new
+credit or storage entitlement is inferred. Production bundling remains gated by
+the unregistered app ID. No app registration/deployment or hosted tests ran.

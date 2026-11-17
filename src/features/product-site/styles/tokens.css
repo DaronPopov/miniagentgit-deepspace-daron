@@ -1,0 +1,42 @@
+:root {
+  color-scheme: light dark;
+  --site-font-body: ui-sans-serif, system-ui, sans-serif;
+  --site-font-code: ui-monospace, monospace;
+  --site-text-small: 0.875rem;
+  --site-text-body: 1rem;
+  --site-text-section: clamp(1.375rem, 3vw, 1.875rem);
+  --site-text-title: clamp(2rem, 5vw, 3.25rem);
+  --site-space-1: 0.25rem;
+  --site-space-2: 0.5rem;
+  --site-space-3: 0.75rem;
+  --site-space-4: 1rem;
+  --site-space-6: 1.5rem;
+  --site-space-8: 2rem;
+  --site-space-12: 3rem;
+  --site-space-16: 4rem;
+  --site-background: #f6f8fa;
+  --site-surface: #ffffff;
+  --site-surface-code: #edf2f5;
+  --site-text: #192833;
+  --site-muted: #4c5f6c;
+  --site-accent: #086858;
+  --site-border: #c2cfd7;
+  --site-focus: #105bca;
+  --site-border-width: 1px;
+  --site-radius: 0.75rem;
+  --site-width: 68rem;
+  --site-prose-width: 62ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --site-background: #101b22;
+    --site-surface: #172630;
+    --site-surface-code: #0b151c;
+    --site-text: #e7ecef;
+    --site-muted: #a8bac5;
+    --site-accent: #a4ddd3;
+    --site-border: #476070;
+    --site-focus: #a9ceff;
+  }
+}

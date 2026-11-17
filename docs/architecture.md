@@ -197,3 +197,36 @@ local runtime recreation. waitUntil is best effort; no unattended recovery claim
 is made. Terminal identities cannot be deleted; admission fails honestly at the
 retained-record/byte cap. Fixed checks are manifest integrity and source policy;
 TypeScript syntax/type checking and arbitrary execution are not provided.
+
+## PASS 06A: public frontend foundation
+
+`src/pages/index.tsx` only composes ProductFoundation. The existing browser root
+and Generouted lazy route discovery are unchanged. The public feature owns
+`contracts/`, `components/`, `content/` and ordinary CSS `styles/` under
+`src/features/product-site/`. No additional application root, server, package,
+provider, SSR or Dynamic Worker is introduced. Presentation metadata is separate
+from repository/commit/identity/CI contracts and carries no authorization rules.
+
+- **UI-001:** routes compose features; no backend logic in public route modules.
+- **UI-002:** public feature imports only React and its own presentation modules;
+  server, SQL, Durable Object, Hono and server-only SDK dependencies are forbidden.
+- **UI-003:** readonly typed props, explicit local state when needed; no state
+  is needed for the foundation.
+- **UI-004:** public presentation cannot import dashboard/auth-ui or the existing
+  `src/client/identity.ts` credential adapter.
+- **UI-005:** container, section, header and code placeholder know no repository
+  state or authentication.
+- **UI-006:** no public initialization network requests, effects or SDK providers.
+- **UI-007:** no mutable module store or class hierarchy.
+- **UI-008:** Vite statically bundles browser modules; lazy chunks are static
+  assets, not request-time rendering or Dynamic Workers.
+
+Tracked-source AST tests enforce the public dependency allowlist, re-exports,
+dynamic-import prohibition, readonly properties, no shared mutable state and
+network/effect capability exclusions. Negative fixtures prove rejection of server,
+SDK, dashboard and identity imports. Existing project-wide cycle tests cover the
+new modules; a browser-target esbuild test checks the route dependency graph.
+React static markup tests are test-only, not a production SSR path. Browser
+layout/focus and the official production bundle remain unverified behind the
+unchanged app-ID gate. Future onboarding/auth/dashboard features remain separate;
+none is implemented here.

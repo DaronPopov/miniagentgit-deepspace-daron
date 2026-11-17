@@ -174,3 +174,20 @@ bounded snapshots, diagnostic/output budgets, attempts and retained identities.
 No silent deletion of idempotency records. waitUntil is not durable acceptance.
 CI storage, validation, engine and tests retain 185 LOC; only the real CI HTTP
 adapter is added to the explicit 300-line allowlist. No new LOC exceptions.
+
+## Public frontend modules
+
+Follow UI-001–UI-008 in [architecture](architecture.md). Thin public routes compose
+`src/features/product-site/`; presentation components import only React and their
+own feature. Backend/domain contracts, SDK hooks, credential adapters and future
+authenticated features must not leak into the public dependency graph. Place
+future onboarding, auth-ui and dashboard responsibilities in separate bounded
+features, not the public layout. No hidden fetch, socket, effects, module store,
+SSR or Dynamic Worker. Keep display contracts readonly and transport-neutral.
+
+Use ordinary CSS custom properties, native semantic links/landmarks, visible
+keyboard focus, a skip target, responsive gutters and system color preference.
+No runtime theme dependency, external font request or component library. All
+frontend source/components/content/hooks/tests retain 185 LOC; no new adapter
+classification or size exception. Public boundary tests use tracked files, so
+stage new modules before validation.
