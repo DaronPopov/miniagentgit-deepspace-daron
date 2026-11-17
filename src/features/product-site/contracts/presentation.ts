@@ -1,7 +1,7 @@
 /** Public display data only; no repository, identity or CI authority. */
 export interface NavigationLink {
   readonly label: string
-  readonly href: `/${string}` | `#${string}`
+  readonly href: `/${string}` | `#${string}` | `https://${string}`
   readonly current?: boolean
 }
 export interface FeatureDescription {

@@ -20,8 +20,10 @@ it('renders one main landmark, ordered headings, labelled navigation and a skip 
     expect(html).toContain('<nav aria-label="Primary navigation">')
     expect(html).toContain('href="#main-content">Skip to content')
     expect(html).toContain('<main id="main-content" tabindex="-1">')
-    expect(html).toContain('id="foundation" aria-labelledby="foundation-title"')
-    expect(html).toContain('<h2 id="foundation-title">')
+    expect(html).toContain(
+      'id="capabilities" aria-labelledby="capabilities-title"',
+    )
+    expect(html).toContain('<h2 id="capabilities-title">')
     expect(html).not.toMatch(/<script|<form|<iframe|onload=|autofocus=/)
     expect(fetch).not.toHaveBeenCalled()
   } finally {

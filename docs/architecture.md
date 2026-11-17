@@ -7,7 +7,7 @@ empty/read HEAD, immutable text commits, tree/file/commit retrieval and durable
 successful replay lookup. HTTP → verified transport → application service →
 canonical RepositoryRoom → synchronous SQLite authority. No mutable HEAD exists
 in HTTP or the scheduler. No branches, merges, Git protocol, binaries, R2, MCP,
-restore/diff engine, arbitrary code execution or new UI are implemented.
+restore/diff engine or arbitrary code execution are implemented.
 Pass 05 adds durable commit-addressed fixed CI; see the CI section below.
 
 FREE-TIER-001 remains mandatory: one DeepSpace Free-plan app, bounded text and
@@ -226,7 +226,31 @@ dynamic-import prohibition, readonly properties, no shared mutable state and
 network/effect capability exclusions. Negative fixtures prove rejection of server,
 SDK, dashboard and identity imports. Existing project-wide cycle tests cover the
 new modules; a browser-target esbuild test checks the route dependency graph.
-React static markup tests are test-only, not a production SSR path. Browser
-layout/focus and the official production bundle remain unverified behind the
-unchanged app-ID gate. Future onboarding/auth/dashboard features remain separate;
+React static markup tests are test-only, not a production SSR path. PASS 06A did not verify rendered browser layout/focus; PASS 06B adds the
+local client-only smoke evidence described below. The official production bundle
+remains unverified behind the unchanged app-ID gate. Future onboarding/auth/dashboard features remain separate;
 none is implemented here.
+
+## PASS 06B: static public landing page
+
+The public feature now composes a hero, capability cards, commit/CI explanations,
+two inline SVG lifecycle diagrams, bounded-development philosophy, repository
+documentation links and a footer. The five-line route, root/router, tokens and
+backend are unchanged. Typed copy lives in landing/workflow/diagram content;
+no repository/CI data, credential adapter or authentication provider is mounted.
+Navigation contracts additionally permit HTTPS documentation/source links.
+
+The commit diagram identifies repository persistence as the only HEAD writer;
+the CI diagram identifies SQLite as durable job state and CI as a reader of
+immutable snapshots. Each SVG has unique React useId title/description/marker IDs
+and an accessible long description; vertical stages remain readable on phones.
+Only desktop widths place both diagrams side by side. The future dashboard node
+is explicitly labelled upcoming. No generic graph/layout dependency is introduced.
+
+All UI invariants remain enforced. Local Chrome smoke tests exercised the actual
+route component and CSS through a temporary browser fixture, without the SDK,
+secrets or server data. This establishes local render/focus/network behavior,
+not production Vite routing, hosted authentication or deployment. See
+[PASS 06B results](passes/pass06b-results.md) for viewport and bundle measurements.
+The page distinguishes verified local functionality, unknown hosted operation,
+and upcoming work; it advertises no Git wire protocol or arbitrary execution.

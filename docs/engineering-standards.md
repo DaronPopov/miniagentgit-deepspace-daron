@@ -1,7 +1,7 @@
 # Engineering standards
 
 MiniAgentGit is a headless, cloud-native service for coding agents. The React
-page is a minimal scaffold shell. Keep one npm package and the official
+page is a statically bundled public presentation feature. Keep one npm package and the official
 DeepSpace Vite/Cloudflare integration; introduce dependencies only for an
 observed requirement.
 

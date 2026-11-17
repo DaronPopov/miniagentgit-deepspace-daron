@@ -1,12 +1,23 @@
 import { HeaderShell } from './header-shell'
 import { SiteContainer } from './site-container'
 import { SiteSection } from './site-section'
-import { CodeSurface } from './code-surface'
+import { Hero } from './hero'
+import { FeatureGrid } from './feature-grid'
+import { CommitWorkflow } from './commit-workflow'
+import { CiExplanation } from './ci-explanation'
 import {
-  examplePlaceholder,
-  foundationNavigation,
-  foundationSection,
-} from '../content/foundation'
+  CommitLifecycleDiagram,
+  CiLifecycleDiagram,
+} from './architecture-diagrams'
+import { DocumentationLinks } from './documentation-links'
+import { SiteFooter } from './site-footer'
+import {
+  capabilities,
+  philosophy,
+  productNavigation,
+  sections,
+  verification,
+} from '../content/landing'
 
 export function ProductFoundation() {
   return (
@@ -14,21 +25,42 @@ export function ProductFoundation() {
       <a className="site-skip-link" href="#main-content">
         Skip to content
       </a>
-      <HeaderShell brand="MiniAgentGit" links={foundationNavigation} />
+      <HeaderShell brand="MiniAgentGit" links={productNavigation} />
       <main id="main-content" tabIndex={-1}>
         <SiteContainer>
-          <div className="site-intro">
-            <p className="site-eyebrow">MiniAgentGit · Public interface</p>
-            <h1>A foundation for agent workflows.</h1>
-            <p className="site-muted">
-              Presentation primitives, ready for composition.
-            </p>
-          </div>
-          <SiteSection metadata={foundationSection}>
-            <CodeSurface example={examplePlaceholder} />
+          <Hero />
+          <SiteSection metadata={sections.capabilities}>
+            <FeatureGrid items={capabilities} />
+          </SiteSection>
+          <SiteSection metadata={sections.workflow}>
+            <CommitWorkflow />
+          </SiteSection>
+          <SiteSection metadata={sections.ci}>
+            <CiExplanation />
+          </SiteSection>
+          <SiteSection metadata={sections.architecture}>
+            <div className="site-diagram-grid">
+              <CommitLifecycleDiagram />
+              <CiLifecycleDiagram />
+            </div>
+          </SiteSection>
+          <SiteSection metadata={sections.philosophy}>
+            <FeatureGrid items={philosophy} />
+            <aside
+              className="site-boundary"
+              aria-labelledby="verification-title"
+            >
+              <h3 id="verification-title">{verification.title}</h3>
+              <p>{verification.description}</p>
+              <p className="site-muted">{verification.upcoming}</p>
+            </aside>
+          </SiteSection>
+          <SiteSection metadata={sections.documentation}>
+            <DocumentationLinks />
           </SiteSection>
         </SiteContainer>
       </main>
+      <SiteFooter />
     </div>
   )
 }

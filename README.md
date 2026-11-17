@@ -70,3 +70,8 @@ integrity and bounded source policy; it does not execute repository code or run
 TypeScript/ESLint/tests on submitted files. After changing validator code/policy,
 run `npm run ci:fingerprint` and commit the reviewed fingerprint. Standard
 validation and production configuration reject a stale fingerprint.
+
+PASS 06B adds a public landing page with accurate local capability descriptions,
+accessible inline SVG commit/CI lifecycles and source-linked documentation. It
+needs no auth provider or backend data. See [PASS 06B results](docs/passes/pass06b-results.md)
+for local browser evidence and the unchanged production build limitation.

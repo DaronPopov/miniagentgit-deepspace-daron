@@ -7,10 +7,9 @@ import type {
   ArchitectureDiagramMetadata,
 } from '../src/features/product-site/contracts/presentation'
 import {
-  foundationNavigation,
-  foundationSection,
-  examplePlaceholder,
-} from '../src/features/product-site/content/foundation'
+  productNavigation,
+  sections,
+} from '../src/features/product-site/content/landing'
 
 it('keeps display contracts serializable, readonly and independent of business models', () => {
   const feature = {
@@ -29,7 +28,7 @@ it('keeps display contracts serializable, readonly and independent of business m
     connections: [{ from: 'route', to: 'feature', label: 'composes' }],
   } as const satisfies ArchitectureDiagramMetadata
   expectTypeOf<NavigationLink['href']>().toEqualTypeOf<
-    `/${string}` | `#${string}`
+    `/${string}` | `#${string}` | `https://${string}`
   >()
   expectTypeOf<SectionMetadata['title']>().toEqualTypeOf<string>()
   expectTypeOf<CodeExampleDescriptor['language']>().toEqualTypeOf<
@@ -49,9 +48,19 @@ it('keeps display contracts serializable, readonly and independent of business m
   for (const edge of diagram.connections)
     expect(ids.has(edge.from) && ids.has(edge.to)).toBe(true)
   expect(
-    foundationNavigation.every(
-      (link) => link.href === `#${foundationSection.id}`,
-    ),
+    productNavigation
+      .filter((link) => link.href.startsWith('#'))
+      .every((link) =>
+        Object.values(sections).some(
+          (section) => link.href === `#${section.id}`,
+        ),
+      ),
   ).toBe(true)
-  expect(examplePlaceholder.language).toBe('text')
+  const example = {
+    id: 'example',
+    title: 'Example',
+    language: 'text',
+    description: 'Placeholder',
+  } as const satisfies CodeExampleDescriptor
+  expect(example.language).toBe('text')
 })
