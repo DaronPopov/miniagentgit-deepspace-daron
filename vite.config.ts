@@ -1,9 +1,12 @@
+import { verifyCiFingerprint } from './scripts/ci-fingerprint.mjs'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import generouted from '@generouted/react-router/plugin'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import { deepspaceBuild } from 'deepspace/build'
+
+verifyCiFingerprint()
 
 export default defineConfig({
   plugins: [

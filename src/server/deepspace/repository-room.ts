@@ -1,6 +1,9 @@
 import { DurableObject } from 'cloudflare:workers'
 import type { AuthEnvironment } from './auth'
 import { repositoryOwnerName } from '../../domain/ownership'
+import { createCiEngine } from '../../application/ci/service'
+import { ciLimits } from '../../application/ci/limits'
+import { createCiStore } from '../storage/ci/store'
 import { createRepositoryRuntime } from '../../application/repository-runtime'
 import { createRepositoryAuthority } from '../storage/repository-authority'
 import { initializeDatabase } from '../storage/migrations'
@@ -46,7 +49,18 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
         authority,
         retainExecution: (promise) => this.ctx.waitUntil(promise),
       })
-      this.owner = createOwnerRoutes(id, runtime.service, this.env)
+      const limits = ciLimits()
+      const ci = createCiEngine({
+        limits,
+        store: createCiStore(
+          durableDatabase(this.ctx.storage),
+          id,
+          limits,
+          Date.now,
+        ),
+        retain: (promise) => this.ctx.waitUntil(promise),
+      })
+      this.owner = createOwnerRoutes(id, runtime.service, this.env, ci)
     }
     return this.owner.fetch(request)
   }

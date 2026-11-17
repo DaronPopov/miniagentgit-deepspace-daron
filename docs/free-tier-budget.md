@@ -194,3 +194,35 @@ invocations including first schema initialization and authority checks. These
 are not measured billed request/SQL units. Path names, JSON escaping and metadata
 change accounting charges; escape-heavy text can significantly exceed the simple
 12 KiB logical estimate. No credit conversion or throughput claim is made.
+
+## PASS 05 CI budget
+
+FREE-TIER-001 remains: one Free-plan deployment, no paid integration, broker,
+container or polling service. Reported 500 credits / one slot and conservative
+128 MiB uploaded-file planning values are unchanged, not verified SQLite/DO/CPU
+quotas. CI uses existing immutable SQLite text, no uploaded files or R2.
+
+Enforced per owner: outstanding 4, retained jobs 32, reserved logical storage
+512 KiB, input 32 files / 32 KiB each / 128 KiB total, diagnostics 16 / 2 KiB,
+receipt 8 KiB, attempts 2, one job / 512 KiB charged byte work per drain, two-second
+claim deadline, pages 8. Limits can be configured downward; see
+[CI pipeline](ci-pipeline.md). Input and work bounds do not establish provider CPU
+or memory limits. CI source text is held for one active invocation, not each queued
+job; roughly 256 KiB of UTF-16 code units can represent a 128 KiB ASCII snapshot,
+before JSON/hash/array/allocator temporaries. This is not a measured peak heap.
+
+A first commit → CI → receipt workflow adds at least two HTTP calls (admission and
+receipt; additional status observations optional), one job row and one immutable
+receipt. Each job reserves 9,216 logical bytes by default, or 294,912 for all 32
+retained identities, plus unmeasured SQLite/index/WAL overhead. Validation reads the
+existing content once into a bounded snapshot and hashes/scans it; no second copy
+is persisted. Request/claim/completion and authorization use multiple synchronous
+SQL closures. These are planning estimates, not billed SQL/request/credit units.
+No credit conversion, cloud load testing, app registration or deployment occurred.
+
+When retained identities reach capacity, new identities are rejected and existing
+ones replay. No silent cleanup, unbounded receipts, diagnostic source excerpts,
+automatic retry loop or extra deployment is introduced. Aggregate repository
+cardinality, incoming request rate, physical storage/CPU/memory and provider cost
+remain unbounded at app level or unknown. Requests drive recovery after runtime
+termination; waitUntil alone does not guarantee background progress.

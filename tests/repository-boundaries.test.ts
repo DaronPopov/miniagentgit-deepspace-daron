@@ -94,6 +94,7 @@ it('upgrades the old schema additively and leaves existing identity and empty HE
     expect(f.db.all('SELECT * FROM commits')).toHaveLength(0)
     expect(f.db.all('SELECT * FROM repository_migrations')).toEqual([
       { version: 2 },
+      { version: 3 },
     ])
   } finally {
     f.close()

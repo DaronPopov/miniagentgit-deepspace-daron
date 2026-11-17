@@ -30,11 +30,15 @@ it('has no static relative import cycles or framework dependencies in domain cod
       const specifier = statement.moduleSpecifier
       if (!specifier || !ts.isStringLiteral(specifier)) continue
       const target = specifier.text
+      const resolvedTarget = relative(
+        process.cwd(),
+        resolve(dirname(file), target),
+      )
       if (file.startsWith('src/domain/')) {
         expect(
-          target.startsWith('./') ||
-            target.startsWith('../domain/') ||
-            (target.startsWith('../contracts/') &&
+          (target.startsWith('.') &&
+            resolvedTarget.startsWith('src/domain/')) ||
+            (resolvedTarget.startsWith('src/contracts/') &&
               ts.isImportDeclaration(statement) &&
               statement.importClause?.isTypeOnly === true),
           `${file}: ${target}`,

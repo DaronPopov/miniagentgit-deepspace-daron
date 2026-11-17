@@ -1,8 +1,9 @@
+import { initializeCiSchema } from './ci/schema'
 import type { Database } from './database'
 import { numberColumn } from './database'
 import { REPOSITORY_SCHEMA } from './schema'
 
-/** Additive v2 upgrade from Pass 02; no fabricated commits or data rewrites. */
+/** Additive v2 repository / v3 CI migrations; no fabricated commits or data rewrites. */
 export function initializeDatabase(db: Database) {
   db.transaction(() => {
     db.run(
@@ -17,7 +18,7 @@ export function initializeDatabase(db: Database) {
         : version
           ? numberColumn(version, 'version')
           : 0
-    if (current > 2) throw new Error('Unsupported repository schema')
+    if (current > 3) throw new Error('Unsupported repository schema')
     for (const statement of REPOSITORY_SCHEMA) db.run(statement)
     if (current < 2) {
       db.run(
@@ -42,6 +43,10 @@ export function initializeDatabase(db: Database) {
         }
       }
       db.run('INSERT INTO repository_migrations(version) VALUES (2)')
+    }
+    if (current < 3) {
+      initializeCiSchema(db)
+      db.run('INSERT INTO repository_migrations(version) VALUES (3)')
     }
   })
 }

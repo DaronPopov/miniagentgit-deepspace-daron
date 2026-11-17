@@ -21,7 +21,9 @@
     "check:size": "node scripts/check-source-size.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
-    "validate": "npm run type-check && npm run lint && npm run format:check && npm run check:size && npm test && npm run build"
+    "validate": "npm run type-check && npm run lint && npm run format:check && npm run check:ci-fingerprint && npm run check:size && npm test && npm run build",
+    "ci:fingerprint": "node scripts/ci-fingerprint.mjs",
+    "check:ci-fingerprint": "node scripts/ci-fingerprint.mjs --check"
   },
   "dependencies": {
     "deepspace": "0.44.2",

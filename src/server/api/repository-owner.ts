@@ -1,4 +1,6 @@
 import { Hono } from 'hono'
+import type { CiEngine } from '../../application/ci/service'
+import { registerCiRoutes } from './ci'
 import type { Principal } from '../../domain/repository'
 import type { RepositoryService } from '../../application/repository-service'
 import { validateCommit } from '../../application/validate-commit'
@@ -14,6 +16,7 @@ export function createOwnerRoutes(
   id: string,
   service: RepositoryService,
   env: AuthEnvironment,
+  ci?: CiEngine,
 ) {
   const app = new Hono<{ Variables: { actor: Principal } }>()
   const base = `/api/repositories/${id}`
@@ -26,7 +29,8 @@ export function createOwnerRoutes(
     if (
       url.search &&
       !url.pathname.endsWith('/tree') &&
-      !url.pathname.startsWith(`${base}/files/`)
+      !url.pathname.startsWith(`${base}/files/`) &&
+      url.pathname !== `${base}/ci/jobs`
     )
       return resultResponse(invalid('Unexpected query parameters'))
     if (c.req.method !== 'PUT') {
@@ -136,6 +140,7 @@ export function createOwnerRoutes(
         : key,
     )
   })
+  if (ci) registerCiRoutes(app, id, ci)
   app.onError(() =>
     resultResponse({
       ok: false,

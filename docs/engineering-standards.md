@@ -160,3 +160,17 @@ code. Test workerd lifecycle/routing with local SQLite-backed namespaces and
 short-lived generated signing keys. The local server-worker test bundle must
 never replace the official production build or alter its app-ID guard. No
 hosted authentication/deployment claim may follow from a local signing fixture.
+
+## Fixed durable CI
+
+Follow CI-001–CI-010 in [CI pipeline](ci-pipeline.md). Treat repository code as
+untrusted data; never execute it or load its configuration/plugins. Validation
+identity includes implementation and policy fingerprints. After changing the
+validator dependency graph, regenerate `npm run ci:fingerprint`, review and commit
+the fingerprint; validation and Vite reject stale generated identity.
+
+Admission/results belong in repository-owned SQL, with generation fencing and
+bounded snapshots, diagnostic/output budgets, attempts and retained identities.
+No silent deletion of idempotency records. waitUntil is not durable acceptance.
+CI storage, validation, engine and tests retain 185 LOC; only the real CI HTTP
+adapter is added to the explicit 300-line allowlist. No new LOC exceptions.

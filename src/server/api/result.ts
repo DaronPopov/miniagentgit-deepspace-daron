@@ -17,7 +17,8 @@ export function resultResponse<T>(
             : error.code === 'CONFLICT'
               ? 409
               : error.code === 'QUOTA_EXCEEDED'
-                ? error.resource === 'pendingCommits'
+                ? error.resource === 'pendingCommits' ||
+                  error.resource === 'ciOutstanding'
                   ? 429
                   : 413
                 : 503

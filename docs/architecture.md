@@ -7,7 +7,8 @@ empty/read HEAD, immutable text commits, tree/file/commit retrieval and durable
 successful replay lookup. HTTP → verified transport → application service →
 canonical RepositoryRoom → synchronous SQLite authority. No mutable HEAD exists
 in HTTP or the scheduler. No branches, merges, Git protocol, binaries, R2, MCP,
-restore/diff engine, CI execution or new UI are implemented.
+restore/diff engine, arbitrary code execution or new UI are implemented.
+Pass 05 adds durable commit-addressed fixed CI; see the CI section below.
 
 FREE-TIER-001 remains mandatory: one DeepSpace Free-plan app, bounded text and
 in-memory state, no paid integrations or background polling. Reported 500
@@ -170,7 +171,7 @@ JWT keys exercise the real SDK verifier. Hosted auth, browser login, platform
 quota/pricing and production serving remain unverified. The official Vite
 production build still rejects the unregistered app-ID placeholder; the local
 server test bundle is not a production artifact or replacement build path.
-No CI functionality or new CI lane was implemented. Local incoming-body
+Fixed CI now has local evidence described below; no hosted CI lane was created. Local incoming-body
 concurrency, app-wide repository cardinality/rate caps and physical DB/CPU/credit
 limits are not guaranteed by the per-repository logical budgets.
 
@@ -179,3 +180,20 @@ References: [DeepSpace architecture](https://docs.deep.space/concepts/architectu
 [SQLite transactions](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transactionsync),
 [Miniflare DO tests](https://developers.cloudflare.com/workers/testing/miniflare/storage/durable-objects/).
 Installed declarations are authoritative where documentation lags.
+
+## PASS 05: durable commit-addressed validation
+
+The canonical repository owner now hosts a separate CI application engine and
+migration-3 CI tables. HTTP → verified identity → repository authorization →
+transactional durable admission → bounded asynchronous fixed validator → fenced
+receipt transaction. No new object, broker or process-global authority is added.
+CI never changes HEAD or immutable commit rows. The pending SQL index is its
+queue; the existing in-memory commit ring is not a durable CI receipt.
+
+Follow **CI-001 through CI-010** in [CI pipeline](ci-pipeline.md), including the
+state diagram, version/fingerprint identity, bounds, cancellation and recovery.
+Request-driven recovery on authorized access is implemented and tested across
+local runtime recreation. waitUntil is best effort; no unattended recovery claim
+is made. Terminal identities cannot be deleted; admission fails honestly at the
+retained-record/byte cap. Fixed checks are manifest integrity and source policy;
+TypeScript syntax/type checking and arbitrary execution are not provided.

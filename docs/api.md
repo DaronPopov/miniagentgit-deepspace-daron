@@ -1,6 +1,6 @@
 # Repository HTTP API
 
-This is the Pass 04 local vertical slice. The production SDK app-ID build gate
+This is the repository and PASS 05 CI local vertical slice. The production SDK app-ID build gate
 remains intact; no hosted app or production authentication has been validated.
 All repository routes require the existing SDK-verified Bearer JWT with trusted
 public key, issuer, audience and expiration. The owner verifies the bearer again;
@@ -11,15 +11,15 @@ branch, merge, diff, restore, Git wire protocol, R2 or binary API is provided.
 ## Routes
 
 | Method | Path                                     | Input / output                                              |
-| ------ | ---------------------------------------- | ----------------------------------------------------------- | ----------------------- |
+| ------ | ---------------------------------------- | ----------------------------------------------------------- |
 | POST   | `/api/repositories`                      | JSON `{name,idempotencyKey}` → repository metadata          |
 | GET    | `/api/repositories/:id`                  | Repository metadata, owner only                             |
-| GET    | `/api/repositories/:id/head`             | `{commitId: string                                          | null, version: number}` |
+| GET    | `/api/repositories/:id/head`             | `{commitId: string \| null, version: number}`               |
 | POST   | `/api/repositories/:id/commits`          | Commit request below → immutable commit metadata            |
 | GET    | `/api/repositories/:id/commits/:commit`  | Basic immutable commit metadata                             |
 | GET    | `/api/repositories/:id/tree`             | Query `commit?`, `limit?`, `cursor?` → `{items,nextCursor}` |
 | GET    | `/api/repositories/:id/files/:commit`    | Required query `path` → JSON string content                 |
-| GET    | `/api/repositories/:id/idempotency/:key` | Previously committed result for the authenticated actor/key |
+| GET    | `/api/repositories/:id/idempotency/:key` | Previously committed result for authenticated actor/key     |
 
 Every success returns `{ "ok": true, "value": ... }` with HTTP 200. Creation
 replay and commit replay return their existing metadata, never a fictional new
@@ -104,3 +104,45 @@ Browser session-to-Bearer acquisition and the real platform audience remain
 unverified. CLI login is not authentication for HTTP users. Local tests generate
 short-lived keys and JWTs and exercise the actual SDK verifier in workerd;
 those are controlled test identities, not DeepSpace-hosted browser sign-in.
+
+## Commit-addressed CI (PASS 05)
+
+All routes below require the same verified Bearer JWT and persisted repository
+owner authorization as commits. Replace `{repo}`, `{commit}`, `{job}`; jobs use
+`ci_` followed by 64 lowercase hex characters. The `value` envelope contains
+serializable CiJob / CiReceipt contracts; errors use the existing typed envelope.
+
+| Method | Route                                            | Input / result                                                                |
+| ------ | ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| POST   | `/api/repositories/{repo}/ci/commits/{commit}`   | JSON `{}` or `{"pipelineId":"miniagentgit-ci-v1"}`; 202 persisted CiJob       |
+| GET    | `/api/repositories/{repo}/ci/jobs/{job}`         | persisted job status                                                          |
+| GET    | `/api/repositories/{repo}/ci/jobs/{job}/receipt` | completed version-1 receipt, or 409 not ready                                 |
+| GET    | `/api/repositories/{repo}/ci/jobs`               | optional `commit`, `cursor` numeric offset, `limit` 1–8; `{items,nextCursor}` |
+| POST   | `/api/repositories/{repo}/ci/jobs/{job}/cancel`  | no body; persisted cancelled or existing terminal job                         |
+
+CI admission bodies are bounded at 2,048 bytes. Unknown body/query fields and
+repeated query parameters are rejected. Cursor is bounded by retained job count;
+there is no deletion, so offset pages do not shift. Unknown jobs/commits are 404;
+invalid IDs/pipeline/pages 400; missing/forged JWT 401; cross-owner 403. Outstanding
+capacity returns 429 QUOTA_EXCEEDED; retained storage/count quotas return 413.
+Internal exceptions are handled by the existing generic error boundary, never
+raw SQL/errors. No endpoints expose generic CI-row/HEAD mutation.
+
+Example after creating a commit:
+
+```sh
+curl -X POST "$BASE/api/repositories/$REPO/ci/commits/$COMMIT" \
+  -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{}'
+# Read value.id as JOB; early 202 is acceptance, not completed validation.
+curl "$BASE/api/repositories/$REPO/ci/jobs/$JOB" -H "Authorization: Bearer $TOKEN"
+curl "$BASE/api/repositories/$REPO/ci/jobs/$JOB/receipt" -H "Authorization: Bearer $TOKEN"
+```
+
+A repeated request for identical commit/pipeline version/fingerprint reuses the
+same job even when terminal or capacity is full. Policy changes produce a distinct
+identity. POST returns the admitted snapshot (initially queued) before awaiting
+validation; subsequent observations may already show completion. A passing receipt
+covers only the named fixed checks, with `typescript: "deferred"`. Correct failures
+by creating a new commit and validating its ID; never rewrite the old commit.
+HTTP disconnect does not cancel CI. Recovery on authorized CI access is described
+in [CI pipeline](ci-pipeline.md); status/list/receipt reads may trigger bounded work.

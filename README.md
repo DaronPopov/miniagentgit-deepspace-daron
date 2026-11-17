@@ -1,14 +1,14 @@
 # MiniAgentGit
 
 A small cloud-native, headless version control service for AI coding agents.
-Pass 04 implements repository creation, immutable UTF-8 snapshots, atomic SQLite
-HEAD updates, durable idempotency, and an owner-only HTTP vertical slice. Local
+Pass 05 includes repository creation, immutable UTF-8 snapshots, atomic SQLite
+HEAD updates, durable idempotency, owner-only HTTP, and asynchronous fixed CI. Local
 workerd tests exercise the real server and SQLite-backed Durable Objects with
 controlled signing keys. Hosted authentication/deployment remains unverified.
 
 See [API](docs/api.md), [architecture](docs/architecture.md),
 [free-tier budget](docs/free-tier-budget.md), and
-[Pass 04 results](docs/passes/pass04-results.md).
+[Pass 05 results](docs/passes/pass05-results.md).
 
 ## Develop
 
@@ -63,3 +63,10 @@ Official references: [installation](https://docs.deep.space/get-started/installa
 [project structure](https://docs.deep.space/get-started/project-structure),
 [architecture](https://docs.deep.space/concepts/architecture), and
 [agent skill](https://github.com/deepdotspace/deepspace-skill).
+
+PASS 05 adds durable asynchronous fixed CI for immutable commits. See
+[CI pipeline](docs/ci-pipeline.md) and [API routes](docs/api.md). It checks manifest
+integrity and bounded source policy; it does not execute repository code or run
+TypeScript/ESLint/tests on submitted files. After changing validator code/policy,
+run `npm run ci:fingerprint` and commit the reviewed fingerprint. Standard
+validation and production configuration reject a stale fingerprint.

@@ -29,6 +29,7 @@ export async function workerFixture(env: AuthEnvironment) {
     compatibilityDate: '2025-01-01',
     compatibilityFlags: ['nodejs_compat'],
     cf: false,
+    unsafeInspectDurableObjects: true,
     bindings: { ...env },
     durableObjects: {
       REPOSITORY_ROOMS: { className: 'RepositoryRoom', useSQLite: true },
@@ -39,6 +40,12 @@ export async function workerFixture(env: AuthEnvironment) {
   return {
     fetch: (path: string, init?: Parameters<Miniflare['dispatchFetch']>[1]) =>
       worker.dispatchFetch(`http://localhost${path}`, init),
+    storage: (name: string) =>
+      worker.unsafeGetDurableObjectStorage(
+        'miniagentgit-local',
+        'RepositoryRoom',
+        { name },
+      ),
     namespace: () => worker.getDurableObjectNamespace('REPOSITORY_ROOMS'),
     restart: async () => {
       await worker.dispose()
