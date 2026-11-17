@@ -222,3 +222,14 @@ is granted to the new feature. All new modules/tests retain 185 LOC without an
 adapter exemption. Native controls own keyboard behavior; no new UI framework,
 registry or installer is introduced. Availability changes require verified
 implementation evidence rather than a selectable integration label.
+
+## Qualified agent tool boundary
+
+Follow TOOL-001–010 in [agent-tool architecture](agent-tool-architecture.md).
+Agent-tool contracts, schema adapters and read-only operation live separately from
+React in `features/agent-tools`; only the server assembly mounts their SDK transport.
+Preserve the original bearer across canonical owner reads; do not replace it with
+trusted identity headers or the generic RecordRoom executor. Tool failure messages
+and output shapes are allowlisted and bounded. All new files retain 185 LOC,
+including the 138-line framework adapter: no new 300-line allowance is needed.
+Public integrations stay planned until actual client and credential qualification.

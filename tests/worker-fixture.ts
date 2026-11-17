@@ -1,13 +1,17 @@
 import { build } from 'esbuild'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import type { V4MiniflareOptions } from 'miniflare'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import type { AuthEnvironment } from '../src/server/deepspace/auth'
 
 /** Actual bundled server worker + workerd SQLite DOs; no Vite/frontend or deploy. */
 export async function workerFixture(env: AuthEnvironment) {
+  const appId = readFileSync(resolve('wrangler.toml'), 'utf8').match(
+    /^DEEPSPACE_APP_ID = "([^"]+)"/m,
+  )?.[1]
+  if (!appId) throw new Error('Missing assigned public app ID in local fixture')
   const directory = mkdtempSync(join(tmpdir(), 'miniagentgit-workerd-'))
   const scriptPath = join(directory, 'worker.mjs')
   await build({
@@ -30,7 +34,12 @@ export async function workerFixture(env: AuthEnvironment) {
     compatibilityFlags: ['nodejs_compat'],
     cf: false,
     unsafeInspectDurableObjects: true,
-    bindings: { ...env },
+    bindings: {
+      APP_NAME: 'MiniAgentGit',
+      // Use the assigned public ID, never a fabricated deployment identity.
+      DEEPSPACE_APP_ID: appId,
+      ...env,
+    },
     durableObjects: {
       REPOSITORY_ROOMS: { className: 'RepositoryRoom', useSQLite: true },
     },

@@ -1,3 +1,4 @@
+import { registerRepositoryTools } from './deepspace/agent-tools'
 import { Hono } from 'hono'
 import {
   createManagedAuthRoutes,
@@ -15,10 +16,13 @@ export interface Env extends AuthEnvironment, ManagedAuthEnvironment {
   REPOSITORY_ROOMS: DurableObjectNamespace
   ASSETS: Fetcher
   OWNER_USER_ID: string
+  readonly APP_NAME: string
+  readonly DEEPSPACE_APP_ID: string
 }
 
 export function createApp() {
   const app = new Hono<{ Bindings: Env }>()
+  registerRepositoryTools(app)
   app.route('/api/auth', createManagedAuthRoutes())
   app.route('/api', createHealthRoutes())
   app.route('/api', createPrincipalRoutes())

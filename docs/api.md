@@ -191,3 +191,15 @@ unregistered-state descriptions above record prior pass evidence and are
 superseded by [PASS 06F results](passes/pass06f-results.md). Fresh interactive OAuth,
 browser sign-out and two hosted users are not inferred from the existing-session
 smoke. No repository or CI API contract changed.
+
+## PASS 08A local agent-tool foundation
+
+One read-only tool is mounted through the installed SDK under
+`/_deepspace/agent`: authenticated discovery, REST invocation and its native
+stateless MCP subset. It reads the existing owner-authorized HEAD operation.
+No repository HTTP request/response contract changes. Tool SDK wire envelopes,
+byte caps, authentication behavior and MCP error semantics are documented in
+[agent-tool architecture](agent-tool-architecture.md). Scoped CLI credentials are
+not accepted by the existing repository verifier; no direct client installation
+flow is available. The application remains undeployed, and earlier hosted URLs
+are historical. This pass made no hosted request or deployment.

@@ -323,3 +323,15 @@ existing command descriptors/generation and CodePanel, never the documentation
 route. Native local selection state causes no network traffic. See
 [product-site contracts](product-site.md) for AGENT-UI-001–010 and the narrow
 import direction; [PASS 06H results](passes/pass06h-results.md) records evidence.
+
+## PASS 08A: qualified read-only agent tool
+
+The server mounts the installed SDK registerAgentToolTransports for one tool,
+miniagentgit.repository_head. A request-scoped reader forwards the original
+verified Bearer to the existing canonical owner HEAD route. No persistence,
+HEAD/CI, schema, scheduling or public frontend code changes. Native REST and the
+installed SDK's stateless MCP subset are tested locally; no custom MCP server or
+new dependency exists. CLI scoped credentials remain rejected by the unchanged
+repository authentication policy; Codex/Claude compatibility is not claimed.
+See [agent-tool architecture](agent-tool-architecture.md) for the capability matrix,
+TOOL-001–010, exact APIs, limits and qualification blockers. The app stays undeployed.
