@@ -1,24 +1,53 @@
 import { DurableObject } from 'cloudflare:workers'
-import { REPOSITORY_SCHEMA } from '../storage/schema'
+import type { AuthEnvironment } from './auth'
+import { repositoryOwnerName } from '../../domain/ownership'
+import { createRepositoryRuntime } from '../../application/repository-runtime'
+import { createRepositoryAuthority } from '../storage/repository-authority'
+import { initializeDatabase } from '../storage/migrations'
+import { durableDatabase } from './database'
+import { createOwnerRoutes } from '../api/repository-owner'
+import { resultResponse } from '../api/result'
 
-/** Lifecycle wiring only. No commit implementation or externally mounted route. */
-export class RepositoryRoom extends DurableObject<unknown> {
-  constructor(state: DurableObjectState, env: unknown) {
+interface RepositoryEnvironment extends AuthEnvironment {
+  readonly REPOSITORY_ROOMS: DurableObjectNamespace
+}
+/** Exactly one scheduler/service pair per verified canonical owner instance. */
+export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
+  private owner: ReturnType<typeof createOwnerRoutes> | undefined
+  constructor(state: DurableObjectState, env: RepositoryEnvironment) {
     super(state, env)
-    state.storage.transactionSync(() => {
-      for (const sql of REPOSITORY_SCHEMA) state.storage.sql.exec(sql)
-    })
+    initializeDatabase(durableDatabase(state.storage))
   }
-
-  async fetch(): Promise<Response> {
-    return Response.json(
-      {
+  async fetch(request: Request): Promise<Response> {
+    const id = new URL(request.url).pathname.match(
+      /^\/api\/repositories\/(repo_[a-z0-9]{16,32})(?:\/|$)/,
+    )?.[1]
+    const name = repositoryOwnerName(id)
+    if (
+      !name.ok ||
+      !this.ctx.id.equals(this.env.REPOSITORY_ROOMS.idFromName(name.value))
+    ) {
+      return resultResponse({
+        ok: false,
         error: {
-          code: 'UNAVAILABLE',
-          message: 'Repository operations not implemented',
+          code: 'INVALID_INPUT',
+          message: 'Repository owner routing mismatch',
         },
-      },
-      { status: 501 },
-    )
+      })
+    }
+    if (!id) throw new Error('Missing owner ID')
+    if (!this.owner) {
+      const authority = createRepositoryAuthority({
+        id,
+        db: durableDatabase(this.ctx.storage),
+      })
+      const runtime = createRepositoryRuntime({
+        id,
+        authority,
+        retainExecution: (promise) => this.ctx.waitUntil(promise),
+      })
+      this.owner = createOwnerRoutes(id, runtime.service, this.env)
+    }
+    return this.owner.fetch(request)
   }
 }

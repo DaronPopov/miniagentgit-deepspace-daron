@@ -71,3 +71,12 @@ export function withinQuota(
 }
 export const utf8Bytes = (text: string): number =>
   new TextEncoder().encode(text).byteLength
+
+/** Composition roots reject invalid or expanded budgets and capture a frozen copy. */
+export function requireResourceLimits(
+  overrides: Partial<ResourceLimits> = {},
+): Readonly<ResourceLimits> {
+  const result = configureLimits(overrides)
+  if (!result.ok) throw new RangeError('Invalid application resource limits')
+  return result.value
+}

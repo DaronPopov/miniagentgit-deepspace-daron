@@ -23,12 +23,12 @@ billable operations were needed for this amendment.
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | Deployment slots           | Currently reported one; server overrides may differ                                                                | One app for all repositories; no preview app per repository                      |
 | Credits                    | 500 monthly advertised; account had 500 remaining, renewal null                                                    | No assumption that compute/storage are unmetered; no paid integrations           |
-| Uploaded files             | Official guide says 128 MiB per app; actual app quota unknown                                                      | Conservative 128 MiB ceiling; planned workflow uses zero uploads                 |
+| Uploaded files             | Official guide says 128 MiB per app; actual app quota unknown                                                      | Conservative 128 MiB ceiling; text workflow uses zero uploads                    |
 | Deploy assets / releases   | Separate allocation from uploaded files; SDK account storage table says Free 1 GiB and repo store constant 256 MiB | Not repository content quota; actual app/account entitlement unknown             |
-| SQLite database bytes      | Repository SQLite is inside its Durable Object; no DeepSpace Free per-repo or per-account SQLite cap found         | Unknown; 8 MiB logical repository budget planned, not physical DB guarantee      |
+| SQLite database bytes      | Repository SQLite is inside its Durable Object; no DeepSpace Free per-repo or per-account SQLite cap found         | Unknown; 8 MiB logical repository limit enforced, not a physical DB guarantee    |
 | SQLite rows / operations   | No DeepSpace Free row/read/write allowance or credit conversion found                                              | Unknown; bound query pages and transactions before enabling writes               |
 | Durable Objects            | Manifest permits SQLite DOs; provider-owned Workers for Platforms namespace                                        | DeepSpace Free object count, active-object cost, request/duration quotas unknown |
-| HTTP and DO requests       | No DeepSpace Free daily/monthly/rate entitlement found                                                             | Unknown; no load tests; planned bounded admission/rate limit                     |
+| HTTP and DO requests       | No DeepSpace Free daily/monthly/rate entitlement found                                                             | Unknown; bounded owner admission implemented; rate limits deferred               |
 | CPU and memory             | No per-app DeepSpace Free CPU allowance or compute-to-credit conversion found                                      | Unknown effective CPU; bound input and queries, then measure after authorization |
 | R2 / optional blob storage | Standard files gateway has active-content restrictions and owner quota                                             | Do not use for repository text now; no new R2 binding                            |
 
@@ -69,19 +69,19 @@ budget revision, not an arbitrary environment variable.
 | Total put text per commit           | 128 KiB                        | Enforced by `validateCommit`                                                               |
 | Commit message                      | 1 KiB                          | Enforced by `validateCommit`                                                               |
 | Page size                           | 25                             | Enforced by `validatePage`                                                                 |
-| Files per repository                | 128                            | Configured; durable post-change count enforcement PLANNED                                  |
-| Commits per repository              | 100                            | Configured; atomic counter enforcement PLANNED                                             |
-| Logical repository bytes            | 8 MiB                          | Configured; retained content/manifest/idempotency accounting PLANNED                       |
+| Files per repository                | 128                            | Enforced in the commit transaction against the full resulting snapshot                     |
+| Commits per repository              | 100                            | Enforced using the durable HEAD version in the commit transaction                          |
+| Logical repository bytes            | 8 MiB                          | Enforced retained logical accounting; physical SQLite usage remains unknown                |
 | Repositories per app                | Demo target 4                  | PLANNED app-wide creation admission; not a configured/enforced counter                     |
-| Concurrent mutations / request rate | No exposed mutations           | Durable bounded admission/rate control PLANNED before public writes                        |
+| Concurrent mutations / request rate | No exposed mutations           | Bounded scheduler/payload admission implemented; ingress/rate limits unimplemented         |
 | CPU / physical DB bytes / credits   | Unknown effective platform cap | Measurement and provider observability PLANNED; no local enforcement claim                 |
 
 Quota failures are typed `{ ok: false, error: { code: 'QUOTA_EXCEEDED',
 resource, maximum, actual? } }`. `actual` is omitted when the SDK body limiter
 reports only the threshold; never invent a measured count. Invalid config or
 measurements yield `INVALID_INPUT`. These validators are executable and tested,
-but no repository endpoint is published yet: they are future operation-boundary
-requirements, not a claim that unimplemented persistence is protected today.
+and repository endpoints now use them. Durable quotas are checked again inside
+the authority transaction; they are not a physical/provider quota guarantee.
 
 Accept only well-formed text without NUL for file content; this is a text API,
 not a complete binary-content detector. Paths use a deliberately narrow printable
@@ -90,25 +90,25 @@ No archives, binary uploads, arbitrary globbing, unbounded diff/history traversa
 or automatic retries. Exact credit cost and physical database amplification
 remain unknown. Lower input limits alone cannot guarantee a CPU or credit cap.
 
-## First end-to-end commit workflow estimate (not implemented)
+## First end-to-end commit workflow estimate (local workflow now implemented)
 
-Assume one app, one repository, one actor, two UTF-8 files of 4 KiB each,
+Assume one app, one repository, one actor, two distinct ordinary UTF-8 text files of 4 KiB each,
 one 128-byte message, and six sequential calls: create repository, read HEAD,
-create commit, list tree, read one file, read history. Assume no retries, no UI
-asset fetches, no auth-provider round trips, no subscriptions, and no R2 writes.
+create commit, list tree, read one file, read commit metadata. Assume no retries, no UI
+asset fetches, no auth-provider round trips, no subscriptions, no high-density JSON escape characters, and no R2 writes.
 
 - 6 external HTTP requests and approximately 6 owner dispatches. Actual internal
   platform authentication and metering subrequests are not measured.
 - 8 KiB new content; two manifest entries; one commit row; one HEAD row; one
-  idempotency row; one repository row (8 rows after the workflow). Creation
-  retry bookkeeping may add a separate row once its design is implemented.
+  idempotency row; one repository row; one snapshot-hash row; one creation-receipt
+  row; and one schema-migration marker (11 rows after the workflow).
 - Reserve 4 KiB logical metadata for the first commit plus 8 KiB contents:
   approximately 12 KiB logical data. Assume up to 4x for SQLite pages/indexes/WAL
   as a planning reserve: approximately 48 KiB, **not measured physical usage**.
 - With full text replacement at the 128 KiB commit ceiling, 100 commits could
-  exceed 12.5 MiB before metadata. Therefore the planned 8 MiB retained-data
+  exceed 12.5 MiB before metadata. Therefore the enforced 8 MiB retained-data
   cap must reject writes earlier; the per-commit limit is not a total budget.
-- Four demo repositories at the planned 8 MiB logical cap reserve 32 MiB logical
+- Four demo repositories at the enforced 8 MiB logical cap reserve 32 MiB logical
   data, roughly 128 MiB under the same unverified 4x assumption. This is SQLite,
   not uploaded-file usage, and must not be described as fitting a known SQLite
   entitlement. Initial schema overhead in empty objects is additional.
@@ -116,9 +116,9 @@ asset fetches, no auth-provider round trips, no subscriptions, and no R2 writes.
   CPU time, SQL rows scanned/written by indexes, billed requests, and credits
   per workflow: **unknown until an explicitly authorized hosted measurement**.
 
-Before enabling public writes: enforce persisted quotas and concurrency in the
-same owner transaction as HEAD advancement; add bounded retry/idempotency
-handling and creation admission. Before claiming hosted Free-plan operability:
+Repository-local quotas, serialized execution, atomic HEAD and successful replay
+are now implemented. Before enabling public traffic, add app-wide creation and
+ingress/rate admission. Before claiming hosted Free-plan operability:
 verify actual app quotas without assuming a Cloudflare plan, then authorize a
 small smoke workflow and inspect usage before/after. Unknown billing or quota
 behavior must fail closed rather than automatically upgrading or provisioning.
@@ -143,8 +143,8 @@ plus sequence and enum fields; 256 events retain roughly 70 KiB of those string
 code units before overhead. These are representation budgets, not measured heap
 or platform memory guarantees. Frozen snapshots temporarily allocate bounded
 copies; callers retaining repeated snapshots/results are outside owner retention.
-No queued source payloads or uploaded files are retained. A future prepared-data
-resolver must separately bound payload storage and tie release to executor exit.
+The scheduler ring itself retains no source payloads or uploaded files. Pass 04
+adds the separately bounded private payload ownership described below.
 
 Active cancellation can leave one bounded internal claim retained until executor
 settlement. On deadline the scheduler closes; queued public completions settle.
@@ -153,3 +153,44 @@ CPU enforcement, provider cost conversion and physical SQLite limits remain
 unimplemented/unknown as described above. The existing first commit workflow
 estimate is unchanged: scheduling adds local descriptor/event bookkeeping, not
 an extra HTTP service, app deployment, SQL write or storage upload.
+
+## Pass 04 durable accounting and prepared payloads
+
+The 8 MiB retained logical counter is initialized with serialized repository and
+creation receipt plus a 256-byte reserve. Each new commit charges unique content
+rows as JSON `[hash,text,utf8Bytes]` plus 64 bytes each, canonical full manifest
+plus 64 bytes per entry, canonical commit metadata, serialized actor/key/digest/ID
+receipt and a 256-byte reserve. Charges include JSON escaping and retained old
+snapshots; deletion does not refund immutable history. Successful replay adds
+zero bytes and no HEAD version. Exact-cap and one-byte-below tests use real SQL.
+This deterministic conservative accounting model is not SQLite file/WAL/index
+measurement. The old approximate 12 KiB/4x first-workflow planning estimate is
+still an estimate, not a measured physical footprint or credit cost.
+
+The owner privately retains at most eight validated payloads by default (32
+maximum), each at most 128 KiB put text plus bounded paths/metadata. Worst-case
+text budget is 1 MiB UTF-8 at default capacity (4 MiB at maximum), potentially
+about twice those bytes as UTF-16 code units, before object/JSON/temporary-hash
+and allocator overhead. Only one active preparation runs. Scheduler descriptors
+hold opaque random references, never bodies. Queued cancellation releases payload;
+active cancellation/timeout retains it until real executor settlement. A callback
+failure cannot retire in-flight work early. Incoming body streams are individually
+bounded at 256 KiB; aggregate simultaneous ingress is not application-wide capped.
+Repository URLs are capped at 2,048 characters. No physical memory guarantee is
+inferred from these logical limits.
+
+Local verification now runs actual workerd SQLite-backed Durable Objects with
+controlled JWT keys, plus Node SQLite transaction/fault/reopen tests. Test-only
+esbuild 0.27.7 and Miniflare 5.20261110.0-beta are explicitly pinned; these versions
+were already transitive tooling dependencies, with no production dependency
+addition. The local harness disables Cloudflare metadata fetching, uses temporary
+persistence directories and disposes its runtimes. No cloud load tests, paid
+integrations, app registration, deployment, uploaded files or credit-consuming
+runtime calls were used. Actual hosted quotas and usage rates remain unknown.
+
+For the six-call initial workflow, source inspection predicts 12 local signature
+verifications (public and owner boundaries) and about 14 synchronous SQL closure
+invocations including first schema initialization and authority checks. These
+are not measured billed request/SQL units. Path names, JSON escaping and metadata
+change accounting charges; escape-heavy text can significantly exceed the simple
+12 KiB logical estimate. No credit conversion or throughput claim is made.

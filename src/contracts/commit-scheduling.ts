@@ -10,6 +10,10 @@ export interface CommitDescriptor {
 export type ExecutionOutcome =
   | { readonly kind: 'committed'; readonly commitId: string }
   | { readonly kind: 'conflict'; readonly actualHead: string | null }
+  | {
+      readonly kind: 'rejected'
+      readonly reason: 'quota' | 'forbidden' | 'invalid' | 'not-found'
+    }
 export type ScheduledOutcome =
   | ExecutionOutcome
   | {

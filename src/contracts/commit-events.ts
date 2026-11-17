@@ -4,7 +4,14 @@ export type CommitEventDetail =
   | { readonly kind: 'conflict'; readonly actualHead: string | null }
   | {
       readonly kind: 'rejected'
-      readonly reason: 'full' | 'closed' | 'invalid' | 'duplicate'
+      readonly reason:
+        | 'full'
+        | 'closed'
+        | 'invalid'
+        | 'duplicate'
+        | 'quota'
+        | 'forbidden'
+        | 'not-found'
     }
   | { readonly kind: 'cancelled'; readonly phase: 'queued' | 'active' }
   | { readonly kind: 'failed'; readonly reason: 'executor' | 'deadline' }

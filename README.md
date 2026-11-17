@@ -1,12 +1,14 @@
 # MiniAgentGit
 
-Foundation for a cloud-native, headless version control service for AI coding
-agents. Pass 01 supplies a minimal DeepSpace app and engineering checks.
-Repository commits, history, browser login flows, and MCP are not implemented.
-Pass 02 prepares typed operation seams and a fail-closed `GET /api/me` identity
-adapter; no repository operation endpoint is published. It requires trusted
-JWT public key, issuer, and verified audience configuration. See
-[architecture](docs/architecture.md) and [free-tier budget](docs/free-tier-budget.md).
+A small cloud-native, headless version control service for AI coding agents.
+Pass 04 implements repository creation, immutable UTF-8 snapshots, atomic SQLite
+HEAD updates, durable idempotency, and an owner-only HTTP vertical slice. Local
+workerd tests exercise the real server and SQLite-backed Durable Objects with
+controlled signing keys. Hosted authentication/deployment remains unverified.
+
+See [API](docs/api.md), [architecture](docs/architecture.md),
+[free-tier budget](docs/free-tier-budget.md), and
+[Pass 04 results](docs/passes/pass04-results.md).
 
 ## Develop
 
@@ -26,10 +28,11 @@ for this pass. When an owner explicitly chooses to register, first run
 the server-minted app id. Consult the official installation guide first.
 Do not deploy or run `deepspace push` as an installation step.
 
-The shell lives at `/`; `GET /api/health` returns
-`{"status":"ok","service":"miniagentgit"}`. This is stateless liveness,
-not a check of storage, platform connectivity, or deployment readiness.
-Other API methods/paths return 404. No repository writes are exposed.
+The static shell lives at `/`; `GET /api/health` reports stateless liveness.
+Protected repository APIs require a Bearer JWT verified against trusted public
+key, issuer and audience; `GET /api/me` reports its verified subject. CLI login
+does not authenticate HTTP users. No browser login flow, MCP, R2, branches,
+merges, Git wire compatibility or CI execution is implemented.
 
 ## Commands
 
@@ -45,12 +48,13 @@ npm run build
 
 `npm run validate` runs all checks plus the build. Stage new source files before
 the size check: it scans tracked files, including staged additions. Vitest
-runs offline unit/HTTP adapter tests; it does not register an app. Production
+runs pure scheduler tests, real Node SQLite tests, and local workerd HTTP/Durable
+Object tests. It does not register an app or contact DeepSpace. Production
 bundles are generated under `dist/` and ignored by Git.
 
 See [engineering standards](docs/engineering-standards.md), [agent rules](AGENTS.md),
 and [Pass 01 results](docs/passes/pass01-results.md) for boundaries and evidence.
-The scaffold's Vite/React file routes, Hono worker, six Durable Object bindings,
+The scaffold's Vite/React file routes, Hono worker, the original six SDK bindings plus the repository owner,
 SDK build plugin, and required users schema are retained. Unused feature
 examples and UI dependencies were removed. There is one npm package and a
 committed package-lock.json; no separate ORM, auth library, or storage driver.

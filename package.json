@@ -31,21 +31,23 @@
     "react-router": "^7.1.0"
   },
   "devDependencies": {
-    "@generouted/react-router": "^1.20.0",
     "@cloudflare/vite-plugin": "^1.33.0",
     "@cloudflare/workers-types": "^5.20260708.1",
+    "@generouted/react-router": "^1.20.0",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.0",
+    "esbuild": "0.27.7",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "miniflare": "5.20261110.0-beta",
+    "prettier": "3.8.3",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.60.1",
-    "vitest": "^4.1.10",
     "vite": "^8.0.0",
-    "wrangler": "^4.79.0",
-    "prettier": "3.8.3",
-    "@types/node": "^24.0.0"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.79.0"
   },
   "private": true,
   "packageManager": "npm@11.16.0"

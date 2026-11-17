@@ -30,7 +30,7 @@ Explicit classification:
 
 The checker uses exact adapter paths, never a blanket `src/server/**` or
 `src/server/api/**` allowance. Current adapters: `src/server/app.ts`,
-`src/server/api/{health,principal,request}.ts`, and
+`src/server/api/{health,principal,request,repositories,repository-owner}.ts`, and
 `src/server/deepspace/{auth,repository-room}.ts`. Ordinary server business logic,
 `src/server/storage/**` (including schema and routing), and unclassified new
 adapters remain at 185. Adding an adapter to the allowlist requires a cohesive
@@ -71,10 +71,10 @@ preserves literal manifest types while checking SDK compatibility.
 | `tests/`                                       | Baseline unit and adapter tests                                 |
 | `scripts/`, `docs/`                            | Validation tooling and engineering evidence                     |
 
-Create `src/domain/` with the first domain implementation; it must not depend
-on React, HTTP, or Cloudflare SDKs. Put repository persistence adapters under
-`src/server/storage/` when persistence is implemented, with application-owned
-ports as needed. Do not create empty trees or placeholder services.
+Domain contracts and pure logic live in `src/domain/` and must not depend on
+React, HTTP or Cloudflare SDKs. Persistence adapters live in `src/server/storage/`
+with explicit application-owned contracts. Do not create empty trees or placeholder
+services.
 
 Only the repository persistence authority may advance HEAD. Transport code
 must not directly mutate repository state. HTTP and future MCP adapters must
@@ -82,11 +82,11 @@ share application-level operations. No circular dependencies or cross-layer
 shortcuts. The health operation imports only its shared contract. The client
 imports no server code. Framework schema declarations are not domain types.
 
-The six original SDK Durable Objects and custom RepositoryRoom are framework
-lifecycle wiring, not domain inheritance. No room endpoints are mounted;
-tasks/jobs reject execution. RepositoryRoom initializes schema only, and no code
-advances HEAD. Identity verification is implemented; repository operations,
-browser login flows and MCP remain deferred.
+The six original SDK Durable Objects remain inert framework wiring. The custom
+RepositoryRoom owns the real SQL authority and one bounded scheduler per canonical
+live owner. Only its commit transaction advances HEAD. Identity verification and
+the local repository API are implemented; hosted browser login and MCP remain
+deferred. No generic SDK record mutation path can write repository state.
 
 ## Validation and changes
 
@@ -113,9 +113,10 @@ runtime test, cron, or unnecessary workload without explicit authorization.
 
 Keep text inputs and query pages bounded. Configuration can lower the frozen
 application ceilings; raising them requires budget review. Use typed
-QUOTA_EXCEEDED results. Request/commit/page validation is implemented; persisted
-storage counters, admission, and rate limits remain planned until operations
-exist. Never claim a configured limit is durable enforcement.
+QUOTA_EXCEEDED results. Request/commit/page validation, repository-local durable logical-byte/file/commit
+limits, and scheduler/payload admission are implemented. App-wide repository
+cardinality, ingress/rate, physical database, CPU and credit controls remain
+unimplemented or unverified. Never claim a configured limit is durable enforcement.
 
 One repository has one canonical persistence owner in the app-private namespace.
 Only its atomic storage operation may advance HEAD. Recheck authorization,
@@ -138,4 +139,24 @@ payloads or raw errors in telemetry. Preserve execution ownership until actual
 executor settlement, even if cancellation already settled the public caller.
 Do not replace a noncooperative executor on timeout or call diagnostic events a
 durable audit log. Use deferred promises/fake clocks rather than timing sleeps.
-No scheduler-only test proves SQLite commit atomicity or hosted lifecycle safety.
+Scheduler-only tests still do not prove SQL atomicity. Pass 04 adds real Node
+SQLite transaction tests and actual local workerd Durable Object HTTP tests;
+these do not establish hosted lifecycle safety. The two new allowlisted files
+are genuine public/owner HTTP adapters, not storage/business modules. All new
+storage, preparation, runtime and test files retain the 185-line default.
+
+## Canonical persistence and local evidence
+
+Hash only validated, well-formed UTF-8 text and versioned deterministic formats.
+Prepared payloads are copied, privately retained under the scheduler's capacity,
+and released only on known queued cancellation or real executor settlement.
+No SQL transaction spans async preparation. Immutable rows reject updates/deletes;
+idempotency replay precedes expected-HEAD rejection. Count retained logical data,
+including old contents/manifests/receipts, rather than just current file bytes.
+Keep logical accounting separate from physical SQLite/provider storage quotas.
+
+Test SQLite failures with actual BEGIN/COMMIT/ROLLBACK and the same authority
+code. Test workerd lifecycle/routing with local SQLite-backed namespaces and
+short-lived generated signing keys. The local server-worker test bundle must
+never replace the official production build or alter its app-ID guard. No
+hosted authentication/deployment claim may follow from a local signing fixture.

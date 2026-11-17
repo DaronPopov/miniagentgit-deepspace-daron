@@ -2,18 +2,18 @@
 
 ## Scope and owner
 
-The implementation schedules lightweight commit descriptors; it does not execute
-repository commits, authorize requests, store file contents, or advance HEAD.
+The scheduler schedules lightweight commit descriptors and never changes HEAD.
+Pass 04 connects its injected executor to the authoritative SQLite commit
+operation, which separately authorizes and persists repository state.
 `createCommitScheduler` receives a validated repository ID and injected executor.
 Its returned frozen handle owns one FIFO, one bounded ownership map, one active
 execution claim, timers, and one diagnostic ring. It is not a global registry.
 
-The future RepositoryRoom lifecycle must instantiate exactly one scheduler for
-its canonical repository and retain it as instance state. Do not instantiate one
-per HTTP request or let clients select a different owner. This pass deliberately
-does not attach an executor to RepositoryRoom: there is no real transaction
-executor to attach yet. Production activation and hosted lifecycle verification
-remain Pass 04 work; multiple factory calls are not a uniqueness mechanism.
+RepositoryRoom now instantiates and retains exactly one scheduler/service pair
+inside its canonical live owner instance. It verifies its actual namespace ID
+before binding state. Do not instantiate one per HTTP request or let clients
+choose a second persistence owner. No process-global scheduler exists. See
+[architecture](architecture.md) and [API](api.md) for the real local slice.
 
 DeepSpace 0.44.2 exports a DO manifest for the custom SQLite lifecycle prepared
 in Pass 02. The installed Cloudflare declarations expose blockConcurrencyWhile,
@@ -21,7 +21,9 @@ waitUntil, abort, and transactionSync; none is assumed to make an in-memory
 promise durable or a JavaScript cancellation interrupt SQL. Official
 [DeepSpace architecture](https://docs.deep.space/concepts/architecture) and
 [room reference](https://docs.deep.space/sdk-reference/worker/rooms) were reviewed.
-No new runtime-specific integration, room fetch, registration, or deploy ran.
+Pass 04 adds the actual SQLite port and a best-effort ctx.waitUntil lifetime
+request for in-flight execution. Local workerd room fetches are tested; no
+registration or deploy ran.
 
 ## Admission and FIFO
 
@@ -45,20 +47,23 @@ independently. Calls made concurrently by agents are ordered by synchronous
 JavaScript admission order, not a promised order of network arrival.
 
 Descriptors contain only validated repository/request IDs, actor subject,
-expected HEAD, idempotency key, and a 64-hex prepared-content reference. They are
+expected HEAD, idempotency key, and an opaque random 64-hex payload reference. They are
 copied into frozen records. Extra fields, file contents, error messages, tokens,
 and caller objects are not retained. Actor subject is identity, not an ownership
-grant; a future authenticated adapter and executor must authorize it.
+grant; the authenticated adapter and persistence authority separately authorize it.
 
-Prepared content is not stored by this scheduler. Pass 04 must give its resolver
-an equally bounded lifecycle and retain/release that content according to actual
-executor completion. Resolve the reference and cross-check the validated payload
-against descriptor actor, repository, expected HEAD, idempotency key and digest. A hash reference does not prove content exists or is durable.
+The scheduler does not store content. Pass 04's repository runtime privately
+owns validated copied payloads in a map bounded to the same admission capacity.
+It resolves the opaque reference and uses the captured verified actor/repository,
+expected HEAD and idempotency key; it never accepts prepared metadata from HTTP.
+Hash preparation runs for the active executor only. Queued cancellation releases
+the payload; active payloads remain until executor settlement. Reference collision
+rejects admission instead of overwriting a slot.
 
 ## Completion, cancellation, deadlines, and shutdown
 
 Each accepted request has one completion promise and cancel handle. Expected
-executor outcomes are committed metadata ID or conflict HEAD; thrown/rejected or
+executor outcomes are committed metadata ID, conflict HEAD, or typed rejection; thrown/rejected or
 invalid executor results become sanitized failed outcomes. The scheduler does
 not invent a successful commit or interpret executor tests as durable evidence.
 
@@ -114,14 +119,15 @@ as a second public terminal outcome; reconcile uncertain results in persistence.
 
 Worker restart/eviction loses rings, timers, promises, and diagnostic sequences.
 Acceptance here is **ephemeral scheduling acceptance**, not durable job receipt.
-A disconnected client may not learn whether the executor committed. No waitUntil,
-background broker, polling service, alarm or external job queue is added.
+A disconnected client may not learn whether the executor committed. ctx.waitUntil
+requests execution lifetime only; it does not persist acceptance. No background
+broker, polling service, alarm or external job queue is added.
 
-FIFO does not prove expected-HEAD correctness. Pass 04 must reauthorize against
-stored metadata; check `(repository, actor, idempotency key)` and canonical
-request digest before stale-HEAD rejection; atomically compare expected HEAD,
-insert immutable commit/manifest/retry metadata, enforce durable quotas, and
-advance HEAD in one owner SQLite transaction. A replay with matching digest
+FIFO does not prove expected-HEAD correctness. The Pass 04 authority reauthorizes against
+stored metadata, checks `(repository, actor, idempotency key)` and canonical
+request digest before stale-HEAD rejection, then atomically compares expected HEAD,
+inserts immutable commit/manifest/retry metadata, enforces durable quotas, and
+advances HEAD in one owner SQLite transaction. A replay with matching digest
 returns its prior outcome; different digest conflicts. Pending request-ID
 deduplication in this pass ends on execution settlement; it cannot deduplicate
 completed or restarted durable work. Never substitute the event sequence for a
@@ -149,5 +155,5 @@ commit ID, replay record or HEAD version. No SQL/R2 atomicity is claimed.
   TypeScript sequences stop explicitly at safe-integer exhaustion.
 
 Tests exercise real local ring/scheduler code with controlled executors and
-clocks. They prove scheduling/retention/cancellation behavior only. The existing
-local SQLite DDL tests do not establish durable commit atomicity either.
+clocks. They prove scheduling/retention/cancellation behavior only. Pass 04 adds real SQL transaction/rollback tests and actual local workerd HTTP/DO
+persistence tests. Those separate tests still do not establish hosted guarantees.

@@ -1,204 +1,181 @@
 # MiniAgentGit architecture
 
-## Invariants and present scope
+## Scope and boundaries
 
-**FREE-TIER-001:** operate the bounded takehome service within one DeepSpace
-Free-plan deployment. See [resource budgets](free-tier-budget.md) for reported
-allowances, unknown quotas, implemented validation, and planned durable controls.
-No registration, deployment, credit consumption, fabricated identity, paid
-integrations, or background work is authorized by this pass.
+Pass 04 implements a local repository vertical slice: create/read repository,
+empty/read HEAD, immutable text commits, tree/file/commit retrieval and durable
+successful replay lookup. HTTP → verified transport → application service →
+canonical RepositoryRoom → synchronous SQLite authority. No mutable HEAD exists
+in HTTP or the scheduler. No branches, merges, Git protocol, binaries, R2, MCP,
+restore/diff engine, CI execution or new UI are implemented.
 
-Target flow: authenticated HTTP / future MCP adapter → application functions →
-repository-scoped authority → SQLite. All repositories share one app deployment;
-a deployment slot is not a repository. Optional immutable blob storage is deferred.
-Use ordinary functions and explicit typed contracts; classes exist only for
-SDK/Cloudflare lifecycle wiring. No service manager or plugin framework.
+FREE-TIER-001 remains mandatory: one DeepSpace Free-plan app, bounded text and
+in-memory state, no paid integrations or background polling. Reported 500
+credits, one deployment slot and conservative 128 MiB uploaded-file allowance
+are planning inputs. SQLite/DO/CPU/request entitlements remain unknown. See
+[budget](free-tier-budget.md), [API](api.md), and [pipeline](commit-pipeline.md).
+No registration, deploy, app-ID fabrication or credit-consuming tests ran.
 
-Current implemented surfaces are `GET /api/health` and `GET /api/me`. The latter
-returns only a verified subject; it is not an authorization grant. Repository
-operations are interfaces and validators, not published success stubs. Unknown
-API paths continue to return 404. A future adapter must authenticate, bound the
-body, validate identifiers/payloads, invoke one shared application operation,
-and map typed outcomes. Proposed mappings are INVALID_INPUT → 400,
-UNAUTHENTICATED → 401, FORBIDDEN → 403, NOT_FOUND → 404, CONFLICT → 409,
-QUOTA_EXCEEDED → 413 for payload size / 429 for admission, UNAVAILABLE → 503.
-These mappings are planned except the implemented identity endpoint's 401/503.
+The SDK is pinned at 0.44.2. Official Vite/React/Hono/Cloudflare scaffolding is
+retained. The required SDK users schema and six inert SDK Durable Objects do
+not own repository data or expose generic repository mutations. RepositoryRoom
+is the custom SQLite Durable Object prepared in Pass 02. Its manifest/binding
+and namespace are unchanged; only its actual owner behavior is implemented.
 
-## Authentication and authorization
+## Identity and repository ownership
 
-`src/server/deepspace/auth.ts` uses the actual SDK `verifyJwt(config, token)`
-returning `{ result: { userId, claims } | null }`. Accept only a bounded Bearer
-token, verify public key, issuer, and audience from trusted deployment config,
-require expiration, and reject anonymous subjects. Missing trusted configuration
-returns UNAVAILABLE. Tokens, claims/debug data, and email are not logged or
-returned. No client header/body ownership or role claim is trusted.
-`AUTH_JWT_AUDIENCE` must be verified against the app's real issued tokens before
-runtime use; no value is guessed or inserted into wrangler.toml.
+The public transport uses SDK `verifyJwt` with configured key, issuer, audience
+and expiry. It forwards the original Bearer token, not an identity assertion;
+RepositoryRoom verifies it again. Browser useAuth remains an unmounted display
+hook. No custom OAuth or token protocol is introduced. Real hosted token audience
+and browser-to-Bearer wiring are not guessed; absent config fails closed.
 
-Browser identity is prepared via SDK `useAuth()` in `src/client/identity.ts`.
-The hook is deliberately unmounted in the static shell, so it makes no session
-request there. It reports display state only. Browser session cookies are not
-accepted as a Bearer token by our server verifier. Platform auth proxy and token
-retrieval wiring remain deferred; CLI login authenticates the developer CLI,
-not browsers or arbitrary clients of MiniAgentGit. No custom OAuth endpoints.
+Creation routes deterministically from verified subject and creation key. One
+logical repository maps to the app-private `repo:<validated ID>` namespace name.
+Before binding service state, RepositoryRoom compares its actual ctx.id to
+`REPOSITORY_ROOMS.idFromName(canonicalName)`. A different object cannot become a
+second owner through a forged request path. A live owner lazily instantiates
+exactly one runtime/scheduler and retains it for its lifetime. There is no global
+scheduler, per-request scheduler, global repository manager or second HEAD.
 
-`Principal` carries the verified user subject. `authorizeOwner` uses persisted
-repository metadata, separately from authentication; initially all repository
-permissions are owner-only. Future authority methods must recheck this against
-their own stored metadata, not caller-supplied metadata. Platform app membership
-or an app-wide admin role is not repository ownership.
+Persisted metadata records identity, owner, name and creation timestamp. Creation
+is atomic with an empty HEAD and creation receipt; it never inserts a commit.
+Same key/name retries return existing metadata; different name conflicts.
+Authorization is separate from identity. The authority checks persisted owner
+and repository ID on reads and inside the commit transaction. HTTP also rejects
+nonowners before admitting commit payloads. App role/client headers grant no
+repository permission. Future scoped API tokens remain design-only.
 
-Future scoped API tokens: server-generated high-entropy secret; store only its
-hash, token ID, bound user/repository, expiry, revocation state, and explicit
-read/write/restore scopes. Resolve subject server-side; intersect scope and
-current repository authorization on every call. No token issuance/storage,
-verification route, or DeepSpace agent-token reuse is implemented. Never send
-trusted identity in WebSocket URLs or use SDK action headers as authorization.
+## Contracts and implementation responsibilities
 
-## Contracts and layers
+- src/domain: readonly serializable repository/results, scalar validation,
+  canonical SHA-256 formats, fixed FIFO and diagnostic rings. No React, HTTP,
+  Cloudflare SDK or storage dependency.
+- src/application: shared operation/service interfaces, bounded validators,
+  hashing preparation, scheduler, private bounded payload lifecycle. Persistence
+  is injected; no SQL or framework dependency.
+- src/server/storage: synchronous Database port, row checks, versioned schema
+  initialization, creation/read authority and sole commit transaction.
+- src/server/deepspace: actual DurableObject lifecycle and SQLite port adapter;
+  existing SDK JWT verifier.
+- src/server/api: Hono public dispatch, owner adapter, bounded body parsing,
+  scalar/query validation and typed response mapping. No SQL.
 
-`src/domain/` contains serializable readonly repository metadata, principal,
-file changes/manifests, commit metadata, HEAD, IDs, and discriminated results.
-Expected errors include INVALID*INPUT, UNAUTHENTICATED, FORBIDDEN, NOT_FOUND,
-CONFLICT, QUOTA_EXCEEDED, and UNAVAILABLE. String aliases are not nominal proof
-of validation: every untrusted boundary must run validators. Repository IDs
-are lowercase `repo*` plus 16–32 alphanumerics; commit/content IDs will use
-64 lowercase hex SHA-256 characters. ID generation/hashing is deferred.
+The existing ten-operation interface remains as the future full API contract;
+the implemented RepositoryService explicitly selects this pass's subset plus
+creation and replay. PreparedCommit now contains immutable content candidates,
+manifest/hash, canonical metadata and semantic digest. No raw prepared object
+is accepted from HTTP or exposed over a Durable Object RPC method.
 
-`src/application/operations.ts` defines create/read repository, read HEAD,
-list tree, read file, create commit, history/details, diff, and restore seams.
-All scoped operations carry a verified actor and repository ID; listing/diff
-returns bounded cursor pages. Restore creates a new commit from an existing
-snapshot; it does not rewind history. It carries expected HEAD and idempotency.
-No operation implementation is registered. Typed read and commit-authority ports
-are in repository-authority.ts; no general setHead or raw SQL escapes the owner.
+## Canonical snapshots and hashing
 
-Validation covers create/commit/restore payloads, IDs, relative paths, page
-limits/cursors, duplicate changes, unknown fields, and bounded text.
-`readJsonRequest` uses SDK `readBoundedBodyText` before parsing. Future path and
-query parameters must use the same scalar validators after decoding; do not
-accept raw unbounded query values. No endpoint consumes those payloads yet.
-HTTP and future MCP must share these application operations and policies.
+SHA-256 hashes exact UTF-8 file text. The canonical manifest is JSON
+`["manifest-v1", [[path,contentHash,utf8Bytes],...]]`, sorted by ASCII path order.
+A full manifest per commit fixes every path/content association. SQL triggers
+prevent updates/deletes to contents, commits, manifests, snapshots and receipts.
+Old file retrieval never consults current HEAD or overwrites old content.
+Snapshot puts replace/add paths; deletes remove them; unmentioned files survive.
+There are no mutable file pointers. File/directory prefix collisions are invalid.
 
-## Repository persistence ownership
+Commit ID is SHA-256 of UTF-8 JSON `["commit-v1", repositoryId, parentId,
+actorSubject, message, serverCreatedAt, manifestHash]`. No object-key iteration,
+locale sort, line-ending change or Unicode normalization affects canonical data.
+The semantic request digest is versioned JSON including sorted changes,
+repository/actor/expected HEAD/message, excluding server timestamp/key. This
+allows a retried key to match even when preparation happens at a new time.
+Creation ID is a 128-bit prefix of a separate versioned SHA-256 domain; this is
+application identity, not Git compatibility. Collision resistance is assumed.
 
-One logical repository maps to `repo:<validated repository ID>` using
-`REPOSITORY_ROOMS.idFromName(name)` and `get(id)`. The binding's namespace is
-app-private; no name comes directly from an unvalidated route. No random
-`newUniqueId`, actor-dependent suffix, or secondary writable owner. Validated
-names are deterministic; actual Cloudflare routing has not been executed.
+## Schema and atomic transaction
 
-The installed `RecordRoom` extends SDK `BaseRoom` and exposes generic records,
-RBAC, queries, mutations, and WebSocket sync, but keeps SQL/schema internals
-private. Its public types expose no multi-record transaction callback. Multiple
-SDK mutations/server actions cannot be assumed to atomically insert commit,
-manifest, retry record, and HEAD together. Do not repurpose those mutations as
-the repository commit engine or allow the generic records API to mutate HEAD.
+Pass 02 tables are reused: repository metadata/logical_bytes, commits, HEAD with
+version, file_contents, manifest_entries and actor-scoped idempotency. Additive
+schema migration v2 introduces creation_receipt, snapshots with manifest_hash,
+immutability triggers and repository_migrations. Initialization is synchronous,
+transactional and idempotent. It preserves prior identity/HEAD and creates no
+fictional commits. Historical populated/manual pre-engine databases with missing
+creation receipts are not automatically assigned a receipt or owner.
 
-Smallest supported alternative: custom Cloudflare `RepositoryRoom extends
-DurableObject`, exported in worker.ts and registered in the SDK `DOManifest`
-with `sqlite: true` and matching Wrangler binding/migration. DeepSpace's manifest
-accepts arbitrary exported class names; Cloudflare supplies the lifecycle and
-SQLite API. The lifecycle constructor runs schema DDL in
-`state.storage.transactionSync`. No public repository route, SQL endpoint,
-WebSocket, alarm, or commit method exists. Its internal fetch returns 501.
-The six original SDK classes remain inert framework wiring, not repository
-owners; no rooms are fetched or activated by this pass's tests.
+One owner operation (`persistCommit`) alone advances HEAD. Its transaction:
 
-Initial tables: repository singleton, commits, singleton mutable HEAD, immutable
-file_contents, manifest_entries, and actor-scoped idempotency records. Keys,
-foreign keys, nonnegative counters, and singleton checks are declared. Content
-and commit immutability are **planned authority rules**, not SQL triggers.
-DDL initialization is idempotent CREATE IF NOT EXISTS; versioned schema upgrades
-will need explicit migration design before changing existing databases.
-No repository row, content, commit, or HEAD is inserted by initialization.
+1. Reads persisted repository identity and owner and authorizes the actor.
+2. Resolves the actor/key receipt. Same digest returns its committed metadata;
+   different digest returns CONFLICT before any stale-HEAD rejection.
+3. Compares expected HEAD, validates the request again, checks snapshot path
+   compatibility, deduplicates immutable contents, and computes quota charges.
+4. Checks post-commit file count, durable commit count via HEAD.version, and
+   retained logical bytes. Every expected rejection occurs before writes.
+5. Inserts content, metadata, snapshot hash, full manifest and replay receipt.
+6. Compare-and-swaps HEAD by its observed version and checks SQLite changes().
+7. Advances logical-byte counter. Any thrown failure rolls back every write.
 
-## Future atomic commit protocol
+There is no await, network call, upload, sleep or polling inside the callback.
+WebCrypto hashes and immutable snapshot preparation occur beforehand. The base
+snapshot is read from the requested HEAD; immutable data remains stable while
+hashing, and expected HEAD is checked again in the transaction. Two preparations
+may compete; only the first matching HEAD can advance. FIFO is not that proof.
 
-Outside the transaction: authenticate; validate and bound the complete request;
-normalize paths; hash canonical semantic request and content; prepare immutable
-text/manifest metadata. Independent hashing and bounded reads may run
-concurrently. Do not keep database locks across network calls or awaits.
+Cloudflare storage.sql.exec and transactionSync back the production port.
+Node SQLite tests use BEGIN IMMEDIATE/COMMIT/ROLLBACK on real SQLite and the same
+authority functions. Local workerd tests additionally execute actual Durable
+Object transactionSync through the bundled server worker and reopen persisted
+object storage. These prove local behavior, not hosted failure/recovery guarantees.
+There is no cross-SQLite/R2 atomicity or distributed transaction manager.
 
-Inside one repository owner's **synchronous** SQLite transaction:
+## Scheduling, cancellation and payload ownership
 
-1. Read stored identity/ownership and reauthorize the actor; verify the routed
-   repository matches persisted ID. Do not bind it from an arbitrary first write.
-2. Look up `(actor_subject, idempotency_key)`. Same digest returns the prior
-   commit; different digest returns CONFLICT. Replay precedes stale-HEAD rejection.
-3. Read actual HEAD and compare expected commit/version, returning CONFLICT
-   without writes if stale. Compare-and-set HEAD as a defensive final check.
-4. Compute resulting tree and retained-byte/file/commit counters from stored
-   state, rejecting QUOTA_EXCEEDED before inserting anything.
-5. Insert missing immutable contents, commit metadata, manifest, and retry
-   record; advance HEAD and counters exactly once. Any failure rolls back all.
+The owner composes the existing scheduler with a private map capped at the same
+outstanding capacity (8 default, maximum 32). A slot owns a validated copied
+payload/context; the FIFO descriptor contains only IDs and an opaque random
+64-hex lookup reference. No source text is retained in ring slots or events.
+Preparation/hashing runs only for the active executor. Quota/permission/input
+rejections are typed executor outcomes, not fabricated successful commits.
 
-Only this owner operation may advance HEAD. No split read/check/write across
-awaits, no transport mutation, no cross-object transaction. Failures after an
-uncertain response are retried with the same idempotency key and digest;
-never assume a timeout means rollback. Bound retained idempotency to retained
-commits; fail closed at the cap rather than silently expiring replay safety.
+Queued cancellation releases its map slot without executing it. Active payloads
+remain until the real executor settles, even when the public waiter has already
+resolved unknown. Executor finally removes its slot on every exit. A DO uses
+ctx.waitUntil on the in-flight authority promise to request continued local
+execution lifetime after caller cancellation; this is not durable job acceptance
+or a guarantee that a runtime cannot terminate. Application timers/deadlines do
+not interrupt synchronous SQL. No owner/executor is replaced while it may run.
 
-Cloudflare documents `transactionSync(callback)` rollback on throw; it cannot
-include async work, and nested transactions use savepoints. SQL statements
-outside it have implicit transaction behavior, which is not a substitute for
-an explicit multi-statement commit boundary. The SDK's generic record operations
-provide no additional guarantee here. Local SQLite DDL tests validate schema
-syntax/constraints only, not hosted transaction scheduling or atomic commits.
+Cancellation can occur during a transaction that subsequently commits. Public
+503/cancellation is therefore uncertain, never a rollback claim. Retry/query the
+same actor/repository/key; successful replay is durable across owner recreation.
+Unsuccessful outcomes do not reserve keys. Worker restart loses only transient
+scheduling, payloads and events; persistent HEAD/metadata/receipts remain.
 
-Optional R2 writes, if later justified, happen as immutable preparation before
-the SQLite transaction. The SQL commit references only confirmed content;
-unreferenced blobs may remain on failure. There is **no SQLite/R2 atomicity**,
-no distributed transaction manager, and no background blob cleanup now.
+## Concurrency invariants
 
-## Verified SDK equivalents and deferred features
+- **COMMIT-001:** only the repository SQL authority advances HEAD.
+- **COMMIT-002:** owned pending requests/payloads include active work and never
+  exceed configured capacity. No capacity waiter or unbounded preparation pool.
+- **COMMIT-003:** admission never overwrites; diagnostic eviction cannot lose a
+  queued request. Cancellation settles explicitly.
+- **COMMIT-004:** expected HEAD, immutable metadata, successful replay, counters
+  and HEAD advancement share one synchronous transaction.
+- **COMMIT-005:** admission deadline, abort, bounded input/query/storage budgets;
+  synchronous work cannot be forcibly cancelled and unknown completion is fenced.
+- **COMMIT-006:** no transaction/lock spans queue wait, hashing, sleeps or network.
+- **COMMIT-007:** scheduler/events remain ephemeral and nonauthoritative; commits,
+  replay and HEAD are persisted. There is no durable job queue.
+- **COMMIT-008:** durable actor/repository/key+digest replay prevents duplicates
+  after uncertain responses; pending request-ID deduplication is not the ledger.
 
-| Concern                       | Verified API                                                              | This pass                                                   |
-| ----------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Browser identity              | `useAuth()` from deepspace                                                | Unmounted typed hook                                        |
-| Server identity               | `verifyJwt` from deepspace/worker                                         | Used by GET /api/me                                         |
-| Bounded body                  | `readBoundedBodyText`, `BodyTooLargeError`                                | Tested request adapter                                      |
-| Records / queries / mutations | `RecordRoom`, `RecordProvider`, `RecordScope`, `useQuery`, `useMutations` | Inspected types; not used for repository state              |
-| Realtime                      | RecordScope WebSocket + SDK room lifecycle                                | Deferred; no subscription required                          |
-| Server actions                | `ActionHandler`, `ActionTools`; scaffold Hono routes                      | Inspected; Hono retained, no bypass headers or action route |
-| Blob storage                  | `appFiles(env, {scope, userId})`                                          | Inspected; unused, no upload                                |
-| Custom SQLite owner           | `DOManifest`, Cloudflare DurableObject, storage.sql.exec, transactionSync | Lifecycle wiring + DDL only                                 |
+## Verification and limitations
 
-References: [SDK auth](https://docs.deep.space/sdk-reference/worker/auth),
-[rooms](https://docs.deep.space/sdk-reference/worker/rooms),
-[client records](https://docs.deep.space/sdk-reference/client/records),
-[server actions](https://docs.deep.space/sdk-reference/worker/server-actions),
-[SQLite transactions](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transactionsync).
-Installed types are authoritative for DeepSpace 0.44.2. This is not hosted
-runtime, transaction atomicity, or production bundle verification.
+Local evidence distinguishes Node SQL rollback/fault injection, pure scheduler
+interleavings, and actual bundled server HTTP + workerd SQLite DOs. Test-only
+JWT keys exercise the real SDK verifier. Hosted auth, browser login, platform
+quota/pricing and production serving remain unverified. The official Vite
+production build still rejects the unregistered app-ID placeholder; the local
+server test bundle is not a production artifact or replacement build path.
+No CI functionality or new CI lane was implemented. Local incoming-body
+concurrency, app-wide repository cardinality/rate caps and physical DB/CPU/credit
+limits are not guaranteed by the per-repository logical budgets.
 
-## Commit concurrency invariants (Pass 03)
-
-- **COMMIT-001 — Single authoritative HEAD owner:** only the repository
-  persistence authority may advance HEAD; scheduler/event code never does.
-- **COMMIT-002 — Bounded admission:** per owner, at most its configured capacity
-  of owned requests including the one active request. Implemented default 8,
-  maximum 32; no promise is allocated for a full-queue rejection.
-- **COMMIT-003 — No silent loss:** admission ring never overwrites. Diagnostic
-  eviction is independent. Cancellation explicitly settles and removes queued work.
-- **COMMIT-004 — Atomic expected-HEAD validation:** compare expected HEAD and
-  update HEAD with commit metadata in one future transaction. FIFO is insufficient;
-  transaction implementation/qualification remains deferred.
-- **COMMIT-005 — Bounded execution:** admission deadlines and abort signals bound
-  public waits on a responsive live event loop. Cancellation cannot interrupt
-  synchronous SQL or prove rollback. Noncooperative work retains its claim and
-  deadline closes admission rather than creating overlap.
-- **COMMIT-006 — No lock-held waiting:** no scheduler lock or database transaction
-  spans queue waiting, timer sleep, polling, external calls, or uploads.
-- **COMMIT-007 — Ephemeral scheduling versus durable commits:** rings are local
-  scheduling/diagnostics; persistent commits, replay results and HEAD remain
-  authority-owned. Restart can lose every in-memory acceptance and event.
-- **COMMIT-008 — Idempotent retry boundary:** pending request-ID duplicates are
-  rejected locally; durable actor/repository/key plus digest replay belongs in
-  the future atomic owner transaction, including after uncertain responses.
-
-The scheduler is an explicit instance factory, not a process-global authority.
-Pass 04 must retain exactly one instance in the canonical RepositoryRoom owner;
-this pass exposes no public scheduling endpoint or fake commit executor.
-[Commit pipeline](commit-pipeline.md) defines overflow, cancellation, deadlines,
-shutdown, exhaustion and restart semantics and the executor/clock failure model.
+References: [DeepSpace architecture](https://docs.deep.space/concepts/architecture),
+[SDK auth](https://docs.deep.space/sdk-reference/worker/auth),
+[SQLite transactions](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transactionsync),
+[Miniflare DO tests](https://developers.cloudflare.com/workers/testing/miniflare/storage/durable-objects/).
+Installed declarations are authoritative where documentation lags.

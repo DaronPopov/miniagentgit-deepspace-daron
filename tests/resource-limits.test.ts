@@ -114,3 +114,18 @@ describe('FREE-TIER-001 resource controls', () => {
     })
   })
 })
+
+it('rejects malformed wire UTF-8 and message surrogates instead of persisting changed text', async () => {
+  const body = new Uint8Array([0x22, 0xc3, 0x28, 0x22])
+  const result = await readJsonRequest(
+    new Request('https://example.test', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body,
+    }),
+  )
+  expect(result).toMatchObject({ error: { code: 'INVALID_INPUT' } })
+  expect(validateCommit({ ...request(), message: '\ud800' })).toMatchObject({
+    error: { code: 'INVALID_INPUT' },
+  })
+})

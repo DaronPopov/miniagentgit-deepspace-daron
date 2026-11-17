@@ -32,7 +32,9 @@ export function validateCommit(
   if (
     typeof value.message !== 'string' ||
     value.message.trim().length === 0 ||
-    value.message.includes('\0')
+    value.message.includes('\0') ||
+    new TextDecoder().decode(new TextEncoder().encode(value.message)) !==
+      value.message
   ) {
     return invalid('Expected nonempty commit message')
   }

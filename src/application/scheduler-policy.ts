@@ -61,11 +61,20 @@ export function copyDescriptor(
     idempotencyKey: request.idempotencyKey,
   })
 }
-export function validExecution(result: ExecutionOutcome): boolean {
-  return result?.kind === 'committed'
-    ? commitId(result.commitId).ok
-    : result?.kind === 'conflict' &&
-        (result.actualHead === null || commitId(result.actualHead).ok)
+export function copyExecution(result: ExecutionOutcome): ExecutionOutcome {
+  if (result?.kind === 'committed' && commitId(result.commitId).ok)
+    return { kind: result.kind, commitId: result.commitId }
+  if (
+    result?.kind === 'conflict' &&
+    (result.actualHead === null || commitId(result.actualHead).ok)
+  )
+    return { kind: result.kind, actualHead: result.actualHead }
+  if (
+    result?.kind === 'rejected' &&
+    ['quota', 'forbidden', 'invalid', 'not-found'].includes(result.reason)
+  )
+    return { kind: result.kind, reason: result.reason }
+  throw new Error('Invalid executor outcome')
 }
 
 export function rejectAdmission(

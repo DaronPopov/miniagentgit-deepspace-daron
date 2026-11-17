@@ -10,6 +10,13 @@ import type { RepositoryContext } from './operations'
 import type { Result } from '../domain/result'
 
 export interface PreparedCommit {
+  readonly manifestHash: string
+  readonly canonical: string
+  readonly contents: readonly {
+    readonly hash: string
+    readonly text: string
+    readonly utf8Bytes: number
+  }[]
   readonly request: CommitRequest
   readonly metadata: CommitMetadata
   readonly manifest: FileManifest

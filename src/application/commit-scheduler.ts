@@ -13,7 +13,7 @@ import {
   rejectAdmission,
   schedulerConfiguration,
   systemSchedulerClock,
-  validExecution,
+  copyExecution,
 } from './scheduler-policy'
 
 import { createOwnedRequest } from './scheduled-request'
@@ -97,16 +97,13 @@ export function createCommitScheduler(
   }
   async function run(job: OwnedRequest) {
     try {
-      const result = await execute(job.request, job.controller.signal)
+      const result = copyExecution(
+        await execute(job.request, job.controller.signal),
+      )
       if (clock.now() >= job.expiresAt) expire(job)
-      if (!validExecution(result)) throw new Error('Invalid executor outcome')
       if (!job.settled) {
-        const outcome =
-          result.kind === 'committed'
-            ? { kind: result.kind, commitId: result.commitId }
-            : { kind: result.kind, actualHead: result.actualHead }
-        event(job, outcome)
-        settle(job, outcome)
+        event(job, result)
+        settle(job, result)
       }
     } catch {
       if (!job.settled) {

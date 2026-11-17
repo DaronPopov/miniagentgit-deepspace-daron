@@ -14,6 +14,8 @@ const integrationFiles = new Set([
   'src/server/api/health.ts',
   'src/server/api/principal.ts',
   'src/server/api/request.ts',
+  'src/server/api/repositories.ts',
+  'src/server/api/repository-owner.ts',
   'src/server/deepspace/auth.ts',
   'src/server/deepspace/repository-room.ts',
 ])
