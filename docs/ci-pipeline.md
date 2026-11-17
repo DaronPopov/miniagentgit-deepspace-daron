@@ -176,3 +176,10 @@ snapshot-only relative imports as separately checkpointed stages. Existing
 routes can return schema 1 or 2 receipts depending on the historical pipeline.
 See [deterministic code analysis](ci-code-analysis.md) for the current checks
 and [durable stage semantics](ci-durable-stages.md) for checkpoint validation.
+
+## PASS 09C resource evidence
+
+The [adversarial parser qualification](ci-parser-resource-qualification.md)
+documents which ceilings apply before and after parsing. The harness and fault
+tests are local tooling. They add no production validation or fingerprint
+inputs.

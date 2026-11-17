@@ -364,3 +364,10 @@ cursor. The app validates persisted checkpoints before resuming work. ASTs
 are local to one stage and one file. The parser and import resolver accept
 committed data through the repository snapshot interface.
 See [deterministic code analysis](ci-code-analysis.md).
+
+## PASS 09C parser qualification
+
+The production Worker and five durable CI stages retain their PASS 09B
+execution boundary. The local parser harness measures generated input in
+disposable processes. It has no Worker import path.
+See [parser resource qualification](ci-parser-resource-qualification.md).

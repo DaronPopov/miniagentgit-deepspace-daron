@@ -138,3 +138,11 @@ Syntax would parse bounded JS, TS or JSON. Lint would use fixed rules without
 plugins or repository configuration. Imports would resolve relative paths inside
 the snapshot. Semantic type analysis requires separate Worker bundle, CPU and
 memory qualification. No submitted program is executed.
+
+## PASS 09C stage containment
+
+The two-second elapsed check can reject a finished stage. JavaScript timers
+cannot interrupt a synchronous parser. Local workerd verified checkpoint
+resumption and orphan expiry. See the
+[parser resource qualification](ci-parser-resource-qualification.md) for the
+limits on that evidence.

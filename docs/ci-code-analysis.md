@@ -73,3 +73,10 @@ check states. An unrun new check is `skipped`; semantic TypeScript stays
 The CI fingerprint covers the validator source graph and the parser's locked
 version and integrity. See [durable stages](ci-durable-stages.md) and
 [PASS 09B results](passes/pass09b-results.md).
+
+## PASS 09C parser qualification
+
+[Parser resource qualification](ci-parser-resource-qualification.md) measures
+adversarial inputs separately in Node and workerd. The traversal ceilings
+apply after Babel has allocated the AST. The five-stage policy and pipeline
+fingerprint remain at the PASS 09B version.
