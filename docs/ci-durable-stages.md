@@ -1,5 +1,29 @@
 # Durable CI stages
 
+PASS 09B expands the production pipeline to version 3 and receipt schema 2.
+The current validator policy is in [deterministic code analysis](ci-code-analysis.md).
+The PASS 09A descriptions below record the version 2 baseline.
+
+## PASS 09B checkpoint and continuation
+
+The repository validates every nonterminal checkpoint against its schema,
+stage ordinal, job fingerprint, generation, completed-check set, counter bounds
+and serialized size before continuing. Only successful stages can checkpoint
+and continue, so their diagnostics must be empty. An owner redispatch validates
+and atomically rebinds the checkpoint to its next generation. A malformed
+checkpoint yields a failing receipt. A concurrent result must still match the
+active generation and its original ordinal at commit time.
+
+Version 3 allows four continuations per scheduler row, each delayed by 100 ms.
+The SDK increments its attempts on every invocation; the app uses that count
+to cap continuations and still sets SDK failure attempts to one. The stage
+window and overall deadline stay at two and 30 seconds, respectively. The
+repository deadline alarm settles an orphaned job without owner polling once
+armed. Redispatch remains an authorized, bounded action. A failure before
+arming that alarm can still require owner observation or replay.
+
+## PASS 09A baseline
+
 An owner requests CI for an immutable commit through the existing commit CI
 route. With the app-private JobRoom binding present, new admissions select
 pipeline version 2, using the existing pipeline ID and receipt schema. The

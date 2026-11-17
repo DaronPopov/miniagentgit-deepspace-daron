@@ -52,7 +52,7 @@ export function admitCi(
   const reservation =
     1024 +
     limits.receiptBytes +
-    (staged && pipeline.version === 2 ? stageBounds.checkpointBytes : 0)
+    (staged && pipeline.version === 3 ? stageBounds.checkpointBytes : 0)
   for (const [resource, actual, maximum] of [
     ['ciOutstanding', numberColumn(counts, 'pending') + 1, limits.outstanding],
     ['ciStoredJobs', numberColumn(counts, 'stored') + 1, limits.storedJobs],
@@ -81,7 +81,7 @@ export function admitCi(
     staged ? now + stageBounds.elapsedMs : 0,
     reservation,
   )
-  if (staged && pipeline.version === 2)
+  if (staged && pipeline.version === 3)
     db.run('INSERT INTO ci_stages(job_id) VALUES (?)', id)
   const job = findJob(db, id)
   if (!job) throw new Error('CI acceptance not persisted')

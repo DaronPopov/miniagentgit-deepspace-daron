@@ -39,17 +39,21 @@ export interface CiJob {
   readonly code: CiCode
 }
 export interface CiDiagnostic {
-  readonly check: 'manifest' | 'source'
+  readonly check: 'manifest' | 'source' | 'syntax' | 'lint' | 'imports'
   readonly code: string
   readonly path?: string
   readonly line?: number
 }
+export type CiCheckState = 'passed' | 'failed' | 'skipped'
 export interface CiValidation {
   readonly state: 'passed' | 'failed'
   readonly code: CiCode
   readonly checks: {
-    readonly manifest: 'passed' | 'failed'
+    readonly manifest: CiCheckState
     readonly source: 'passed' | 'failed' | 'skipped'
+    readonly syntax?: CiCheckState
+    readonly lint?: CiCheckState
+    readonly imports?: CiCheckState
     readonly typescript: 'deferred'
   }
   readonly diagnostics: readonly CiDiagnostic[]
@@ -59,7 +63,7 @@ export interface CiValidation {
   readonly work: number
 }
 export interface CiReceipt extends CiValidation {
-  readonly schemaVersion: 1
+  readonly schemaVersion: 1 | 2
   readonly jobId: string
   readonly repositoryId: string
   readonly commitId: string

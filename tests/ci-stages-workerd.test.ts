@@ -1,42 +1,30 @@
 import { expect, it } from 'vitest'
-import { identityFixture } from './identity-fixture'
-import { workerFixture } from './worker-fixture'
+import { ciWorkerClient } from './ci-worker-client'
 import { creation, request } from './sqlite-fixture'
 import { objectValue } from '../src/domain/validation'
 import { stringColumn } from '../src/server/storage/database'
 
 it('runs integrity and source policy through actual JobRoom alarms', async () => {
-  const identity = await identityFixture()
-  const worker = await workerFixture(identity.env, true)
-  const headers = {
-    authorization: `Bearer ${await identity.token()}`,
-    'content-type': 'application/json',
-  }
-  async function value(path: string, body?: unknown, status = 200) {
-    const response = await worker.fetch(
-      path,
-      body === undefined
-        ? { headers }
-        : {
-            headers,
-            method: 'POST',
-            body: JSON.stringify(body),
-          },
-    )
-    const json: unknown = await response.json()
-    expect(response.status, JSON.stringify(json)).toBe(status)
-    if (!objectValue(json) || !objectValue(json.value))
-      throw new Error('Missing value')
-    return json.value
-  }
+  const { identity, worker, headers, value } = await ciWorkerClient()
   try {
     const id = stringColumn(await value('/api/repositories', creation), 'id')
     const base = `/api/repositories/${id}`
     const commit = stringColumn(
-      await value(
-        `${base}/commits`,
-        request('ci_stage_valid_1', null, 'valid\n'),
-      ),
+      await value(`${base}/commits`, {
+        ...request('ci_stage_valid_1'),
+        changes: [
+          {
+            kind: 'put',
+            path: 'src/entry.tsx',
+            text: 'import "./dep"; export const x: unknown = <b/>; throw Error("submitted");\n',
+          },
+          {
+            kind: 'put',
+            path: 'src/dep.jsx',
+            text: 'export const x = <span/>;\n',
+          },
+        ],
+      }),
       'id',
     )
     const admit = `${base}/ci/commits/${commit}`
@@ -57,19 +45,23 @@ it('runs integrity and source policy through actual JobRoom alarms', async () =>
     ).toBe(400)
     const receipt = `${base}/ci/jobs/${job}/receipt`
     let storage = await worker.storage(`repo:${id}`)
-    if (process.env.CI_VERIFY_STAGE_RESTART === '1') {
+    for (
+      let ordinal = 1;
+      process.env.CI_VERIFY_STAGE_RESTART === '1' && ordinal <= 4;
+      ordinal++
+    ) {
       await expect
         .poll(
           async () => {
             const rows = await storage.exec(
-              'SELECT sequence FROM ci_stages WHERE job_id=?',
+              'SELECT ordinal FROM ci_stages WHERE job_id=?',
               job,
             )
-            return rows[0]?.sequence
+            return rows[0]?.ordinal
           },
           { interval: 5, timeout: 5000 },
         )
-        .toBe(1)
+        .toBe(ordinal)
       await worker.restart()
       storage = await worker.storage(`repo:${id}`)
     }
@@ -77,20 +69,28 @@ it('runs integrity and source policy through actual JobRoom alarms', async () =>
       .poll(
         async () => {
           const rows = await storage.exec(
-            'SELECT sequence FROM ci_stages WHERE job_id=?',
+            'SELECT ordinal FROM ci_stages WHERE job_id=?',
             job,
           )
-          return rows[0]?.sequence
+          return rows[0]?.ordinal
         },
         { timeout: 5000 },
       )
-      .toBe(2)
+      .toBe(5)
     const result = await value(receipt)
     expect(result).toMatchObject({
       terminalState: 'passed',
       generation: 1,
-      pipeline: { version: 2 },
-      checks: { manifest: 'passed', source: 'passed', typescript: 'deferred' },
+      pipeline: { version: 3 },
+      schemaVersion: 2,
+      checks: {
+        manifest: 'passed',
+        source: 'passed',
+        syntax: 'passed',
+        lint: 'passed',
+        imports: 'passed',
+        typescript: 'deferred',
+      },
     })
     expect((await value(admit, {}, 202)).id).toBe(job)
     expect(await value(`${base}/head`)).toEqual({
@@ -155,10 +155,10 @@ it('runs integrity and source policy through actual JobRoom alarms', async () =>
         async () =>
           (
             await latest.exec(
-              'SELECT sequence FROM ci_stages WHERE job_id=?',
+              'SELECT ordinal FROM ci_stages WHERE job_id=?',
               badJob,
             )
-          )[0]?.sequence,
+          )[0]?.ordinal,
       )
       .toBe(2)
     expect(await value(badReceipt)).toMatchObject({

@@ -1,3 +1,4 @@
+import { readCheckpoint } from '../../../application/ci/checkpoint'
 import type {
   CiCode,
   CiJob,
@@ -22,6 +23,30 @@ export function writeTerminal(
   limits: CiLimits,
   validation?: CiValidation,
 ): CiJob {
+  if (
+    !validation &&
+    job.pipeline.version === 3 &&
+    (state === 'expired' || state === 'cancelled' || state === 'interrupted')
+  ) {
+    const previous = findJob(db, job.id)
+    const cursor = db.all(
+      'SELECT ordinal, checkpoint FROM ci_stages WHERE job_id=?',
+      job.id,
+    )[0]
+    if (
+      previous &&
+      typeof cursor?.ordinal === 'number' &&
+      typeof cursor.checkpoint === 'string'
+    ) {
+      const prior = readCheckpoint(
+        cursor.checkpoint,
+        previous,
+        cursor.ordinal,
+        limits,
+      )
+      if (prior) validation = { ...prior, state: 'failed', code }
+    }
+  }
   const receipt = ciReceipt(job, state, code, now, limits, validation)
   db.run(
     'UPDATE ci_jobs SET state=?, code=?, generation=?, updated_ms=? WHERE id=?',

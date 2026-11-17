@@ -14,8 +14,16 @@ export function ciReceipt(
   code: CiCode,
   now: number,
   limits: CiLimits,
-  validation = failedValidation(code),
+  validation?: CiValidation,
 ): CiReceipt {
+  const expanded = job.pipeline.version === 3
+  const baseline = (reason: CiCode): CiValidation => {
+    const failed = failedValidation(reason)
+    return expanded
+      ? { ...failed, checks: { ...failed.checks, manifest: 'skipped' } }
+      : failed
+  }
+  validation ??= baseline(code)
   const validPass =
     validation.code === 'none' &&
     [validation.files, validation.bytes, validation.work].every(
@@ -27,15 +35,29 @@ export function ciReceipt(
     validation.state === 'passed' &&
     validation.checks.manifest === 'passed' &&
     validation.checks.source === 'passed' &&
+    (!expanded ||
+      (validation.checks.syntax === 'passed' &&
+        validation.checks.lint === 'passed' &&
+        validation.checks.imports === 'passed')) &&
     validation.diagnostics.length === 0 &&
     !validation.truncated
   const safe: CiValidation =
     state === 'passed' && !validPass
       ? failedValidation('validator_exception')
       : validation
+  const checks = (value: CiValidation): CiValidation['checks'] =>
+    expanded
+      ? {
+          syntax: 'skipped',
+          lint: 'skipped',
+          imports: 'skipped',
+          ...value.checks,
+        }
+      : value.checks
   const result: CiReceipt = {
     ...safe,
-    schemaVersion: 1,
+    checks: checks(safe),
+    schemaVersion: expanded ? 2 : 1,
     jobId: job.id,
     repositoryId: job.repositoryId,
     commitId: job.commitId,
@@ -54,6 +76,7 @@ export function ciReceipt(
     return {
       ...result,
       ...failedValidation('output_limit'),
+      checks: checks(failedValidation('output_limit')),
       terminalState: 'failed',
     }
   }

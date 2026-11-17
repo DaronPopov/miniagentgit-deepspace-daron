@@ -1,6 +1,10 @@
 import { JobRoom } from 'deepspace/worker'
 import type { Job, JobContext } from 'deepspace/worker'
-import { stageBounds, validDispatch } from '../../application/ci/stages'
+import {
+  ciStages,
+  stageBounds,
+  validDispatch,
+} from '../../application/ci/stages'
 import { objectValue } from '../../domain/validation'
 import { repositoryOwnerName } from '../../domain/ownership'
 import type { RepositoryRoom } from './repository-room'
@@ -56,9 +60,13 @@ export class AppJobRoom extends JobRoom<JobEnvironment> {
     const namespace = this.env.REPOSITORY_ROOMS
     const owner = namespace.get(namespace.idFromName(name.value))
     const result = await owner.executeCiStage(job.payload)
-    if (result === 'continue' && !ctx.signal.aborted && job.attempts === 1)
+    if (
+      result === 'continue' &&
+      !ctx.signal.aborted &&
+      job.attempts < ciStages.length
+    )
       ctx.continue(
-        { next: 'source-policy' },
+        { invocation: job.attempts },
         { afterMs: stageBounds.continuationMs },
       )
   }

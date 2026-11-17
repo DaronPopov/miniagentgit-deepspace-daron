@@ -1,3 +1,7 @@
+import {
+  encodeCheckpoint,
+  readCheckpoint,
+} from '../../../application/ci/checkpoint'
 import type { CiDispatch } from '../../../application/ci/stages'
 import { dispatchFor, stageBounds } from '../../../application/ci/stages'
 import { ciLimits } from '../../../application/ci/limits'
@@ -15,13 +19,11 @@ export function reserveDispatch(
 ): CiDispatch | undefined {
   return db.transaction(() => {
     const job = findJob(db, id)
-    if (
-      !job ||
-      terminal(job) ||
-      job.pipeline.version !== 2 ||
-      !db.all('SELECT job_id FROM ci_stages WHERE job_id=?', id)[0]
-    )
-      return
+    const cursor = db.all(
+      'SELECT ordinal, checkpoint FROM ci_stages WHERE job_id=?',
+      id,
+    )[0]
+    if (!job || terminal(job) || job.pipeline.version !== 3 || !cursor) return
     const deadline = job.createdAt + stageBounds.elapsedMs
     if (now >= deadline) {
       writeTerminal(
@@ -40,6 +42,18 @@ export function reserveDispatch(
         now - job.updatedAt < stageBounds.dispatchLeaseMs)
     )
       return
+    const ordinal = cursor.ordinal
+    const prior =
+      typeof ordinal === 'number' && typeof cursor.checkpoint === 'string'
+        ? readCheckpoint(cursor.checkpoint, job, ordinal, limits)
+        : undefined
+    if (
+      typeof ordinal !== 'number' ||
+      (ordinal === 0 ? cursor.checkpoint !== '' : !prior)
+    ) {
+      writeTerminal(db, job, 'failed', 'validator_exception', now, limits)
+      return
+    }
     db.run(
       "UPDATE ci_jobs SET state='running', attempts=attempts+1, generation=generation+1, deadline_ms=?, updated_ms=? WHERE id=?",
       deadline,
@@ -48,6 +62,12 @@ export function reserveDispatch(
     )
     const claimed = findJob(db, id)
     if (!claimed) throw new Error('Missing reserved dispatch')
+    if (prior)
+      db.run(
+        'UPDATE ci_stages SET checkpoint=? WHERE job_id=?',
+        encodeCheckpoint(claimed, ordinal, prior),
+        id,
+      )
     return dispatchFor(claimed)
   })
 }

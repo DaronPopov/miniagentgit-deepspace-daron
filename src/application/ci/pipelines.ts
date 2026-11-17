@@ -10,7 +10,7 @@ export async function ciPipeline(
   limits: CiLimits,
   staged = false,
 ): Promise<CiPipeline> {
-  const definition = { ...CI_PIPELINES[0], version: staged ? 2 : 1 }
+  const definition = { ...CI_PIPELINES[0], version: staged ? 3 : 1 }
   return Object.freeze({
     ...definition,
     fingerprint: await sha256(

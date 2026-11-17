@@ -47,6 +47,14 @@ export function expectedCiFingerprint() {
     }
   }
   for (const path of roots) visit(path)
+  const lock = JSON.parse(
+    readFileSync(resolve(root, 'package-lock.json'), 'utf8'),
+  )
+  const parser = lock.packages['node_modules/@babel/parser']
+  files.set(
+    '@babel/parser lock',
+    JSON.stringify([parser.version, parser.integrity]),
+  )
   const hash = createHash('sha256').update('miniagentgit-ci-source-v1\0')
   for (const [path, source] of [...files].sort(([a], [b]) =>
     a < b ? -1 : a > b ? 1 : 0,

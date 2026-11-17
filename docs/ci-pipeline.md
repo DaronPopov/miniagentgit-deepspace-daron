@@ -168,3 +168,11 @@ the gated production Vite bundle or a provider compressed-size measurement.
 dispatch, checkpoint and deadline rules. The sections above document the PASS 05
 executor and receipt compatibility. The existing HTTP routes serve both
 execution paths.
+
+## PASS 09B deterministic analysis
+
+With the JobRoom binding, pipeline version 3 adds syntax, fixed AST lint and
+snapshot-only relative imports as separately checkpointed stages. Existing
+routes can return schema 1 or 2 receipts depending on the historical pipeline.
+See [deterministic code analysis](ci-code-analysis.md) for the current checks
+and [durable stage semantics](ci-durable-stages.md) for checkpoint validation.

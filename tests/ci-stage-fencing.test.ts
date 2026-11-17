@@ -33,18 +33,30 @@ it('rolls back failed stage persistence, resumes after a lost continuation, and 
       "CREATE TRIGGER fail_checkpoint BEFORE UPDATE ON ci_stages BEGIN SELECT RAISE(ABORT,'injected'); END",
     )
     await expect(run()).rejects.toThrow('injected')
-    expect(f.cursor()?.sequence).toBe(0)
+    expect(f.cursor()?.ordinal).toBe(0)
     f.db.run('DROP TRIGGER fail_checkpoint')
-    expect(await run()).toBe('continue')
+    expect((await Promise.all([run(), run()])).sort()).toEqual([
+      'continue',
+      'stale',
+    ])
     const checkpoint = f.cursor()
-    expect(checkpoint?.sequence).toBe(1)
+    expect(checkpoint?.ordinal).toBe(1)
     expect(reserveDispatch(f.db, f.id, f.now())).toBeUndefined()
     f.advance(stageBounds.dispatchLeaseMs)
     const second = f.dispatch()
     expect(second.generation).toBe(2)
+    const rebound = f.cursor()
+    expect(rebound?.ordinal).toBe(checkpoint?.ordinal)
+    expect(String(rebound?.checkpoint)).toBe(
+      String(checkpoint?.checkpoint).replace(
+        '"generation":1',
+        '"generation":2',
+      ),
+    )
     expect(await run()).toBe('stale')
-    expect(f.cursor()).toEqual(checkpoint)
+    expect(f.cursor()).toEqual(rebound)
     expect(reserveDispatch(f.db, f.id, f.now())).toBeUndefined()
+    for (let n = 0; n < 3; n++) expect(await run(second)).toBe('continue')
     expect(await run(second)).toBe('done')
     const receipt = f.read()
     const job = unwrap(f.store.get(f.context, f.id))
@@ -53,7 +65,12 @@ it('rolls back failed stage persistence, resumes after a lost continuation, and 
       f.limits,
       new AbortController().signal,
     )
-    expect(receipt).toMatchObject(legacy)
+    expect(receipt).toMatchObject({
+      files: legacy.files,
+      bytes: legacy.bytes,
+      checks: legacy.checks,
+    })
+    expect(receipt.work).toBeGreaterThanOrEqual(legacy.work)
     expect(await run(second)).toBe('stale')
     expect(f.read()).toEqual(receipt)
     expect(f.db.all('SELECT * FROM ci_receipts')).toHaveLength(1)
@@ -62,20 +79,20 @@ it('rolls back failed stage persistence, resumes after a lost continuation, and 
   }
 })
 
-it.each([0, 1, 2])(
+it.each([0, 1, 2, 3, 4, 5])(
   'preserves cancellation at stage boundary %i',
   async (boundary) => {
     const f = await setup()
     try {
       const dispatch = f.dispatch()
-      if (boundary >= 1)
-        expect(await runStage(f.db, dispatch, f.now)).toBe('continue')
-      if (boundary >= 2)
-        expect(await runStage(f.db, dispatch, f.now)).toBe('done')
+      for (let index = 0; index < boundary; index++)
+        expect(await runStage(f.db, dispatch, f.now)).toBe(
+          index === 4 ? 'done' : 'continue',
+        )
       unwrap(f.store.stop(f.context, f.id, 'cancelled'))
       const receipt = f.read()
       expect(receipt.terminalState).toBe(
-        boundary === 2 ? 'passed' : 'cancelled',
+        boundary === 5 ? 'passed' : 'cancelled',
       )
       const cursor = f.cursor()
       expect(await runStage(f.db, dispatch, f.now)).toBe('stale')
@@ -139,6 +156,24 @@ it('fails corrupt integrity without advancing to source policy', async () => {
       terminalState: 'failed',
       code: 'integrity_failed',
       checks: { manifest: 'failed', source: 'skipped', typescript: 'deferred' },
+    })
+  } finally {
+    await f.dispose()
+  }
+})
+
+it('rejects corrupt checkpoint data before resuming validation', async () => {
+  const f = await setup()
+  try {
+    const dispatch = f.dispatch()
+    expect(await runStage(f.db, dispatch, f.now)).toBe('continue')
+    f.db.run(
+      'UPDATE ci_stages SET checkpoint=json_set(checkpoint, \'$.result.diagnostics\', json(\'[{"code":"unknown"}]\'))',
+    )
+    expect(await runStage(f.db, dispatch, f.now)).toBe('stale')
+    expect(f.read()).toMatchObject({
+      terminalState: 'failed',
+      code: 'validator_exception',
     })
   } finally {
     await f.dispose()

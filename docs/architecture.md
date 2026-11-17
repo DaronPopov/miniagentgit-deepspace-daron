@@ -356,3 +356,11 @@ AppJobRoom schedules a fixed internal executor through its app-private
 namespace and calls RepositoryRoom over binding-only RPC. The original HTTP
 authority and scoped agent HEAD route keep their separate authentication rules.
 See [durable CI stages](ci-durable-stages.md) for the lifecycle and migration.
+
+## PASS 09B code analysis
+
+The canonical CI authority adds three fixed analysis stages to its durable
+cursor. The app validates persisted checkpoints before resuming work. ASTs
+are local to one stage and one file. The parser and import resolver accept
+committed data through the repository snapshot interface.
+See [deterministic code analysis](ci-code-analysis.md).

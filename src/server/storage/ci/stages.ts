@@ -1,19 +1,19 @@
+import {
+  encodeCheckpoint,
+  readCheckpoint,
+} from '../../../application/ci/checkpoint'
+import { analyzeSnapshot } from '../../../application/ci/analysis'
 import type { CiJob, CiValidation } from '../../../contracts/ci'
 import { ciPipeline } from '../../../application/ci/pipelines'
 import { ciLimits } from '../../../application/ci/limits'
-import { stageBounds } from '../../../application/ci/stages'
-import type {
-  CiDispatch,
-  CiStage,
-  StageReply,
-} from '../../../application/ci/stages'
+import { ciStages, stageBounds } from '../../../application/ci/stages'
+import type { CiDispatch, StageReply } from '../../../application/ci/stages'
 import {
   failedValidation,
   validateIntegrity,
   validateSource,
 } from '../../../application/ci/validation'
 import type { Database } from '../database'
-import { numberColumn, stringColumn } from '../database'
 import { loadCiSnapshot } from './snapshot'
 import { findJob, writeTerminal } from './writes'
 import { nextGeneration } from './rows'
@@ -28,7 +28,7 @@ function matches(job: CiJob | undefined, dispatch: CiDispatch): job is CiJob {
     job.repositoryId === dispatch.repositoryId &&
     job.commitId === dispatch.commitId &&
     job.pipeline.fingerprint === dispatch.pipelineFingerprint &&
-    job.pipeline.version === 2
+    (job.pipeline.version === 2 || job.pipeline.version === 3)
   )
 }
 
@@ -42,7 +42,10 @@ export async function runStage(
   const input = db.transaction(() => {
     const job = findJob(db, dispatch.ciJobId)
     if (!matches(job, dispatch)) return
-    if (job.pipeline.fingerprint !== pipeline.fingerprint) {
+    if (
+      job.pipeline.version !== pipeline.version ||
+      job.pipeline.fingerprint !== pipeline.fingerprint
+    ) {
       writeTerminal(
         db,
         { ...job, generation: nextGeneration(job) },
@@ -65,16 +68,25 @@ export async function runStage(
       return
     }
     const cursor = db.all('SELECT * FROM ci_stages WHERE job_id=?', job.id)[0]
-    if (!cursor) throw new Error('Missing CI stage cursor')
-    const sequence = numberColumn(cursor, 'sequence')
-    if (sequence !== 0 && sequence !== 1)
-      throw new Error('Invalid CI stage cursor')
-    return {
-      sequence,
-      stage: (sequence === 0 ? 'integrity' : 'source-policy') satisfies CiStage,
-      prior: stringColumn(cursor, 'checkpoint'),
-      snapshot: loadCiSnapshot(db, job, limits),
+    const ordinal = cursor?.ordinal
+    const stage =
+      typeof ordinal === 'number' && Number.isInteger(ordinal)
+        ? ciStages[ordinal]
+        : undefined
+    const raw = cursor?.checkpoint
+    const prior =
+      typeof raw === 'string' && typeof ordinal === 'number'
+        ? readCheckpoint(raw, job, ordinal, limits)
+        : undefined
+    if (
+      typeof ordinal !== 'number' ||
+      !stage ||
+      (ordinal === 0 ? raw !== '' : !prior)
+    ) {
+      writeTerminal(db, job, 'failed', 'validator_exception', now(), limits)
+      return
     }
+    return { ordinal, stage, prior, snapshot: loadCiSnapshot(db, job, limits) }
   })
   if (!input) return 'stale'
   const controller = new AbortController()
@@ -93,14 +105,22 @@ export async function runStage(
         limits,
         controller.signal,
       )
-    } else {
-      // Only the successful fixed integrity stage writes this local SQL value.
-      const prior = JSON.parse(input.prior) as CiValidation
+    } else if (!input.prior) {
+      validation = failedValidation('validator_exception')
+    } else if (input.stage === 'source-policy') {
       validation = validateSource(
         input.snapshot.value,
         limits,
         controller.signal,
-        prior,
+        input.prior,
+      )
+    } else {
+      validation = analyzeSnapshot(
+        input.stage,
+        input.snapshot.value,
+        limits,
+        input.prior,
+        controller.signal,
       )
     }
   } catch {
@@ -112,11 +132,10 @@ export async function runStage(
     const job = findJob(db, dispatch.ciJobId)
     if (!matches(job, dispatch)) return 'stale'
     const cursor = db.all(
-      'SELECT sequence FROM ci_stages WHERE job_id=?',
+      'SELECT ordinal FROM ci_stages WHERE job_id=?',
       job.id,
     )[0]
-    if (!cursor || numberColumn(cursor, 'sequence') !== input.sequence)
-      return 'stale'
+    if (!cursor || cursor.ordinal !== input.ordinal) return 'stale'
     const completed = now()
     if (
       completed >= job.deadline ||
@@ -133,18 +152,19 @@ export async function runStage(
       )
       return 'done'
     }
-    const continuing = input.sequence === 0 && validation.state === 'passed'
+    const next = input.ordinal + 1
+    const continuing = next < ciStages.length && validation.state === 'passed'
+    const checkpoint = continuing
+      ? encodeCheckpoint(job, next, validation)
+      : JSON.stringify(validation)
     db.run(
-      `UPDATE ci_stages SET sequence=?, completed_ms=?, checkpoint=?,
-        integrity_ms=COALESCE(integrity_ms,?),
-        integrity_duration_ms=COALESCE(integrity_duration_ms,?),
-        source_duration_ms=? WHERE job_id=?`,
-      continuing ? 1 : 2,
+      `UPDATE ci_stages SET ordinal=?, completed_ms=?, checkpoint=?,
+        stage_timings=json_set(stage_timings, ?, ?) WHERE job_id=?`,
+      next,
       completed,
-      JSON.stringify(validation),
-      input.sequence === 0 ? completed : null,
-      input.sequence === 0 ? completed - start : null,
-      input.sequence === 1 ? completed - start : null,
+      checkpoint,
+      '$.' + input.stage,
+      completed - start,
       job.id,
     )
     if (continuing) return 'continue'

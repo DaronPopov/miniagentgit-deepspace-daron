@@ -285,3 +285,11 @@ and a repository-local deadline alarm. No periodic cross-repository scan runs.
 The stage path may read a bounded snapshot twice. See
 [durable CI stages](ci-durable-stages.md) for deadline and accounting details
 and [PASS 09A results](passes/pass09a-results.md) for local evidence.
+
+## PASS 09B analysis budget
+
+Version 3 permits four continuations and five stage RPCs for a successful run.
+The job and retention limits, 4 KiB serialized checkpoint cap, 512 KiB logical
+work ceiling and 30-second deadline stay fixed. Analysis adds parser-input,
+AST-depth, node and import-count caps. See [analysis bounds](ci-code-analysis.md)
+and [local measurements](passes/pass09b-results.md).

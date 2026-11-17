@@ -26,6 +26,7 @@
     "check:ci-fingerprint": "node scripts/ci-fingerprint.mjs --check"
   },
   "dependencies": {
+    "@babel/parser": "7.29.14",
     "deepspace": "0.44.2",
     "hono": "^4.13.7",
     "lucide-react": "1.74.0",

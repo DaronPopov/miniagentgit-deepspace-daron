@@ -1,3 +1,4 @@
+import { interruptLegacyStages } from './ci/legacy-stages'
 import { initializeCiSchema } from './ci/schema'
 import type { Database } from './database'
 import { numberColumn } from './database'
@@ -18,7 +19,7 @@ export function initializeDatabase(db: Database) {
         : version
           ? numberColumn(version, 'version')
           : 0
-    if (current > 4) throw new Error('Unsupported repository schema')
+    if (current > 5) throw new Error('Unsupported repository schema')
     for (const statement of REPOSITORY_SCHEMA) db.run(statement)
     if (current < 2) {
       db.run(
@@ -67,6 +68,16 @@ export function initializeDatabase(db: Database) {
           EXISTS (SELECT 1 FROM ci_stages WHERE job_id=OLD.id))
       ) BEGIN SELECT RAISE(ABORT,'invalid CI transition'); END`)
       db.run('INSERT INTO repository_migrations(version) VALUES (4)')
+    }
+    if (current < 5) {
+      db.run(
+        'ALTER TABLE ci_stages ADD COLUMN ordinal INTEGER NOT NULL DEFAULT 0 CHECK(ordinal BETWEEN 0 AND 5)',
+      )
+      db.run(
+        "ALTER TABLE ci_stages ADD COLUMN stage_timings TEXT NOT NULL DEFAULT '{}' CHECK(json_valid(stage_timings) AND length(stage_timings) <= 256)",
+      )
+      interruptLegacyStages(db)
+      db.run('INSERT INTO repository_migrations(version) VALUES (5)')
     }
   })
 }

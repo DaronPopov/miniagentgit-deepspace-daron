@@ -9,7 +9,15 @@ export const stageBounds = Object.freeze({
   continuationMs: 100,
   checkpointBytes: 4096,
 })
-export type CiStage = 'integrity' | 'source-policy'
+export const ciStages = [
+  'integrity',
+  'source-policy',
+  'syntax',
+  'lint',
+  'imports',
+] as const
+export type CiStage = (typeof ciStages)[number]
+export type AnalysisStage = Extract<CiStage, 'syntax' | 'lint' | 'imports'>
 export type StageReply = 'continue' | 'done' | 'stale'
 export interface CiDispatch {
   readonly repositoryId: string
