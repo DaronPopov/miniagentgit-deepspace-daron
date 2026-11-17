@@ -1,10 +1,14 @@
 # MiniAgentGit
 
 A small cloud-native, headless version control service for AI coding agents.
-Pass 05 includes repository creation, immutable UTF-8 snapshots, atomic SQLite
-HEAD updates, durable idempotency, owner-only HTTP, and asynchronous fixed CI. Local
-workerd tests exercise the real server and SQLite-backed Durable Objects with
-controlled signing keys. Hosted authentication/deployment remains unverified.
+The service includes repository creation, immutable UTF-8 snapshots, atomic
+SQLite HEAD updates, durable idempotency, owner-only HTTP and asynchronous fixed
+CI. The public homepage prioritizes agent connection instructions. HTTP is
+implemented; direct Codex and Claude Code integrations are planned, not installers.
+
+**Deployment is inactive**, as reported by the owner. The earlier hosted URL must
+not be treated as a running service. HTTP setup requires a running application
+and a supported API credential. No MCP server or MiniAgentGit CLI is published.
 
 See [API](docs/api.md), [architecture](docs/architecture.md),
 [free-tier budget](docs/free-tier-budget.md), and
@@ -22,10 +26,11 @@ npm run dev -- --host 127.0.0.1
 ```
 
 The official dev command requires a DeepSpace session and registered app.
-`wrangler.toml` intentionally retains `__APP_ID__`: no account was registered
-for this pass. When an owner explicitly chooses to register, first run
-`npx deepspace auth whoami`, then `npx deepspace app init --json`, and commit
-the server-minted app id. Consult the official installation guide first.
+The existing assigned app ID remains stable in `wrangler.toml`; do not register
+another application. `npm run build` compiles locally without publishing. Ordinary
+validation does not authorize cloud calls, registration or deployment. The local
+browser smoke below serves only the built static client on loopback.
+
 Do not deploy or run `deepspace push` as an installation step.
 
 The static shell lives at `/`; `GET /api/health` reports stateless liveness.
@@ -87,10 +92,23 @@ and compatible Bearer JWT; CLI developer login is not that credential. See
 
 `/dashboard` contains the route-scoped DeepSpace authentication boundary only;
 it does not load repositories or CI data. `/` and `/docs` remain public.
-The registered application is live at
-https://miniagentgit-deepspace-daron.app.space. PASS 06F wires the managed auth
+The previously deployed application is currently inactive. PASS 06F wired the managed auth
 bridge and verifies existing-session Bearer identity, repository and CI APIs.
 Fresh interactive provider login/sign-out qualification is tracked separately
 in the PASS 06F report. See
 [authentication architecture](docs/authentication-architecture.md) and
 [PASS 06D evidence](docs/passes/pass06d-results.md). Do not register another app or deploy as part of ordinary local validation.
+
+### Agent onboarding UI
+
+The homepage offers OpenAI Codex, Claude Code and HTTP API choices. Only HTTP
+shows example commands, with an explicit deployment prerequisite. Both Windows
+PowerShell and curl.exe-in-PowerShell examples reuse the public `/docs` generator;
+copying never obtains credentials or calls the API. Detailed repository/commit/CI
+examples remain under `/docs`.
+
+After `npm run build`, run `node scripts/smoke-agent-onboarding.mjs` for the local
+Chrome light/dark and responsive interaction matrix. It uses the installed Chrome
+binary (`CHROME_BINARY` may override its path), no browser package, no backend and
+no hosted application. It stops its server/browser and removes its temporary
+profile. [PASS 06H evidence](docs/passes/pass06h-results.md) records the results.

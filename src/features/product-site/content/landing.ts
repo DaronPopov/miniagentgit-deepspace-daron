@@ -22,7 +22,7 @@ export const hero = {
   title: 'Version control built for coding agents.',
   description:
     'Immutable repository snapshots, conflict-safe commits, and bounded asynchronous CI in one lightweight service.',
-  primary: 'Explore the architecture',
+  primary: 'Connect your coding agent',
   secondary: 'Read the API',
   scope: 'Text-only snapshots. Headless HTTP API.',
   asideTitle: 'One repository. One HEAD authority.',

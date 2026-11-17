@@ -60,7 +60,7 @@ export const guideSections = [
     id: 'availability',
     title: 'Availability and boundaries',
     paragraphs: [
-      'Repository and CI behavior is verified locally with SQLite-backed workerd Durable Objects and controlled test identities. Hosted user authentication, the real token audience, live deployment and provider runtime quotas are not yet qualified. These examples are contracts, not a claim that a hosted endpoint is available.',
+      'The HTTP repository and CI workflow was previously tested on a hosted application, which is now undeployed. Deploy or select a running application before using these examples. Hosted user authentication through a fresh browser sign-in and provider runtime quotas still require qualification.',
       'Use a service origin supplied by the operator for BASE_URL, without a trailing slash. Replace BEARER_JWT in your terminal with a compatible credential. Repository, commit and job IDs come from actual responses; no public test credentials are supplied here.',
       'This API does not implement Git wire compatibility, branches, merges, arbitrary binaries or MCP. CI does not run package installation, scripts, ESLint, tests or TypeScript type checking; syntax parsing is not provided.',
     ],

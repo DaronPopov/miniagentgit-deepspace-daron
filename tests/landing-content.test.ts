@@ -51,7 +51,7 @@ it('uses real documentation links and in-page anchors without protected API navi
     'https://github.com/DaronPopov/miniagentgit-deepspace-daron',
   )
   expect(html).not.toMatch(
-    /href="\/(api|dashboard|login|auth)\b|<button|<form|target="_blank"/,
+    /href="\/(api|dashboard|login|auth)\b|<form|target="_blank"/,
   )
 })
 it('does not fabricate live data, advertise unavailable execution, or require hosted configuration', () => {
@@ -61,7 +61,7 @@ it('does not fabricate live data, advertise unavailable execution, or require ho
     const html = renderToStaticMarkup(createElement(Home))
     expect(html).toContain('Commit lifecycle')
     expect(html).not.toMatch(
-      /take.home|deliberately bounded|deliberately scoped|versioned|pipeline fingerprints|upcoming|unverified|locally verified|local evidence|free.tier|PASS 0|app ID|not implemented|deferred/i,
+      /take.home|deliberately bounded|deliberately scoped|versioned|pipeline fingerprints|upcoming|unverified|locally verified|local evidence|free.tier|PASS 0|app ID/i,
     )
     expect(html).not.toContain('id="philosophy"')
     expect(html).not.toContain('verification-title')
@@ -69,7 +69,7 @@ it('does not fabricate live data, advertise unavailable execution, or require ho
       /repo_[a-z0-9]{16,32}|ci_[a-f0-9]{64}|[a-f0-9]{64}|100% uptime|production.ready|npm install|npm test|hosted runner|container execution|Try live|Sign in/,
     )
     expect(html).not.toMatch(
-      /<input|<script|data-repository|data-commit|data-ci-job/,
+      /<input[^>]+type="(?:password|text)"|<script|data-repository|data-commit|data-ci-job/,
     )
   } finally {
     vi.unstubAllEnvs()

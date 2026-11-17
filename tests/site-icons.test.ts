@@ -92,9 +92,12 @@ it('enhances each major component without removing visible labels or changing se
   const actualSections = [...html.matchAll(/<section[^>]*\bid="([^"]+)"/g)].map(
     (match) => match[1],
   )
-  expect(actualSections).toEqual(
-    Object.values(sections).map((section) => section.id),
-  )
+  expect(actualSections).toEqual([
+    'connect',
+    ...Object.values(sections).flatMap((section) =>
+      section.id === 'documentation' ? ['security', section.id] : [section.id],
+    ),
+  ])
 })
 it('allows Lucide only through static named imports in the dedicated icon boundary', () => {
   const path = 'src/features/product-site/components/site-icon.tsx'

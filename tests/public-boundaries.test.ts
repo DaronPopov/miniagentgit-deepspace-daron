@@ -10,7 +10,8 @@ it('restricts public dependencies to React, internal presentation and the narrow
     .filter(
       (path) =>
         (path.startsWith('src/features/product-site/') ||
-          path.startsWith('src/features/onboarding/')) &&
+          path.startsWith('src/features/onboarding/') ||
+          path.startsWith('src/features/agent-onboarding/')) &&
         /\.tsx?$/.test(path),
     )
   expect(files.length).toBeGreaterThan(5)
@@ -48,8 +49,8 @@ it('keeps the public route as thin feature composition and the browser entry pro
     true,
     ts.ScriptKind.TSX,
   )
-  expect(syntax.statements).toHaveLength(2)
-  const component = syntax.statements[1]
+  expect(syntax.statements).toHaveLength(3)
+  const component = syntax.statements[2]
   expect(
     component &&
       ts.isFunctionDeclaration(component) &&

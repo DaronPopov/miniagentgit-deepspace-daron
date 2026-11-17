@@ -309,3 +309,17 @@ immutable commit/replay and CI receipt. Prior unregistered/local-only statements
 are historical; see [PASS 06F evidence](passes/pass06f-results.md) for exact hosted
 qualification limits. Interactive OAuth and multi-user hosted evidence remain
 separate from local isolation tests.
+
+## PASS 06H: static agent connection flow
+
+The owner has undeployed the app; previous hosted evidence is historical and the
+old URL is not treated as active. No registration, deployment or cloud probe runs
+in this pass. The registered app ID and backend authority are unchanged.
+
+The public route composes an independent agent-onboarding feature below the hero
+via an explicit layout slot. HTTP requires deployment/configuration; Codex and
+Claude Code remain planned with no install commands. The feature reuses only
+existing command descriptors/generation and CodePanel, never the documentation
+route. Native local selection state causes no network traffic. See
+[product-site contracts](product-site.md) for AGENT-UI-001–010 and the narrow
+import direction; [PASS 06H results](passes/pass06h-results.md) records evidence.

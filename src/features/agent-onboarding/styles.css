@@ -1,0 +1,110 @@
+.agent-onboarding {
+  margin-block: var(--site-space-4) var(--site-space-12);
+  border-block-start: 3px solid var(--site-accent);
+}
+.agent-selector,
+.agent-shell {
+  border: 0;
+  padding: 0;
+  margin: var(--site-space-6) 0;
+  min-inline-size: 0;
+}
+.agent-selector legend,
+.agent-shell legend {
+  font-weight: 600;
+  margin-block-end: var(--site-space-3);
+}
+.agent-options {
+  display: grid;
+  gap: var(--site-space-3);
+}
+.agent-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--site-space-3);
+  padding: var(--site-space-4);
+  border: 1px solid var(--site-border);
+  border-radius: var(--site-radius);
+  background: var(--site-surface);
+  cursor: pointer;
+  min-inline-size: 0;
+}
+.agent-option[data-selected='true'] {
+  border-color: var(--site-accent);
+  box-shadow: inset 0 0 0 1px var(--site-accent);
+}
+.agent-option input,
+.agent-shell input {
+  accent-color: var(--site-accent);
+  flex-shrink: 0;
+  margin-block-start: 0.4rem;
+}
+.agent-option:focus-within {
+  outline: 3px solid var(--site-focus);
+  outline-offset: 4px;
+}
+.agent-option-status {
+  display: block;
+  color: var(--site-muted);
+  font-size: var(--site-text-small);
+  margin-block-start: var(--site-space-2);
+}
+.agent-panel {
+  padding: var(--site-space-6);
+  border: 1px solid var(--site-border);
+  border-radius: var(--site-radius);
+  background: var(--site-surface);
+  min-inline-size: 0;
+}
+.agent-panel-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--site-space-4);
+  justify-content: space-between;
+  margin-block-end: var(--site-space-4);
+}
+.agent-panel h3,
+.agent-panel h4 {
+  margin: 0 0 var(--site-space-2);
+}
+.agent-badge {
+  color: var(--site-accent);
+  font: var(--site-text-small) var(--site-font-code);
+}
+.agent-availability {
+  border-inline-start: 3px solid var(--site-accent);
+  padding-inline-start: var(--site-space-4);
+}
+.agent-panel ul,
+.agent-steps {
+  padding-inline-start: var(--site-space-6);
+  margin-block: var(--site-space-4) var(--site-space-6);
+}
+.agent-steps {
+  display: grid;
+  gap: var(--site-space-4) var(--site-space-8);
+}
+.agent-steps p {
+  margin: 0;
+  color: var(--site-muted);
+  font-size: var(--site-text-small);
+}
+.agent-shell label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--site-space-2);
+  min-block-size: 2.75rem;
+  margin-inline-end: var(--site-space-6);
+}
+.agent-panel .site-button {
+  text-align: center;
+}
+@media (min-width: 40rem) {
+  .agent-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .agent-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

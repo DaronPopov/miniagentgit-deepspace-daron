@@ -1,3 +1,5 @@
+import { securitySection, securityNotes } from '../content/security'
+import type { ReactNode } from 'react'
 import { HeaderShell } from './header-shell'
 import { SiteContainer } from './site-container'
 import { SiteSection } from './site-section'
@@ -13,7 +15,11 @@ import { DocumentationLinks } from './documentation-links'
 import { SiteFooter } from './site-footer'
 import { capabilities, productNavigation, sections } from '../content/landing'
 
-export function ProductFoundation() {
+export function ProductFoundation({
+  children,
+}: {
+  readonly children?: ReactNode
+}) {
   return (
     <div className="product-site">
       <a className="site-skip-link" href="#main-content">
@@ -23,6 +29,7 @@ export function ProductFoundation() {
       <main id="main-content" tabIndex={-1}>
         <SiteContainer>
           <Hero />
+          {children}
           <SiteSection metadata={sections.capabilities}>
             <FeatureGrid items={capabilities} />
           </SiteSection>
@@ -37,6 +44,9 @@ export function ProductFoundation() {
               <CommitLifecycleDiagram />
               <CiLifecycleDiagram />
             </div>
+          </SiteSection>
+          <SiteSection metadata={securitySection}>
+            <FeatureGrid items={securityNotes} />
           </SiteSection>
           <SiteSection metadata={sections.documentation}>
             <DocumentationLinks />

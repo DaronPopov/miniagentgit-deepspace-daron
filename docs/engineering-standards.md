@@ -207,3 +207,18 @@ boundary. Only its clipboard adapter may access navigator, and only for an
 explicit copy action. Copy the displayed string verbatim; never fetch/replace
 credentials or execute commands. Match actual routes/validators and label shell
 syntax accurately. All onboarding components, formatters and tests keep 185 LOC.
+
+## Agent onboarding presentation
+
+Follow AGENT-UI-001–010 in [product-site.md](product-site.md). The homepage route
+composes agent-onboarding through the product layout's explicit children slot;
+product-site and onboarding cannot import agent-onboarding or each other's route
+compositions. Agent-onboarding may use React, its own modules, SiteIcon and the
+existing narrow shared presentation primitives, type-only icon contracts, plus
+exactly onboarding CodePanel, examples/commands, examples/requests and the shell
+contract. Existing public import tests enforce these exact dependencies. Clipboard
+capability stays in the original adapter; no auth/network/effect/storage capability
+is granted to the new feature. All new modules/tests retain 185 LOC without an
+adapter exemption. Native controls own keyboard behavior; no new UI framework,
+registry or installer is introduced. Availability changes require verified
+implementation evidence rather than a selectable integration label.

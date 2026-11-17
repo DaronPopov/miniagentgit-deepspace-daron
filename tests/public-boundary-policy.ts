@@ -3,6 +3,36 @@ import ts from 'typescript'
 
 const root = 'src/features/product-site/'
 const onboarding = 'src/features/onboarding/'
+const agents = 'src/features/agent-onboarding/'
+const reusedOnboarding = new Set(
+  [
+    'components/code-panel',
+    'examples/commands',
+    'examples/requests',
+    'contracts/documentation',
+  ].map((name) => onboarding + name),
+)
+function allowedDependency(path: string, resolved: string, typeOnly: boolean) {
+  if (path === 'src/pages/index.tsx')
+    return (
+      resolved === root + 'components/product-foundation' ||
+      resolved === agents + 'agent-onboarding'
+    )
+  if (path.startsWith(agents))
+    return (
+      resolved.startsWith(agents) ||
+      shared.has(resolved) ||
+      reusedOnboarding.has(resolved) ||
+      (typeOnly && resolved === root + 'contracts/icons')
+    )
+  if (path.startsWith(onboarding) || path === 'src/pages/docs.tsx')
+    return (
+      resolved.startsWith(onboarding) ||
+      shared.has(resolved) ||
+      (typeOnly && resolved === root + 'contracts/presentation')
+    )
+  return resolved.startsWith(root)
+}
 const shared = new Set(
   ['header-shell', 'site-container', 'site-footer', 'site-icon'].map(
     (name) => root + 'components/' + name,
@@ -10,6 +40,10 @@ const shared = new Set(
 )
 const forbidden = new Set([
   'fetch',
+  'localStorage',
+  'sessionStorage',
+  'indexedDB',
+  'console',
   'XMLHttpRequest',
   'WebSocket',
   'EventSource',
@@ -56,13 +90,11 @@ export function publicViolations(
             name.text === 'lucide-react'
           ) &&
           (!name.text.startsWith('.') ||
-            !(path.startsWith(onboarding) || path === 'src/pages/docs.tsx'
-              ? resolved.startsWith(onboarding) ||
-                shared.has(resolved) ||
-                (resolved === root + 'contracts/presentation' &&
-                  ts.isImportDeclaration(node) &&
-                  node.importClause?.isTypeOnly)
-              : resolved.startsWith(root)))
+            !allowedDependency(
+              path,
+              resolved,
+              ts.isImportDeclaration(node) && !!node.importClause?.isTypeOnly,
+            ))
         )
           violations.push(`forbidden dependency: ${name.text}`)
       }

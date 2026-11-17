@@ -9,7 +9,7 @@ export function Hero() {
         <h1>{hero.title}</h1>
         <p className="site-lead">{hero.description}</p>
         <div className="site-actions">
-          <a className="site-button" href="#architecture">
+          <a className="site-button" href="#connect">
             {hero.primary}
             <SiteIcon name="next" />
           </a>
