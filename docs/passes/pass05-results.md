@@ -10,7 +10,7 @@ registration, deployment, fabricated ID or cloud-credit-consuming operation ran.
 
 - Starting SHA: `b1cfd5726cbe47837d98380b0591224075ec0498`, verified on main.
 - Starting index/worktree: clean. Prior PASS 01–04 work preserved.
-- Implementation SHA: recorded in the report update after implementation commit.
+- Implementation SHA: `dac8dd367bcf04dc57672ec27d043ac9221ab71f`.
 - Final report/delivery SHA: `git log -1 --format=%H -- docs/passes/pass05-results.md`;
   also reported to the user. A report cannot embed its own commit hash.
 
