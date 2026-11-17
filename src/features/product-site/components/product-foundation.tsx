@@ -11,13 +11,7 @@ import {
 } from './architecture-diagrams'
 import { DocumentationLinks } from './documentation-links'
 import { SiteFooter } from './site-footer'
-import {
-  capabilities,
-  philosophy,
-  productNavigation,
-  sections,
-  verification,
-} from '../content/landing'
+import { capabilities, productNavigation, sections } from '../content/landing'
 
 export function ProductFoundation() {
   return (
@@ -43,17 +37,6 @@ export function ProductFoundation() {
               <CommitLifecycleDiagram />
               <CiLifecycleDiagram />
             </div>
-          </SiteSection>
-          <SiteSection metadata={sections.philosophy}>
-            <FeatureGrid items={philosophy} />
-            <aside
-              className="site-boundary"
-              aria-labelledby="verification-title"
-            >
-              <h3 id="verification-title">{verification.title}</h3>
-              <p>{verification.description}</p>
-              <p className="site-muted">{verification.upcoming}</p>
-            </aside>
           </SiteSection>
           <SiteSection metadata={sections.documentation}>
             <DocumentationLinks />

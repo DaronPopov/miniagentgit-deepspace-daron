@@ -50,7 +50,7 @@ it('renders accessible inline SVG lifecycles with correct ordered ownership boun
   ])
   expect(diagramNotes.commit).toContain('not durable job state')
   expect(diagramNotes.ci).toContain('CI never owns HEAD')
-  expect(ciDiagram.nodes.at(-1)?.label).toContain('Dashboard upcoming')
+  expect(ciDiagram.nodes.at(-1)?.label).toBe('Agent')
 })
 it('uses unique SVG title/description/marker IDs even when diagrams are reused', () => {
   const html = renderToStaticMarkup(

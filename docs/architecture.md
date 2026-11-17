@@ -235,8 +235,7 @@ none is implemented here.
 ## PASS 06B: static public landing page
 
 The public feature now composes a hero, capability cards, commit/CI explanations,
-two inline SVG lifecycle diagrams, bounded-development philosophy, repository
-documentation links and a footer. The five-line route, root/router, tokens and
+two inline SVG lifecycle diagrams, repository documentation links and a footer. The five-line route, root/router, tokens and
 backend are unchanged. Typed copy lives in landing/workflow/diagram content;
 no repository/CI data, credential adapter or authentication provider is mounted.
 Navigation contracts additionally permit HTTPS documentation/source links.
@@ -245,16 +244,16 @@ The commit diagram identifies repository persistence as the only HEAD writer;
 the CI diagram identifies SQLite as durable job state and CI as a reader of
 immutable snapshots. Each SVG has unique React useId title/description/marker IDs
 and an accessible long description; vertical stages remain readable on phones.
-Only desktop widths place both diagrams side by side. The future dashboard node
-is explicitly labelled upcoming. No generic graph/layout dependency is introduced.
+Only desktop widths place both diagrams side by side. The CI diagram ends at the agent retrieving its result. No generic graph/layout dependency is introduced.
 
 All UI invariants remain enforced. Local Chrome smoke tests exercised the actual
 route component and CSS through a temporary browser fixture, without the SDK,
 secrets or server data. This establishes local render/focus/network behavior,
 not production Vite routing, hosted authentication or deployment. See
 [PASS 06B results](passes/pass06b-results.md) for viewport and bundle measurements.
-The page distinguishes verified local functionality, unknown hosted operation,
-and upcoming work; it advertises no Git wire protocol or arbitrary execution.
+The page describes existing product capabilities without project-scope, delivery
+status or release-version copy. Verification details and limitations remain in
+engineering documentation; no Git wire protocol or arbitrary execution is advertised.
 
 ## PASS 06B.1: bounded icon presentation
 

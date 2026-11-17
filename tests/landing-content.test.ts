@@ -10,7 +10,6 @@ import {
   productLinks,
   productNavigation,
   sections,
-  verification,
 } from '../src/features/product-site/content/landing'
 import {
   validation,
@@ -25,13 +24,9 @@ it('explains the real local capabilities, commit workflow and bounded non-execut
     expect(html).toContain(item.title)
   for (const section of Object.values(sections))
     expect(html).toContain(`id="${section.id}"`)
-  expect(html).toContain('Persistent versioned')
+  expect(html).toContain('Persistent CI')
   expect(html).toContain('durable job ID before the checks finish')
-  expect(html).toContain('Pipeline fingerprints')
   expect(html).toContain(validation.boundary)
-  expect(html).toContain(validation.recovery)
-  expect(html).toContain(verification.description)
-  expect(html).toContain(verification.upcoming)
   expect(html.match(/<footer\b/g)).toHaveLength(1)
 })
 it('uses real documentation links and in-page anchors without protected API navigation', () => {
@@ -61,10 +56,12 @@ it('does not fabricate live data, advertise unavailable execution, or require ho
   vi.stubEnv('AUTH_JWT_PUBLIC_KEY', '')
   try {
     const html = renderToStaticMarkup(createElement(Home))
-    expect(html).toContain('Conceptual commit path · no live repository data')
-    expect(html).toContain('not Git wire-protocol compatibility')
-    expect(html).toContain('MCP support are not implemented')
-    expect(html).toContain('TypeScript syntax parsing is deferred')
+    expect(html).toContain('Commit lifecycle')
+    expect(html).not.toMatch(
+      /take.home|deliberately bounded|deliberately scoped|versioned|pipeline fingerprints|upcoming|unverified|locally verified|local evidence|free.tier|PASS 0|app ID|not implemented|deferred/i,
+    )
+    expect(html).not.toContain('id="philosophy"')
+    expect(html).not.toContain('verification-title')
     expect(html).not.toMatch(
       /repo_[a-z0-9]{16,32}|ci_[a-f0-9]{64}|[a-f0-9]{64}|100% uptime|production.ready|npm install|npm test|hosted runner|container execution|Try live|Sign in/,
     )

@@ -35,7 +35,7 @@ export const validation = {
   steps: [
     'Request validation for a specific commit ID.',
     'Receive a durable job ID before the checks finish.',
-    'Retrieve status and a persistent versioned receipt.',
+    'Retrieve status and a persistent CI receipt.',
   ],
   checks: [
     {
@@ -55,19 +55,15 @@ export const validation = {
     {
       id: 'receipts',
       icon: 'commit',
-      title: 'Versioned outcomes',
+      title: 'Persistent results',
       description:
-        'Pipeline fingerprints identify the check implementation and policy. Duplicate requests reuse the same job or receipt.',
+        'Repeated requests for the same commit and checks reuse the existing job or receipt.',
     },
   ],
-  boundary:
-    'Validation treats source as data. It does not execute submitted code, install packages, or run ESLint, tests, or TypeScript type checking. TypeScript syntax parsing is deferred.',
-  recovery:
-    'Recovery is request-driven after runtime recreation. Background progress without another authorized request is not guaranteed.',
+  boundary: 'Fixed checks inspect source as data without executing it.',
 } as const satisfies {
   readonly label: string
   readonly steps: readonly string[]
   readonly checks: readonly FeatureDescription[]
   readonly boundary: string
-  readonly recovery: string
 }

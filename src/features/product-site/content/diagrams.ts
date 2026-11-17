@@ -23,13 +23,13 @@ export const ciDiagram = {
   id: 'ci-lifecycle',
   title: 'Asynchronous CI lifecycle',
   description:
-    'Immutable commit to durable CI job to bounded fixed validators to persistent versioned receipt to agent or future dashboard. SQLite owns durable job state. CI never owns or updates HEAD. A dashboard is upcoming.',
+    'Immutable commit to durable CI job to bounded fixed validators to persistent CI receipt to agent. SQLite owns durable job state. CI never owns or updates HEAD.',
   nodes: [
     { id: 'commit', label: 'Immutable commit' },
     { id: 'job', label: 'Durable CI job\nSQLite-owned state' },
     { id: 'validators', label: 'Bounded fixed\nvalidators' },
-    { id: 'receipt', label: 'Persistent versioned\nreceipt' },
-    { id: 'consumer', label: 'Agent / dashboard\nDashboard upcoming' },
+    { id: 'receipt', label: 'Persistent CI\nreceipt' },
+    { id: 'consumer', label: 'Agent' },
   ],
   connections: [
     { from: 'commit', to: 'job', label: 'durable admission' },

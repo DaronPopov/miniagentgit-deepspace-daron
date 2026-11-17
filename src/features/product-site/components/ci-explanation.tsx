@@ -12,7 +12,6 @@ export function CiExplanation() {
       <FeatureGrid items={validation.checks} />
       <div className="site-boundary">
         <p>{validation.boundary}</p>
-        <p className="site-muted">{validation.recovery}</p>
       </div>
     </>
   )
