@@ -3,6 +3,39 @@ import type { Result } from '../../domain/result'
 import { invalid } from '../../domain/result'
 import { FREE_TIER_LIMITS } from '../../application/resource-limits'
 
+export function checkedUtf8Body(
+  request: Request,
+  maximum: number,
+  onInvalid: () => void = () => undefined,
+) {
+  const decoder = new TextDecoder('utf-8', { fatal: true })
+  let inspected = 0
+  function inspect(chunk?: Uint8Array) {
+    if (inspected > maximum) return
+    try {
+      decoder.decode(chunk, { stream: chunk !== undefined })
+    } catch (error) {
+      onInvalid()
+      throw error
+    }
+  }
+  return (
+    request.body?.pipeThrough(
+      new TransformStream<Uint8Array, Uint8Array>({
+        transform(chunk, controller) {
+          inspected += chunk.byteLength
+          inspect(chunk)
+          // The SDK owns the size check and stops reading oversize streams.
+          controller.enqueue(chunk)
+        },
+        flush() {
+          inspect()
+        },
+      }),
+    ) ?? null
+  )
+}
+
 /** Bounded JSON parsing shared by authenticated repository transports. */
 export async function readJsonRequest(
   request: Request,
@@ -23,35 +56,9 @@ export async function readJsonRequest(
   }
   let invalidUtf8 = false
   try {
-    const decoder = new TextDecoder('utf-8', { fatal: true })
-    let inspected = 0
-    const body =
-      request.body?.pipeThrough(
-        new TransformStream<Uint8Array, Uint8Array>({
-          transform(chunk, controller) {
-            inspected += chunk.byteLength
-            // Let the SDK reject oversize chunks without decoding/allocating their text.
-            if (inspected <= maximum) {
-              try {
-                decoder.decode(chunk, { stream: true })
-              } catch (error) {
-                invalidUtf8 = true
-                throw error
-              }
-            }
-            controller.enqueue(chunk)
-          },
-          flush() {
-            if (inspected > maximum) return
-            try {
-              decoder.decode()
-            } catch (error) {
-              invalidUtf8 = true
-              throw error
-            }
-          },
-        }),
-      ) ?? null
+    const body = checkedUtf8Body(request, maximum, () => {
+      invalidUtf8 = true
+    })
     const text = await readBoundedBodyText(
       { headers: request.headers, body },
       maximum,

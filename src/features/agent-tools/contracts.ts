@@ -4,7 +4,9 @@ import type { Result } from '../../domain/result'
 import type { RepositoryHead } from '../../domain/repository'
 
 export const REPOSITORY_HEAD_TOOL = 'miniagentgit.repository_head'
-export const TOOL_REQUEST_BYTES = 2048
+import { FREE_TIER_LIMITS } from '../../application/resource-limits'
+
+export const TOOL_REQUEST_BYTES = FREE_TIER_LIMITS.requestBytes
 export const TOOL_RESULT_BYTES = 1024
 export interface RepositoryHeadInput {
   readonly repositoryId: string

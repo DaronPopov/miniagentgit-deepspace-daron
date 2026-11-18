@@ -32,9 +32,9 @@ it('uses actual SDK MCP initialization/discovery/calls with scoped credentials a
       capabilities: { tools: {} },
     })
     await alice.notify('notifications/initialized')
-    expect((await alice.listTools()).map((t) => t.name)).toEqual([
+    expect((await alice.listTools()).map((t) => t.name)).toContain(
       REPOSITORY_HEAD_TOOL,
-    ])
+    )
     expect(
       await alice.callTool(REPOSITORY_HEAD_TOOL, { repositoryId: a.id }),
     ).toMatchObject({

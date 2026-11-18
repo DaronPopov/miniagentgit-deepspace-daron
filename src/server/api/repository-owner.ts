@@ -17,13 +17,14 @@ export function createOwnerRoutes(
   service: RepositoryService,
   env: AuthEnvironment,
   ci?: CiEngine,
+  policy = { base: '/api/repositories', authenticate },
 ) {
   const app = new Hono<{ Variables: { actor: Principal } }>()
-  const base = `/api/repositories/${id}`
+  const base = `${policy.base}/${id}`
   app.use('*', async (c, next) => {
     if (c.req.url.length > 2048)
       return resultResponse(invalid('Repository URL exceeds 2048 characters'))
-    const identity = await authenticate(c.req.raw, env)
+    const identity = await policy.authenticate(c.req.raw, env)
     if (!identity.ok) return resultResponse(identity)
     const url = new URL(c.req.url)
     if (
@@ -140,7 +141,7 @@ export function createOwnerRoutes(
         : key,
     )
   })
-  if (ci) registerCiRoutes(app, id, ci)
+  if (ci) registerCiRoutes(app, id, ci, base)
   app.onError(() =>
     resultResponse({
       ok: false,

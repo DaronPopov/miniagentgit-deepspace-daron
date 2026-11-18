@@ -32,9 +32,9 @@ it('qualifies the installed SDK MCP test client over real workerd HTTP with bear
       capabilities: { tools: {} },
     })
     await alice.notify('notifications/initialized')
-    expect((await alice.listTools()).map((tool) => tool.name)).toEqual([
+    expect((await alice.listTools()).map((tool) => tool.name)).toContain(
       REPOSITORY_HEAD_TOOL,
-    ])
+    )
     const result = await alice.callTool(REPOSITORY_HEAD_TOOL, {
       repositoryId: a.id,
     })

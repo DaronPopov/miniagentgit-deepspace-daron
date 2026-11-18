@@ -3,8 +3,8 @@ import { tenantFixture } from './tenant-fixture'
 import { REPOSITORY_HEAD_TOOL } from '../src/features/agent-tools/contracts'
 
 /** CLI-shaped JWTs signed only by ephemeral local test keys; no token exchange. */
-export async function agentCredentialFixture() {
-  const f = await tenantFixture()
+export async function agentCredentialFixture(jobs = false) {
+  const f = await tenantFixture(jobs)
   const token = (
     subject = 'Alice',
     overrides: Readonly<Record<string, unknown>> = {},

@@ -1,23 +1,28 @@
 import type { Hono } from 'hono'
-import {
-  AgentToolError,
-  readBoundedBodyText,
-  registerAgentToolTransports,
-} from 'deepspace/worker'
-import { authenticateTool } from './agent-auth'
-import type { AuthEnvironment } from './auth'
-import { routeRepository } from '../storage/routing'
-import { resultResponse } from '../api/result'
-import { objectValue } from '../../domain/validation'
+import { registerAgentToolTransports } from 'deepspace/worker'
+import { CI_DEFAULT_LIMITS } from '../../application/ci/limits'
 import { invalid } from '../../domain/result'
-import type { Result } from '../../domain/result'
-import type { RepositoryHead } from '../../domain/repository'
 import {
   REPOSITORY_HEAD_TOOL,
   TOOL_REQUEST_BYTES,
   TOOL_RESULT_BYTES,
   validateHead,
 } from '../../features/agent-tools/contracts'
+import { schemaAdapter } from '../../features/agent-tools/json-schema'
+import {
+  AGENT_BASE,
+  operations,
+  ownerOperation,
+} from '../../features/agent-tools/operation-inputs'
+import {
+  projectOutput,
+  resultBytes,
+  validOutput,
+} from '../../features/agent-tools/operation-output'
+import {
+  operationInputs,
+  operationOutputs,
+} from '../../features/agent-tools/operation-schemas'
 import {
   repositoryHead,
   unavailable,
@@ -26,82 +31,53 @@ import {
   headInputSchema,
   headOutputSchema,
 } from '../../features/agent-tools/schemas'
+import { checkedUtf8Body } from '../api/request'
+import { resultResponse } from '../api/result'
+import { authenticateTool } from './agent-auth'
+import { callOwner } from './agent-binding'
+import { toolFailure } from './agent-errors'
+import type { AuthEnvironment } from './auth'
 
 interface ToolEnvironment extends AuthEnvironment {
   readonly REPOSITORY_ROOMS: DurableObjectNamespace
   readonly APP_NAME: string
   readonly DEEPSPACE_APP_ID: string
 }
-/** Forward only the verified bearer to the existing owner HTTP/application seam. */
-async function readOwnerHead(
-  env: ToolEnvironment,
-  request: Request,
-  id: string,
-): Promise<Result<RepositoryHead>> {
-  try {
-    const owner = routeRepository(env.REPOSITORY_ROOMS, id)
-    if (!owner.ok) return owner
-    const url = new URL(
-      `/_deepspace/agent/repositories/${id}/head`,
-      request.url,
-    )
-    const response = await owner.value.fetch(
-      new Request(url, {
-        method: 'GET',
-        signal: request.signal,
-        headers: { authorization: request.headers.get('authorization') ?? '' },
-      }),
-    )
-    if (!response.ok) {
-      await response.body?.cancel()
-      if (
-        response.status === 401 ||
-        response.status === 403 ||
-        response.status === 404
-      )
-        return {
-          ok: false,
-          error: {
-            code:
-              response.status === 401
-                ? 'UNAUTHENTICATED'
-                : response.status === 403
-                  ? 'FORBIDDEN'
-                  : 'NOT_FOUND',
-            message:
-              response.status === 401
-                ? 'Valid bearer identity required'
-                : response.status === 403
-                  ? 'Repository access denied'
-                  : 'Repository not found',
-          },
-        }
-      return unavailable()
-    }
-    const value: unknown = JSON.parse(
-      await readBoundedBodyText(response, TOOL_RESULT_BYTES),
-    )
-    if (!objectValue(value) || value.ok !== true) return unavailable()
-    const head = validateHead(value.value)
-    return head.ok ? head : unavailable()
-  } catch {
-    return unavailable()
-  }
-}
+
+const descriptions = {
+  repository_create:
+    'Create a private repository for your account using an idempotency key.',
+  repository_commit:
+    'Commit bounded text changes to your repository using expected HEAD and an idempotency key.',
+  ci_request:
+    'Request fixed static CI for an immutable commit you own. Returns admission status.',
+  ci_status: 'Read persisted CI status for a job in your repository.',
+  ci_receipt:
+    'Read the immutable terminal CI receipt for a job in your repository.',
+} as const
+
 export function registerRepositoryTools<E extends ToolEnvironment>(
   app: Hono<{ Bindings: E }>,
 ) {
-  app.use('/_deepspace/agent/*', async (c, next) => {
-    if (c.req.url.length > 2048 || new URL(c.req.url).search)
+  app.use(AGENT_BASE + '/*', async (c, next) => {
+    if (c.req.url.length > 2048 || c.req.url.includes('?'))
       return resultResponse(
         invalid('Tool URL exceeds limits or has query parameters'),
       )
+    if (c.req.method === 'POST' && c.req.raw.body) {
+      const init = {
+        body: checkedUtf8Body(c.req.raw, TOOL_REQUEST_BYTES),
+        duplex: 'half' as const,
+        signal: c.req.raw.signal,
+      }
+      c.req.raw = new Request(c.req.raw, init)
+    }
     await next()
   })
   registerAgentToolTransports(app, {
-    basePath: '/_deepspace/agent',
+    basePath: AGENT_BASE,
     requestBodyCap: TOOL_REQUEST_BYTES,
-    resultCap: TOOL_RESULT_BYTES,
+    resultCap: CI_DEFAULT_LIMITS.receiptBytes,
     describe: (env) => ({ id: env.DEEPSPACE_APP_ID, name: env.APP_NAME }),
     resolveTools: async (request, env) => {
       const identity = await authenticateTool(request, env)
@@ -113,28 +89,65 @@ export function registerRepositoryTools<E extends ToolEnvironment>(
           inputSchema: headInputSchema,
           outputSchema: headOutputSchema,
           execute: async (input: unknown) => {
-            const result = await repositoryHead(input, (id) =>
-              readOwnerHead(env, request, id),
-            )
-            if (!result.ok)
-              throw new AgentToolError(
-                result.error.code,
-                'message' in result.error
-                  ? result.error.message
-                  : 'Tool unavailable',
-                result.error.code === 'INVALID_INPUT'
-                  ? 400
-                  : result.error.code === 'UNAUTHENTICATED'
-                    ? 401
-                    : result.error.code === 'FORBIDDEN'
-                      ? 403
-                      : result.error.code === 'NOT_FOUND'
-                        ? 404
-                        : 503,
+            const result = await repositoryHead(input, async (id) => {
+              const response = await callOwner(
+                env.REPOSITORY_ROOMS,
+                request,
+                { id, suffix: '/head', method: 'GET' },
+                TOOL_RESULT_BYTES,
               )
-            return result.value
+              if (!response.ok) return response
+              const head = validateHead(response.value)
+              return head.ok ? head : unavailable()
+            })
+            return result.ok ? result.value : toolFailure(result.error)
           },
         },
+        ...Object.fromEntries(
+          operations.map((operation) => [
+            'miniagentgit.' + operation,
+            {
+              description: descriptions[operation],
+              inputSchema: schemaAdapter(operationInputs[operation]),
+              outputSchema: schemaAdapter(
+                operationOutputs[operation],
+                (value) => validOutput(operation, value),
+              ),
+              execute: async (input: unknown) => {
+                const route = await ownerOperation(
+                  operation,
+                  input,
+                  identity.value,
+                )
+                if (!route.ok) return toolFailure(route.error)
+                const response = await callOwner(
+                  env.REPOSITORY_ROOMS,
+                  request,
+                  route.value,
+                  // Private response includes the envelope and, for writes, the
+                  // signed account subject before projection.
+                  resultBytes[operation] + 256,
+                )
+                if (!response.ok) return toolFailure(response.error)
+                const value = projectOutput(operation, response.value)
+                if (!validOutput(operation, value)) {
+                  return toolFailure({
+                    code: 'UNAVAILABLE',
+                    message: 'Invalid repository operation result',
+                  })
+                }
+                // Source is never returned; suppress any exact bearer echoed in metadata.
+                const token = request.headers.get('authorization')?.slice(7)
+                if (token && JSON.stringify(value).includes(token))
+                  return toolFailure({
+                    code: 'UNAVAILABLE',
+                    message: 'Invalid repository operation result',
+                  })
+                return value
+              },
+            },
+          ]),
+        ),
       }
     },
   })

@@ -3,16 +3,19 @@
 A small cloud-native, headless version control service for AI coding agents.
 The service includes repository creation, immutable UTF-8 snapshots, atomic
 SQLite HEAD updates, durable idempotency, owner-only HTTP and asynchronous fixed
-CI. The public homepage prioritizes agent connection instructions. HTTP is
-implemented; direct Codex and Claude Code integrations are planned, not installers.
+CI. The six native MCP tools are locally verified from repository creation through
+a failing commit and a passing correction. Codex and Claude Code connections
+still require qualification.
 
 **Deployment is inactive**, as reported by the owner. The earlier hosted URL must
 not be treated as a running service. HTTP setup requires a running application
-and a supported API credential. No MCP server or MiniAgentGit CLI is published.
+and a supported API credential. The native MCP surface shares the same repository
+and CI authority.
 
 See [API](docs/api.md), [architecture](docs/architecture.md),
-[free-tier budget](docs/free-tier-budget.md), and
-[Pass 05 results](docs/passes/pass05-results.md).
+[free-tier budget](docs/free-tier-budget.md),
+[MCP repository workflow](docs/mcp-repository-workflow.md), and
+[PASS 10A results](docs/passes/pass10a-results.md).
 
 ## Develop
 
@@ -36,8 +39,8 @@ Do not deploy or run `deepspace push` as an installation step.
 The static shell lives at `/`; `GET /api/health` reports stateless liveness.
 Protected repository APIs require a Bearer JWT verified against trusted public
 key, issuer and audience; `GET /api/me` reports its verified subject. CLI login
-does not authenticate HTTP users. No browser login flow, MCP, R2, branches,
-merges or Git wire compatibility is implemented. Fixed non-executing CI is implemented.
+does not authenticate HTTP users. The native MCP tools accept an origin-bound agent JWT or existing user JWT and
+check ownership at the repository. Fixed CI validates committed source as data.
 
 ## Commands
 

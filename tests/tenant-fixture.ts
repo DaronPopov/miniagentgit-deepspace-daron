@@ -5,9 +5,9 @@ import { request } from './sqlite-fixture'
 import { objectValue } from '../src/domain/validation'
 import { stringColumn } from '../src/server/storage/database'
 
-export async function tenantFixture() {
+export async function tenantFixture(jobs = false) {
   const identity = await identityFixture(),
-    worker = await workerFixture(identity.env)
+    worker = await workerFixture(identity.env, jobs)
   const tokens = {
     Alice: await identity.token('Alice'),
     Bob: await identity.token('Bob'),

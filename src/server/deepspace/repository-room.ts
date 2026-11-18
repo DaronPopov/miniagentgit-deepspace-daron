@@ -59,7 +59,7 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
   async fetch(request: Request): Promise<Response> {
     const pathname = new URL(request.url).pathname
     const agent = pathname.match(
-      /^\/_deepspace\/agent\/repositories\/(repo_[a-z0-9]{16,32})\/head$/,
+      /^\/_deepspace\/agent\/repositories\/(repo_[a-z0-9]{16,32})(?:\/|$)/,
     )
     const id =
       agent?.[1] ??
@@ -120,10 +120,15 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
         retain: (promise) => this.ctx.waitUntil(promise),
       })
       this.owner = createOwnerRoutes(id, runtime.service, this.env, ci)
-      this.agentOwner = createAgentOwnerRoutes(id, runtime.service, this.env)
+      this.agentOwner = createAgentOwnerRoutes(
+        id,
+        runtime.service,
+        this.env,
+        ci,
+      )
     }
     return agent && this.agentOwner
-      ? this.agentOwner.fetch(request)
+      ? this.agentOwner(request)
       : this.owner.fetch(request)
   }
 }

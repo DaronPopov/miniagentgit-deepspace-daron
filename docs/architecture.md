@@ -6,9 +6,9 @@ Pass 04 implements a local repository vertical slice: create/read repository,
 empty/read HEAD, immutable text commits, tree/file/commit retrieval and durable
 successful replay lookup. HTTP → verified transport → application service →
 canonical RepositoryRoom → synchronous SQLite authority. No mutable HEAD exists
-in HTTP or the scheduler. No branches, merges, Git protocol, binaries, R2, MCP,
-restore/diff engine or arbitrary code execution are implemented.
-Pass 05 adds durable commit-addressed fixed CI; see the CI section below.
+in HTTP or the scheduler. The repository stores bounded text snapshots.
+Pass 05 adds durable commit-addressed fixed CI. PASS 10A adds six native MCP
+tools over the same repository and CI authority.
 
 FREE-TIER-001 remains mandatory: one DeepSpace Free-plan app, bounded text and
 in-memory state, no paid integrations or background polling. Reported 500
@@ -371,3 +371,14 @@ The production Worker and five durable CI stages retain their PASS 09B
 execution boundary. The local parser harness measures generated input in
 disposable processes. It has no Worker import path.
 See [parser resource qualification](ci-parser-resource-qualification.md).
+
+## PASS 10A native MCP repository and CI operations
+
+The SDK's stateless HTTP transport shares a request-scoped tool implementation
+between REST and MCP. Creation derives the room from the verified account and
+idempotency key. Each operation crosses the app-private binding on a fixed route
+and method. The canonical object reverifies the original bearer and delegates
+to the same application handlers used by the ordinary HTTP API. The persisted
+owner governs reads and writes, and the commit transaction retains exclusive
+authority over HEAD. CI admission, dispatch and receipts remain
+repository- and JobRoom-owned. See the [tool trust model](agent-tool-architecture.md#pass-10a-repository-and-ci-tools).

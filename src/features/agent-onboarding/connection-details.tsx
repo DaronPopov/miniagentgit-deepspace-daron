@@ -20,11 +20,11 @@ export function ConnectionDetails({
           <code>{connection.endpoint}</code>
         </dd>
       </dl>
-      <h4>Supported tool</h4>
+      <h4>Supported tools</h4>
       <ul>
         {connection.tools.map((tool) => (
           <li key={tool}>
-            <code>{tool}</code> — read the owner-authorized repository HEAD.
+            <code>{tool}</code>
           </li>
         ))}
       </ul>

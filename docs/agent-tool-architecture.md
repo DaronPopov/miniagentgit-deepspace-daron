@@ -314,3 +314,36 @@ See [PASS 08B results](passes/pass08b-results.md) for exact tests and UI evidenc
 - MCP-AUTH-008: missing/invalid/ambiguous credentials fail closed.
 - MCP-AUTH-009: MCP isError remains distinct from tool success and transport errors.
 - MCP-AUTH-010: local protocol/auth evidence does not enable hosted/client claims.
+
+## PASS 10A repository and CI tools
+
+The PASS 08A and 08B decisions above describe the earlier HEAD-only surface.
+PASS 10A extends the installed SDK dispatcher with five additional operations
+under the existing credential model. The signed account may create its own
+repository and read HEAD, commit, request CI, read CI status and read a receipt
+for that account's repositories. The SDK verifies the configured key, agent
+issuer and scope. The app requires the exact origin as a single string audience,
+a finite unexpired expiration and a nonanonymous signed subject. Existing user
+JWT compatibility remains in place. User-supplied roles, owner and delegation
+claims confer no access.
+
+The command adapter validates each input with the existing domain/application
+validators, or a small CI identifier and pipeline check. It forwards the
+original bearer and, for writes, JSON content type and the normalized body,
+through the canonical binding. It never follows redirects. The owner matches
+a closed method/path allowlist and rejects query strings and unexpected headers.
+The tolerated HTTP framing headers added by local workerd's binding proxy carry
+no identity or routing authority. Shared repository handlers run the dedicated
+verifier in the owner and enforce ownership through the application authority.
+Creation checks the derived identity inside the same initialization path.
+The transport neither reads SQL nor directly invokes JobRoom.
+
+The SDK owns REST discovery, input envelopes, MCP protocol handling, and final
+serialization. Published input schemas describe each closed object. Domain
+validators enforce canonical paths, byte quotas and supported semantic values
+before the binding call. The bounded response adapter validates output shape
+and strips account identifiers from write metadata. A literal bearer echoed
+in metadata fails closed. The largest tool result fits the existing 8 KiB
+receipt budget. The SDK's shared body cap now matches the 256 KiB HTTP commit
+cap, with operation-specific input and output limits. See the
+[exact contracts and local workflow](mcp-repository-workflow.md).

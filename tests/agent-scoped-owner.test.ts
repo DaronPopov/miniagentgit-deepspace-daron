@@ -74,19 +74,24 @@ it('reverifies bearer, canonical room and read-only path at the binding boundary
       const response = await room.fetch(`http://localhost${path}`, {
         headers: {
           authorization: `Bearer ${token}`,
-          'x-user-id': 'Alice',
         },
       })
       expect(response.status).toBe(status)
     }
-    // Forwarded origin/identity hints cannot change the signed audience or owner.
+    expect(
+      (
+        await room.fetch(`http://localhost${path}`, {
+          headers: { authorization: `Bearer ${alice}`, 'x-user-id': 'Alice' },
+        })
+      ).status,
+    ).toBe(400)
+    // Verify the forwarded bearer against the original origin.
     const wrongOrigin = await f.token('Alice', { aud: 'https://other.test' })
     expect(
       (
         await room.fetch(`http://localhost${path}`, {
           headers: {
             authorization: `Bearer ${wrongOrigin}`,
-            'x-forwarded-host': 'other.test',
           },
         })
       ).status,

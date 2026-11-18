@@ -48,11 +48,12 @@ export const integrations = [
     id: 'codex',
     name: 'OpenAI Codex',
     icon: 'source',
-    purpose: 'Inspect your private repository HEAD from OpenAI Codex.',
+    purpose:
+      'Create repositories, commit changes and check CI from OpenAI Codex.',
     capability: {
       state: 'unavailable',
       message:
-        'Application currently undeployed. Native MCP and agent credential admission are locally qualified; an actual Codex connection and hosted credential flow are not yet verified.',
+        'Application currently undeployed. The repository and CI workflow is locally qualified with the DeepSpace SDK client; an actual Codex connection and hosted credential flow are not yet verified.',
     },
     connection: mcpConnection,
     clientGuide: {
@@ -66,11 +67,12 @@ export const integrations = [
     id: 'claude',
     name: 'Claude Code',
     icon: 'api',
-    purpose: 'Inspect your private repository HEAD from Claude Code.',
+    purpose:
+      'Create repositories, commit changes and check CI from Claude Code.',
     capability: {
       state: 'unavailable',
       message:
-        'Application currently undeployed. Native MCP and agent credential admission are locally qualified; an actual Claude Code connection and hosted credential flow are not yet verified.',
+        'Application currently undeployed. The repository and CI workflow is locally qualified with the DeepSpace SDK client; an actual Claude Code connection and hosted credential flow are not yet verified.',
     },
     connection: mcpConnection,
     clientGuide: {

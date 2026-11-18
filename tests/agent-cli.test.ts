@@ -98,7 +98,9 @@ it('runs the installed DeepSpace CLI against simulated local token issuance and 
     const discovered = await run(['tools', origin])
     expect(discovered).toMatchObject({
       ok: true,
-      tools: [{ name: REPOSITORY_HEAD_TOOL }],
+      tools: expect.arrayContaining([
+        expect.objectContaining({ name: REPOSITORY_HEAD_TOOL }),
+      ]),
     })
     const result = await run([
       'invoke',

@@ -18,17 +18,17 @@ it('discovers and invokes the actual SDK REST tool through canonical workerd/SQL
     expect(metadata).toMatchObject({
       ok: true,
       app: { name: 'MiniAgentGit' },
-      tools: [
-        {
-          name: REPOSITORY_HEAD_TOOL,
-          inputSchema: { additionalProperties: false },
-          outputSchema: { type: 'object' },
-        },
-      ],
     })
     if (!objectValue(metadata) || !Array.isArray(metadata.tools))
       throw new Error('Missing tool metadata')
-    expect(metadata.tools).toHaveLength(1)
+    expect(metadata.tools).toHaveLength(6)
+    expect(metadata.tools).toContainEqual(
+      expect.objectContaining({
+        name: REPOSITORY_HEAD_TOOL,
+        inputSchema: expect.objectContaining({ additionalProperties: false }),
+        outputSchema: expect.objectContaining({ type: 'object' }),
+      }),
+    )
     const descriptions = JSON.stringify(metadata)
     for (const privateValue of [
       a.id,
@@ -142,7 +142,13 @@ it('exercises the installed native MCP subset with the same verified bearer and 
     })
     expect(
       await (await invoke('Alice', 'tools/list', {})).json(),
-    ).toMatchObject({ result: { tools: [{ name: REPOSITORY_HEAD_TOOL }] } })
+    ).toMatchObject({
+      result: {
+        tools: expect.arrayContaining([
+          expect.objectContaining({ name: REPOSITORY_HEAD_TOOL }),
+        ]),
+      },
+    })
     const call = await invoke('Alice', 'tools/call', {
       name: REPOSITORY_HEAD_TOOL,
       arguments: { repositoryId: a.id },

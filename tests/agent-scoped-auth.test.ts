@@ -38,6 +38,7 @@ it('qualifies the actual SDK verifier, strict agent claims and the unchanged use
       { iss: 'https://untrusted.test/agent' },
       { iss: f.identity.env.AUTH_JWT_ISSUER },
       { aud: 'https://other.test' },
+      { aud: ['http://localhost', 'https://other.test'] },
       { scope: 'app:owner' },
       { scope: 'user' },
       { scope: undefined },
@@ -49,6 +50,26 @@ it('qualifies the actual SDK verifier, strict agent claims and the unchanged use
       const response = await f.head(await f.token('Alice', overrides), a.id)
       expect(response.status, JSON.stringify(overrides)).toBe(401)
     }
+    const [header, , signature] = scoped.split('.')
+    const edited = Buffer.from(
+      JSON.stringify({
+        sub: 'Bob',
+        aud: 'http://localhost',
+        iss: agentTokenIssuer(String(f.identity.env.AUTH_JWT_ISSUER)),
+        scope: 'agent',
+        exp: Math.floor(Date.now() / 1000) + 600,
+      }),
+    ).toString('base64url')
+    expect(
+      (await f.head(`${header}.${edited}.${signature}`, a.id)).status,
+    ).toBe(401)
+    const wrongOrigin = await f.fetchUrl(
+      'https://other.test/_deepspace/agent/tools',
+      {
+        headers: { authorization: 'Bearer ' + scoped },
+      },
+    )
+    expect(wrongOrigin.status).toBe(401)
     const other = await identityFixture()
     const invalidSignature = await other.token('Alice', {
       iss: agentTokenIssuer(String(f.identity.env.AUTH_JWT_ISSUER)),

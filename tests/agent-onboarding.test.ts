@@ -50,7 +50,16 @@ it('explains locally qualified MCP without installation commands for inactive in
     expect(html).toContain('Unavailable')
     expect(html).toContain('locally qualified')
     expect(html).toContain('Stateless HTTP MCP')
-    expect(html).toContain('miniagentgit.repository_head')
+    for (const action of [
+      'repository_create',
+      'repository_head',
+      'repository_commit',
+      'ci_request',
+      'ci_status',
+      'ci_receipt',
+    ])
+      expect(html).toContain('miniagentgit.' + action)
+    expect(html).toContain('Read its terminal receipt')
     expect(html).toContain('&lt;TRUSTED_BASE_URL&gt;/_deepspace/agent/mcp')
     expect(html).toContain('isError')
     expect(html).toContain('Official ')

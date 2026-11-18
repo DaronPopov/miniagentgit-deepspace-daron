@@ -4,10 +4,12 @@ import { creation, request } from './sqlite-fixture'
 import { stringColumn } from '../src/server/storage/database'
 import { stageBounds } from '../src/application/ci/stages'
 
+import { workflowClient } from './mcp-workflow-client'
+
 it.skipIf(process.env.CI_VERIFY_STAGE_DEADLINE !== '1')(
   'expires an orphaned job through its repository alarm without owner polling',
   async () => {
-    const { worker, value } = await ciWorkerClient()
+    const { identity, worker, value } = await ciWorkerClient()
     try {
       const repo = stringColumn(
         await value('/api/repositories', creation),
@@ -64,6 +66,21 @@ it.skipIf(process.env.CI_VERIFY_STAGE_DEADLINE !== '1')(
           )
         )[0]?.ordinal,
       ).toBe(1)
+      const agent = workflowClient(worker, await identity.token())
+      expect(
+        await agent.value('ci_status', { repositoryId: repo, jobId: job }),
+      ).toMatchObject({
+        state: 'expired',
+        generation: 3,
+        code: 'deadline',
+      })
+      expect(
+        await agent.value('ci_receipt', { repositoryId: repo, jobId: job }),
+      ).toMatchObject({
+        terminalState: 'expired',
+        code: 'deadline',
+        checks: { typescript: 'deferred' },
+      })
     } finally {
       await worker.close()
     }

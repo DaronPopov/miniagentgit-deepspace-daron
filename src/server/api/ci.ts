@@ -1,3 +1,4 @@
+import { readBoundedBodyText } from 'deepspace/worker'
 import type { Hono } from 'hono'
 import type { Principal } from '../../domain/repository'
 import type { CiEngine } from '../../application/ci/service'
@@ -11,8 +12,9 @@ export function registerCiRoutes(
   app: Hono<{ Variables: { actor: Principal } }>,
   repositoryId: string,
   engine: CiEngine,
+  repositoryPath: string,
 ) {
-  const base = `/api/repositories/${repositoryId}/ci`
+  const base = `${repositoryPath}/ci`
   app.post(`${base}/commits/:commit`, async (c) => {
     const commit = commitId(c.req.param('commit'))
     if (!commit.ok) return resultResponse(commit)
@@ -77,9 +79,10 @@ export function registerCiRoutes(
         : invalid('Invalid CI job ID'),
     )
   })
-  app.post(`${base}/jobs/:job/cancel`, (c) => {
+  app.post(`${base}/jobs/:job/cancel`, async (c) => {
     const id = c.req.param('job')
-    if (c.req.raw.body !== null)
+    // A binding may represent an empty POST as a zero-byte body stream.
+    if ((await readBoundedBodyText(c.req.raw, 1).catch(() => null)) !== '')
       return resultResponse(invalid('Cancellation accepts no body'))
     return resultResponse(
       /^ci_[a-f0-9]{64}$/.test(id)

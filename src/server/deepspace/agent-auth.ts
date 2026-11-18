@@ -41,6 +41,7 @@ export async function authenticateTool(
         message: 'Identity verification not configured',
       },
     }
+  const origin = new URL(request.url).origin
   const { result } = await verifyAgentToken(
     {
       publicKey: env.AUTH_JWT_PUBLIC_KEY,
@@ -48,7 +49,7 @@ export async function authenticateTool(
       clockSkewMs: 0,
     },
     token,
-    new URL(request.url).origin,
+    origin,
   )
   if (
     !result ||
@@ -56,6 +57,7 @@ export async function authenticateTool(
     !result.userId.trim() ||
     result.userId.startsWith('anon-') ||
     result.claims.scope !== 'agent' ||
+    result.claims.aud !== origin ||
     typeof result.claims.exp !== 'number' ||
     !Number.isFinite(result.claims.exp) ||
     result.claims.exp * 1000 <= Date.now()

@@ -203,3 +203,12 @@ byte caps, authentication behavior and MCP error semantics are documented in
 not accepted by the existing repository verifier; no direct client installation
 flow is available. The application remains undeployed, and earlier hosted URLs
 are historical. This pass made no hosted request or deployment.
+
+## PASS 10A native MCP and REST tools
+
+The native tool transport now supports owner-authorized repository creation,
+HEAD, commits, CI admission, job reads and terminal receipts. User JWTs remain
+valid on both surfaces. An origin-bound agent JWT is accepted on the dedicated
+tool transport and reverified by the repository owner. Ordinary `/api` routes
+retain their existing user policy. The native transport maps operation failures
+to REST status or MCP tool errors. See the [six contracts and retry workflow](mcp-repository-workflow.md).

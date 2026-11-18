@@ -183,3 +183,13 @@ The [adversarial parser qualification](ci-parser-resource-qualification.md)
 documents which ceilings apply before and after parsing. The harness and fault
 tests are local tooling. They add no production validation or fingerprint
 inputs.
+
+## PASS 10A agent callers
+
+`miniagentgit.ci_request`, `miniagentgit.ci_status` and
+`miniagentgit.ci_receipt` call the same owner-scoped CI engine as HTTP. A request
+returns its persisted job identity and admission state. A receipt becomes
+available only at a terminal state. The staged pipeline, JobRoom continuation,
+checkpoint recovery, source policy and semantic TypeScript deferral apply to all
+callers. See the [MCP workflow](mcp-repository-workflow.md) and
+[parser resource qualification](ci-parser-resource-qualification.md).

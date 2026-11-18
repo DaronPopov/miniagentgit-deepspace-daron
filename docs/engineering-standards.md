@@ -85,8 +85,8 @@ imports no server code. Framework schema declarations are not domain types.
 The six original SDK Durable Objects remain inert framework wiring. The custom
 RepositoryRoom owns the real SQL authority and one bounded scheduler per canonical
 live owner. Only its commit transaction advances HEAD. Identity verification and
-the local repository API are implemented; hosted browser login and MCP remain
-deferred. No generic SDK record mutation path can write repository state.
+the local repository API and native MCP tool surface are implemented. Hosted
+credential and client qualification remain deferred. No generic SDK record mutation path can write repository state.
 
 ## Validation and changes
 
@@ -245,3 +245,13 @@ Never use synthetic identity headers or a generic SDK record executor. Agent
 scope is not owner permission. Follow MCP-AUTH-001–010 in agent-tool architecture.
 Onboarding can describe this local qualification while keeping inactive client
 connections unavailable and installation commands disabled.
+
+## PASS 10A repository and CI tools
+
+The existing native transport and private binding forward a verified credential
+to a closed repository operation set. The owner reuses the HTTP application
+handlers and authenticates the original bearer independently. Keep the schema,
+input validation, bounded result validation, binding and error handling in
+separate modules under the ordinary 185-line cap. The new tools add no adapter
+exception. Apply the shared repository and CI resource ceilings and preserve
+the commit transaction and JobRoom fencing.
