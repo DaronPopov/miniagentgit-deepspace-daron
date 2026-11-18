@@ -12,9 +12,10 @@ export function AuthControls({
   readonly onAction: (action: () => Promise<void>) => Promise<void>
 }) {
   return (
-    <div className="site-actions auth-actions">
+    <div className="site-actions">
       {authenticated ? (
         <button
+          className="site-button site-button-secondary"
           disabled={busy}
           type="button"
           onClick={() => void onAction(actions.signOut)}
@@ -24,6 +25,7 @@ export function AuthControls({
       ) : (
         <>
           <button
+            className="site-button site-button-secondary"
             disabled={busy}
             type="button"
             onClick={() => void onAction(() => actions.signIn('github'))}
@@ -31,6 +33,7 @@ export function AuthControls({
             Continue with GitHub
           </button>
           <button
+            className="site-button site-button-secondary"
             disabled={busy}
             type="button"
             onClick={() => void onAction(() => actions.signIn('google'))}

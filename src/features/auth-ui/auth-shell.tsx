@@ -34,7 +34,11 @@ export function AuthShell({
               MiniAgentGit · Account
             </p>
             <h1>Your account</h1>
-            <div role="status" aria-live="polite">
+            <div
+              role="status"
+              aria-live="polite"
+              data-auth-state={state.status}
+            >
               {state.status === 'signed-in' ? (
                 <>
                   <p>

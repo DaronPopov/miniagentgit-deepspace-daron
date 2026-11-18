@@ -6,10 +6,6 @@
 .site-diagram {
   margin: 0;
   padding: var(--site-space-4);
-  min-inline-size: 0;
-  border: var(--site-border-width) solid var(--site-border);
-  border-radius: var(--site-radius);
-  background: var(--site-surface);
 }
 .site-diagram figcaption {
   font-weight: 600;

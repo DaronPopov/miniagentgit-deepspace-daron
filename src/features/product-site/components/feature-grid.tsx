@@ -9,7 +9,7 @@ export function FeatureGrid({
   return (
     <ul className="site-feature-grid">
       {items.map((item) => (
-        <li className="site-card" key={item.id}>
+        <li className="site-surface site-card" key={item.id}>
           <h3 className="site-icon-title">
             {item.icon && <SiteIcon name={item.icon} />}
             <span>{item.title}</span>

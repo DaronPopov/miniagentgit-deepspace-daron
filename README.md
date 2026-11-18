@@ -31,8 +31,11 @@ npm run dev -- --host 127.0.0.1
 The official dev command requires a DeepSpace session and registered app.
 The existing assigned app ID remains stable in `wrangler.toml`; do not register
 another application. `npm run build` compiles locally without publishing. Ordinary
-validation does not authorize cloud calls, registration or deployment. The local
-browser smoke below serves only the built static client on loopback.
+validation does not authorize cloud calls, registration or deployment. The onboarding smoke below serves the built static client on loopback.
+The [agent UI tooling guide](docs/frontend/agent-ui-tooling.md) provides a
+loopback Worker/client preview and Playwright MCP matrix with an isolated
+local test identity. See the [frontend design system](docs/frontend/design-system.md)
+and [PASS 11A evidence](docs/frontend/evidence/pass11a/README.md).
 
 Do not deploy or run `deepspace push` as an installation step.
 

@@ -1,17 +1,9 @@
-.auth-actions button {
-  min-block-size: 2.75rem;
-  padding: var(--site-space-3) var(--site-space-6);
-  background: var(--site-surface);
-  color: var(--site-accent);
-  border: var(--site-border-width) solid var(--site-border);
-  border-radius: var(--site-radius);
-  font: inherit;
-  cursor: pointer;
-}
-.auth-actions button:disabled {
-  cursor: wait;
-}
-
 .auth-shell p {
   overflow-wrap: anywhere;
+}
+
+.auth-shell [data-auth-state='error'],
+.auth-shell [data-auth-state='expired'],
+.auth-shell [data-auth-state='token-unavailable'] {
+  color: var(--site-danger);
 }

@@ -23,11 +23,7 @@
   align-items: flex-start;
   gap: var(--site-space-3);
   padding: var(--site-space-4);
-  border: 1px solid var(--site-border);
-  border-radius: var(--site-radius);
-  background: var(--site-surface);
   cursor: pointer;
-  min-inline-size: 0;
 }
 .agent-option[data-selected='true'] {
   border-color: var(--site-accent);
@@ -40,8 +36,8 @@
   margin-block-start: 0.4rem;
 }
 .agent-option:focus-within {
-  outline: 3px solid var(--site-focus);
-  outline-offset: 4px;
+  outline: var(--site-focus-width) solid var(--site-focus);
+  outline-offset: var(--site-focus-offset);
 }
 .agent-option-status {
   display: block;
@@ -51,10 +47,6 @@
 }
 .agent-panel {
   padding: var(--site-space-6);
-  border: 1px solid var(--site-border);
-  border-radius: var(--site-radius);
-  background: var(--site-surface);
-  min-inline-size: 0;
 }
 .agent-panel-heading {
   display: flex;
@@ -94,7 +86,7 @@
   display: inline-flex;
   align-items: flex-start;
   gap: var(--site-space-2);
-  min-block-size: 2.75rem;
+  min-block-size: var(--site-control-size);
   margin-inline-end: var(--site-space-6);
 }
 .agent-panel .site-button {

@@ -1,0 +1,320 @@
+{
+  "server": {
+    "name": "Playwright",
+    "version": "1.66.0-alpha-2026-11-09"
+  },
+  "tools": [
+    "browser_click",
+    "browser_close",
+    "browser_console_messages",
+    "browser_drag",
+    "browser_drop",
+    "browser_emulate_media",
+    "browser_evaluate",
+    "browser_file_upload",
+    "browser_fill_form",
+    "browser_find",
+    "browser_handle_dialog",
+    "browser_hover",
+    "browser_navigate",
+    "browser_navigate_back",
+    "browser_network_request",
+    "browser_network_requests",
+    "browser_press_key",
+    "browser_resize",
+    "browser_run_code_unsafe",
+    "browser_select_option",
+    "browser_snapshot",
+    "browser_tabs",
+    "browser_take_screenshot",
+    "browser_type",
+    "browser_wait_for"
+  ],
+  "homeToDocs": [1440, 390],
+  "surfaces": [
+    {
+      "surface": "landing",
+      "viewport": [1440, 1000],
+      "title": "MiniAgentGit",
+      "headings": ["Version control built for coding agents."],
+      "main": 1,
+      "navigation": 1,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Deployment required. The HTTP workflow is implemented and previously hosted-tested, but this application is currently undeployed.",
+      "controls": ["Copy command"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "docs",
+      "viewport": [1440, 1000],
+      "title": "MiniAgentGit",
+      "headings": ["Connect your agent over HTTP."],
+      "main": 1,
+      "navigation": 3,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "",
+      "controls": ["Copy command", "Copy command"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "missing",
+      "viewport": [1440, 1000],
+      "title": "",
+      "headings": [],
+      "main": 0,
+      "navigation": 0,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": null,
+      "controls": [],
+      "httpErrors": [["GET", "/pass11a-missing", "404"]],
+      "consoleErrors": 1,
+      "consoleWarnings": 0,
+      "consoleWarningsText": []
+    },
+    {
+      "surface": "unauthorized",
+      "viewport": [1440, 1000],
+      "title": "",
+      "headings": [],
+      "main": 0,
+      "navigation": 0,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": null,
+      "controls": [],
+      "httpErrors": [["GET", "/api/me", "401"]],
+      "consoleErrors": 1,
+      "consoleWarnings": 0,
+      "consoleWarningsText": []
+    },
+    {
+      "surface": "sign-in",
+      "viewport": [1440, 1000],
+      "title": "MiniAgentGit",
+      "headings": ["Your account"],
+      "main": 1,
+      "navigation": 1,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Sign in to continue.",
+      "controls": ["Continue with GitHub", "Continue with Google"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "dashboard",
+      "viewport": [1440, 1000],
+      "title": "MiniAgentGit",
+      "headings": ["Your account"],
+      "main": 1,
+      "navigation": 1,
+      "width": 1440,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Signed in as local-browser-owner\n\nRepository access is checked by the server for every operation.",
+      "controls": ["Sign out"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ],
+      "verifiedIdentity": true,
+      "signOut": true
+    },
+    {
+      "surface": "landing",
+      "viewport": [390, 844],
+      "title": "MiniAgentGit",
+      "headings": ["Version control built for coding agents."],
+      "main": 1,
+      "navigation": 1,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Deployment required. The HTTP workflow is implemented and previously hosted-tested, but this application is currently undeployed.",
+      "controls": ["Copy command"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "docs",
+      "viewport": [390, 844],
+      "title": "MiniAgentGit",
+      "headings": ["Connect your agent over HTTP."],
+      "main": 1,
+      "navigation": 3,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "",
+      "controls": ["Copy command", "Copy command"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "missing",
+      "viewport": [390, 844],
+      "title": "",
+      "headings": [],
+      "main": 0,
+      "navigation": 0,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": null,
+      "controls": [],
+      "httpErrors": [["GET", "/pass11a-missing", "404"]],
+      "consoleErrors": 1,
+      "consoleWarnings": 0,
+      "consoleWarningsText": []
+    },
+    {
+      "surface": "unauthorized",
+      "viewport": [390, 844],
+      "title": "",
+      "headings": [],
+      "main": 0,
+      "navigation": 0,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": null,
+      "controls": [],
+      "httpErrors": [["GET", "/api/me", "401"]],
+      "consoleErrors": 1,
+      "consoleWarnings": 0,
+      "consoleWarningsText": []
+    },
+    {
+      "surface": "sign-in",
+      "viewport": [390, 844],
+      "title": "MiniAgentGit",
+      "headings": ["Your account"],
+      "main": 1,
+      "navigation": 1,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Sign in to continue.",
+      "controls": ["Continue with GitHub", "Continue with Google"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ]
+    },
+    {
+      "surface": "dashboard",
+      "viewport": [390, 844],
+      "title": "MiniAgentGit",
+      "headings": ["Your account"],
+      "main": 1,
+      "navigation": 1,
+      "width": 390,
+      "overflow": false,
+      "missingLabels": 0,
+      "brokenAnchors": [],
+      "status": "Signed in as local-browser-owner\n\nRepository access is checked by the server for every operation.",
+      "controls": ["Sign out"],
+      "focus": {
+        "label": "Skip to content",
+        "outline": "solid",
+        "width": "3px"
+      },
+      "skipTarget": "main-content",
+      "httpErrors": [],
+      "consoleErrors": 0,
+      "consoleWarnings": 1,
+      "consoleWarningsText": [
+        "[WARNING] No `HydrateFallback` element provided to render during initial hydration @ <loopback>/assets/index-XTnNvzwL.js:10"
+      ],
+      "verifiedIdentity": true,
+      "signOut": true
+    }
+  ]
+}

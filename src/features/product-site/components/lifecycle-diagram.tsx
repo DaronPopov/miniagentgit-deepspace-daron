@@ -11,7 +11,7 @@ export function LifecycleDiagram({
 }) {
   const id = useId()
   return (
-    <figure className="site-diagram">
+    <figure className="site-surface site-diagram">
       <figcaption>{metadata.title}</figcaption>
       <svg
         viewBox="0 0 300 480"

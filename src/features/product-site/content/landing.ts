@@ -15,6 +15,7 @@ export const productNavigation = [
   { label: 'Capabilities', href: '#capabilities' },
   { label: 'Architecture', href: '#architecture' },
   { label: 'Docs', href: '/docs' },
+  { label: 'Account', href: '/dashboard' },
   { label: 'GitHub', href: productLinks.github, icon: 'external' },
 ] as const satisfies readonly NavigationLink[]
 export const hero = {

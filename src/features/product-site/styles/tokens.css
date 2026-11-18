@@ -4,6 +4,7 @@
   --site-font-code: ui-monospace, monospace;
   --site-text-small: 0.875rem;
   --site-text-body: 1rem;
+  --site-text-lead: 1.125rem;
   --site-text-section: clamp(1.375rem, 3vw, 1.875rem);
   --site-text-title: clamp(2rem, 5vw, 3.25rem);
   --site-space-1: 0.25rem;
@@ -22,8 +23,14 @@
   --site-accent: #086858;
   --site-border: #c2cfd7;
   --site-focus: #105bca;
+  --site-danger: #a1272f;
+  --site-success: #17603c;
+  --site-warning: #79500c;
   --site-border-width: 1px;
   --site-radius: 0.75rem;
+  --site-control-size: 2.75rem;
+  --site-focus-width: 3px;
+  --site-focus-offset: 4px;
   --site-width: 68rem;
   --site-prose-width: 62ch;
 }
@@ -38,5 +45,8 @@
     --site-accent: #a4ddd3;
     --site-border: #476070;
     --site-focus: #a9ceff;
+    --site-danger: #ffadb2;
+    --site-success: #a2e6bf;
+    --site-warning: #ffcf84;
   }
 }

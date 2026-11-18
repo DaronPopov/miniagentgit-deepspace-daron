@@ -12,7 +12,7 @@ export function IntegrationPanel({
   return (
     <div
       id="agent-setup"
-      className="agent-panel"
+      className="site-surface agent-panel"
       aria-labelledby="agent-panel-title"
     >
       <div className="agent-panel-heading">

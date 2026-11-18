@@ -3,6 +3,7 @@ import type { NavigationLink } from '../../product-site/contracts/presentation'
 
 export const docsNavigation = [
   { label: 'Home', href: '/' },
+  { label: 'Account', href: '/dashboard' },
   { label: 'Connect your agent', href: '#quick-start' },
   { label: 'API guide', href: '#api-guide' },
 ] as const satisfies readonly NavigationLink[]
@@ -60,9 +61,9 @@ export const guideSections = [
     id: 'availability',
     title: 'Availability and boundaries',
     paragraphs: [
-      'The HTTP repository and CI workflow was previously tested on a hosted application, which is now undeployed. Deploy or select a running application before using these examples. Hosted user authentication through a fresh browser sign-in and provider runtime quotas still require qualification.',
+      'The HTTP repository and CI workflow was previously tested on a hosted application, which is now undeployed. Use an operator-provided running application for these examples. Hosted user authentication through a fresh browser sign-in and provider runtime quotas still require qualification.',
       'Use a service origin supplied by the operator for BASE_URL, without a trailing slash. Replace BEARER_JWT in your terminal with a compatible credential. Repository, commit and job IDs come from actual responses; no public test credentials are supplied here.',
-      'This API does not implement Git wire compatibility, branches, merges, arbitrary binaries or MCP. CI does not run package installation, scripts, ESLint, tests or TypeScript type checking; syntax parsing is not provided.',
+      'The separate native MCP endpoint exposes six locally qualified repository and CI tools. These HTTP examples do not require MCP. CI checks snapshot integrity, source policy, supported syntax, fixed lint rules and local imports without running submitted code. Semantic TypeScript checking is deferred.',
     ],
   },
   {

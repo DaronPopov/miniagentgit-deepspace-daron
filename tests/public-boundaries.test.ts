@@ -58,7 +58,8 @@ it('keeps the public route as thin feature composition and the browser entry pro
   ).toBe(1)
   const main = readFileSync('src/main.tsx', 'utf8')
   expect(main).toContain("from '@generouted/react-router/lazy'")
-  expect(main).toContain('createBrowserRouter(routes)')
+  expect(main).toMatch(/createBrowserRouter\(\s*routes\.map\(/)
+  expect(main).toContain('HydrateFallback: RouteLoading')
   expect(main).not.toMatch(
     /Provider.*from ['"]deepspace|fetch\(|useBrowserIdentity/,
   )

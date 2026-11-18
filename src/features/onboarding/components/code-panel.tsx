@@ -26,6 +26,7 @@ export function CodePanel({
           {title}
         </span>
         <button
+          className="site-button site-button-secondary site-button-compact"
           type="button"
           onClick={copy}
           disabled={status === 'copying'}

@@ -46,19 +46,6 @@
   font: var(--site-text-small) / 1.6 var(--site-font-code);
   white-space: pre;
 }
-.docs-code button {
-  min-block-size: 2.75rem;
-  padding: var(--site-space-2) var(--site-space-4);
-  color: var(--site-accent);
-  background: var(--site-surface);
-  border: var(--site-border-width) solid var(--site-border);
-  border-radius: var(--site-radius);
-  font: inherit;
-  cursor: pointer;
-}
-.docs-code button:disabled {
-  cursor: wait;
-}
 .docs-copy-status {
   font-size: var(--site-text-small);
   margin: 0;

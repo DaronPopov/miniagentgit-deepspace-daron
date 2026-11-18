@@ -16,7 +16,7 @@ export function IntegrationSelector({
         {integrations.map((item) => (
           <label
             key={item.id}
-            className="agent-option"
+            className="site-surface agent-option"
             data-selected={selected === item.id}
           >
             <input

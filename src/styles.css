@@ -3,6 +3,7 @@
 @import './features/onboarding/styles/documentation.css';
 @import './features/product-site/styles/tokens.css';
 @import './features/product-site/styles/layout.css';
+@import './features/product-site/styles/primitives.css';
 @import './features/product-site/styles/landing.css';
 @import './features/product-site/styles/diagrams.css';
 @import './features/product-site/styles/icons.css';
@@ -43,8 +44,8 @@ a {
   text-underline-offset: 0.2em;
 }
 :focus-visible {
-  outline: 3px solid var(--site-focus);
-  outline-offset: 4px;
+  outline: var(--site-focus-width) solid var(--site-focus);
+  outline-offset: var(--site-focus-offset);
 }
 @media (forced-colors: active) {
   :focus-visible {

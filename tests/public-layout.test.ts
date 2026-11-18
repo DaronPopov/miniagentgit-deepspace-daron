@@ -93,7 +93,9 @@ it('defines complete light/dark tokens, responsive constraints and visible keybo
   expect(layout).toContain('@media (min-width: 64rem)')
   expect(layout).toContain('.site-skip-link:focus')
   expect(base).toContain(':focus-visible')
-  expect(base).toContain('outline: 3px solid var(--site-focus)')
+  expect(base).toContain(
+    'outline: var(--site-focus-width) solid var(--site-focus)',
+  )
   expect(base).toContain('forced-colors: active')
   for (const css of [tokens, layout, base])
     expect(css).not.toMatch(/https?:|url\(|@font-face/)

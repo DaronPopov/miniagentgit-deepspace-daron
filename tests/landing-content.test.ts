@@ -29,7 +29,7 @@ it('explains the real local capabilities, commit workflow and bounded non-execut
   expect(html).toContain(validation.boundary)
   expect(html.match(/<footer\b/g)).toHaveLength(1)
 })
-it('uses real documentation links and in-page anchors without protected API navigation', () => {
+it('links to documentation and the account entry without navigating to protected APIs', () => {
   const html = renderToStaticMarkup(createElement(Home))
   const ids = new Set(
     [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]),
@@ -50,9 +50,8 @@ it('uses real documentation links and in-page anchors without protected API navi
   expect(productLinks.github).toBe(
     'https://github.com/DaronPopov/miniagentgit-deepspace-daron',
   )
-  expect(html).not.toMatch(
-    /href="\/(api|dashboard|login|auth)\b|<form|target="_blank"/,
-  )
+  expect(html).toContain('href="/dashboard">Account</a>')
+  expect(html).not.toMatch(/href="\/(api|login|auth)\b|<form|target="_blank"/)
 })
 it('does not fabricate live data, advertise unavailable execution, or require hosted configuration', () => {
   vi.stubEnv('DEEPSPACE_APP_ID', '')

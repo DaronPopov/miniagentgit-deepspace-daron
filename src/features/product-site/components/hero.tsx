@@ -23,7 +23,10 @@ export function Hero() {
         </div>
         <p className="site-muted site-small">{hero.scope}</p>
       </div>
-      <aside className="site-contract" aria-labelledby="contract-title">
+      <aside
+        className="site-surface site-contract"
+        aria-labelledby="contract-title"
+      >
         <p className="site-eyebrow">{hero.asideNote}</p>
         <h2 id="contract-title">{hero.asideTitle}</h2>
         <p className="site-muted">{hero.asideDescription}</p>

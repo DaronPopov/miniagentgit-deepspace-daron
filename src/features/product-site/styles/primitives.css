@@ -1,0 +1,45 @@
+.site-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--site-control-size);
+  padding: var(--site-space-3) var(--site-space-6);
+  border: var(--site-border-width) solid var(--site-accent);
+  border-radius: var(--site-radius);
+  background: var(--site-accent);
+  color: var(--site-background);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.site-button-secondary {
+  background: var(--site-surface);
+  color: var(--site-accent);
+  border-color: var(--site-border);
+}
+
+.site-button-compact {
+  padding: var(--site-space-2) var(--site-space-4);
+}
+
+.site-button:not(:disabled):hover {
+  text-decoration: underline;
+}
+
+.site-button:not(:disabled):active {
+  text-decoration-thickness: 2px;
+}
+
+.site-button:disabled {
+  color: var(--site-muted);
+  cursor: default;
+}
+
+.site-surface {
+  min-inline-size: 0;
+  border: var(--site-border-width) solid var(--site-border);
+  border-radius: var(--site-radius);
+  background: var(--site-surface);
+}

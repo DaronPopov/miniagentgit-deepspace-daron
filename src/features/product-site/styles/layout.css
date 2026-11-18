@@ -34,7 +34,7 @@
 .site-brand {
   display: inline-flex;
   align-items: center;
-  min-block-size: 2.75rem;
+  min-block-size: var(--site-control-size);
 }
 .site-intro {
   padding-block: var(--site-space-12) var(--site-space-8);

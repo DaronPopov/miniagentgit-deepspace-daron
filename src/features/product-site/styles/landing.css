@@ -8,7 +8,7 @@
   padding-block-end: var(--site-space-12);
 }
 .site-lead {
-  font-size: 1.125rem;
+  font-size: var(--site-text-lead);
   color: var(--site-muted);
 }
 .site-actions {
@@ -17,25 +17,6 @@
   gap: var(--site-space-3);
   margin-block: var(--site-space-8) var(--site-space-6);
 }
-.site-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-block-size: 2.75rem;
-  padding: var(--site-space-3) var(--site-space-6);
-  border: var(--site-border-width) solid var(--site-accent);
-  border-radius: var(--site-radius);
-  background: var(--site-accent);
-  color: var(--site-background);
-  font-weight: 600;
-  text-decoration: none;
-}
-.site-button-secondary {
-  background: var(--site-surface);
-  color: var(--site-accent);
-  border-color: var(--site-border);
-}
-.site-button:hover,
 .site-documentation a:hover {
   text-decoration: underline;
 }
@@ -46,10 +27,6 @@
 .site-card,
 .site-boundary {
   padding: var(--site-space-6);
-  border: var(--site-border-width) solid var(--site-border);
-  border-radius: var(--site-radius);
-  background: var(--site-surface);
-  min-inline-size: 0;
 }
 .site-contract {
   align-self: center;
@@ -84,7 +61,7 @@
 .site-workflow h3,
 .site-boundary h3 {
   margin: 0 0 var(--site-space-3);
-  font-size: 1.125rem;
+  font-size: var(--site-text-lead);
   line-height: 1.4;
 }
 .site-card p:last-child,

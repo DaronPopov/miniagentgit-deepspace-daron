@@ -10,7 +10,7 @@ export function CiExplanation() {
         ))}
       </ol>
       <FeatureGrid items={validation.checks} />
-      <div className="site-boundary">
+      <div className="site-surface site-boundary">
         <p>{validation.boundary}</p>
       </div>
     </>
