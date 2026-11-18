@@ -4,8 +4,7 @@ import { mcpConnection, agentPrerequisites, agentSteps } from './mcp-connection'
 export const httpSteps = [
   {
     title: 'Choose a running service',
-    description:
-      'Deploy MiniAgentGit or use a running application supplied by your operator. The previous deployment is inactive.',
+    description: 'Use the trusted MiniAgentGit URL supplied by your operator.',
   },
   {
     title: 'Obtain an API credential',
@@ -50,11 +49,6 @@ export const integrations = [
     icon: 'source',
     purpose:
       'Create repositories, commit changes and check CI from OpenAI Codex.',
-    capability: {
-      state: 'unavailable',
-      message:
-        'The repository and CI workflow passed with Codex on the local Worker. Hosted credentials and production admission still require qualification.',
-    },
     connection: mcpConnection,
     clientGuide: {
       label: 'Official Codex MCP configuration',
@@ -69,11 +63,6 @@ export const integrations = [
     icon: 'api',
     purpose:
       'Create repositories, commit changes and check CI from Claude Code.',
-    capability: {
-      state: 'unavailable',
-      message:
-        'The repository and CI workflow is locally qualified with the DeepSpace SDK client. Claude Code and hosted credentials still require qualification.',
-    },
     connection: mcpConnection,
     clientGuide: {
       label: 'Official Claude Code MCP configuration',
@@ -88,11 +77,6 @@ export const integrations = [
     icon: 'api',
     purpose:
       'Connect any coding agent that can send authenticated HTTP requests.',
-    capability: {
-      state: 'requires-configuration',
-      message:
-        'Deployment required. The HTTP workflow is implemented and previously hosted-tested, but this application is currently undeployed.',
-    },
     prerequisites: [
       'A running MiniAgentGit application and its trusted base URL.',
       'A supported Bearer JWT and Windows PowerShell or curl.exe in PowerShell.',
@@ -104,17 +88,9 @@ export const integrations = [
 export const onboardingCopy = {
   eyebrow: 'Choose your connection',
   title: 'Connect your coding agent',
-  description:
-    'Choose an integration, check its availability, then follow the setup instructions. Your agent stays in control of each commit.',
-  statusLabels: {
-    planned: 'Planned',
-    available: 'Verified and available',
-    'locally-qualified': 'Locally qualified',
-    unavailable: 'Unavailable',
-    'requires-configuration': 'Deployment required',
-  },
+  description: 'Choose a client or use the HTTP API.',
   setupNote:
-    'After deployment and credential acquisition, replace the two placeholders in your terminal. Run setup once per new workflow; retain existing keys after an uncertain response. These examples do not connect to an active endpoint as shown.',
+    'Replace the URL and token placeholders in your terminal. Keep the same idempotency key when retrying an uncertain response.',
   credentialNote:
-    'The public page never signs you in, obtains credentials or calls the API. Copying only copies the visible text.',
+    'The HTTP copy button copies the visible template. Supply your token locally.',
 } as const

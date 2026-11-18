@@ -38,6 +38,14 @@ export async function publicChecks(page, origin, capture, assert) {
     .click()
   await page.locator('#connect').waitFor()
   assert(new URL(page.url()).hash === '#connect', 'Agent onboarding link')
+  for (const name of ['OpenAI Codex', 'Claude Code', 'HTTP API']) {
+    await page.getByRole('radio', { name, exact: true }).check()
+    const panel = await page.locator('#agent-setup').innerText()
+    assert(
+      !/Unavailable|Deployment required|currently undeployed/.test(panel),
+      name + ' has no deployment badge',
+    )
+  }
   await capture('onboarding')
   await page.getByRole('link', { name: 'Read the docs' }).click()
   await page

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import type { Integration } from './contracts'
-import { onboardingCopy } from './content'
 import { SiteIcon } from '../product-site/components/site-icon'
 import { ConnectionDetails } from './connection-details'
 import { HttpSetup } from './http-setup'
@@ -23,14 +22,8 @@ export function IntegrationPanel({
           <SiteIcon name={integration.icon} />
           {integration.name}
         </h3>
-        <span className="agent-badge">
-          {onboardingCopy.statusLabels[integration.capability.state]}
-        </span>
       </div>
       <p>{integration.purpose}</p>
-      <p className="agent-availability" role="status">
-        {integration.capability.message}
-      </p>
       {integration.connection && (
         <ConnectionDetails connection={integration.connection} />
       )}
@@ -61,8 +54,7 @@ export function IntegrationPanel({
           </a>
         </p>
       )}
-      {integration.id === 'http' &&
-      integration.capability.state === 'requires-configuration' ? (
+      {integration.id === 'http' ? (
         <HttpSetup />
       ) : (
         <a className="site-button site-button-secondary" href="/docs#mcp-guide">

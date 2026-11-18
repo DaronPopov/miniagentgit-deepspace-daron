@@ -39,12 +39,6 @@
   outline: var(--site-focus-width) solid var(--site-focus);
   outline-offset: var(--site-focus-offset);
 }
-.agent-option-status {
-  display: block;
-  color: var(--site-muted);
-  font-size: var(--site-text-small);
-  margin-block-start: var(--site-space-2);
-}
 .agent-panel {
   padding: var(--site-space-6);
 }
@@ -59,14 +53,6 @@
 .agent-panel h3,
 .agent-panel h4 {
   margin: 0 0 var(--site-space-2);
-}
-.agent-badge {
-  color: var(--site-accent);
-  font: var(--site-text-small) var(--site-font-code);
-}
-.agent-availability {
-  border-inline-start: 3px solid var(--site-accent);
-  padding-inline-start: var(--site-space-4);
 }
 .agent-panel ul,
 .agent-steps {

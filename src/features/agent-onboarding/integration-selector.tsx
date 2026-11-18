@@ -1,5 +1,5 @@
 import { SiteIcon } from '../product-site/components/site-icon'
-import { integrations, onboardingCopy } from './content'
+import { integrations } from './content'
 import type { IntegrationId } from './contracts'
 
 export function IntegrationSelector({
@@ -27,14 +27,9 @@ export function IntegrationSelector({
               onChange={() => onSelect(item.id)}
               aria-controls="agent-setup"
             />
-            <span>
-              <span className="site-icon-label">
-                <SiteIcon name={item.icon} />
-                {item.name}
-              </span>
-              <span className="agent-option-status">
-                {onboardingCopy.statusLabels[item.capability.state]}
-              </span>
+            <span className="site-icon-label">
+              <SiteIcon name={item.icon} />
+              {item.name}
             </span>
           </label>
         ))}

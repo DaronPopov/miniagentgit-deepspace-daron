@@ -3,8 +3,6 @@ import type { AgentConnection, SetupStep } from './contracts'
 /** Evidence-backed presentation only; no credential acquisition or client config. */
 export const mcpConnection = {
   transport: 'Stateless HTTP MCP (POST JSON-RPC)',
-  qualification:
-    'The DeepSpace SDK client and Codex CLI passed locally. Hosted credentials and Claude Code still require qualification.',
   endpoint: '<TRUSTED_BASE_URL>/_deepspace/agent/mcp',
   authentication:
     'Origin-bound DeepSpace agent Bearer JWT for the account that owns the repository. Existing supported user Bearer JWTs also work. Agent scope alone grants no repository access.',
@@ -21,22 +19,16 @@ export const mcpConnection = {
 } as const satisfies AgentConnection
 
 export const agentPrerequisites = [
-  'An activated MiniAgentGit service and an operator-confirmed trusted base URL. This application is currently undeployed.',
-  'An unexpired credential issued for that exact origin, with the same verified account subject as the persisted repository owner.',
+  'An unexpired DeepSpace credential with the same verified account subject as the persisted repository owner.',
   'Create a repository for the signed account or use the ID of a repository it already owns.',
-  'Client configuration and credential renewal qualified by your operator before use. Keep tokens out of project files and URLs.',
+  'Keep tokens out of project files and URLs.',
 ] as const
 
 export const agentSteps = [
   {
-    title: 'Wait for service activation',
+    title: 'Open a new client session',
     description:
-      'The DeepSpace SDK test client completed repository creation, commits and failing-to-passing CI locally. This service is currently undeployed.',
-  },
-  {
-    title: 'Confirm credentials and client setup',
-    description:
-      'After activation, use the client’s documented HTTP MCP configuration with a privately supplied Bearer credential. DeepSpace developer login is not itself a token to paste here.',
+      'Paste the copied setup command into the selected terminal shell.',
   },
   {
     title: 'Verify discovery and ownership',

@@ -20,13 +20,12 @@ import { copyCommand } from '../src/features/onboarding/components/clipboard'
 it('keeps integration metadata readonly, serializable and truthful', () => {
   expectTypeOf<Integration>().toEqualTypeOf<Readonly<Integration>>()
   expect(JSON.parse(JSON.stringify(integrations))).toEqual(integrations)
-  expect(integrations.map((item) => [item.id, item.capability.state])).toEqual([
-    ['codex', 'unavailable'],
-    ['claude', 'unavailable'],
-    ['http', 'requires-configuration'],
+  expect(integrations.map((item) => item.id)).toEqual([
+    'codex',
+    'claude',
+    'http',
   ])
   expect(httpSteps).toHaveLength(8)
-  expect(integrations[2].capability.message).toContain('currently undeployed')
 })
 it('renders native keyboard-operable radios and explicit selected state', () => {
   const choose = vi.fn()
@@ -38,6 +37,7 @@ it('renders native keyboard-operable radios and explicit selected state', () => 
     expect(html.match(/checked=""/g)).toHaveLength(1)
     expect(html).toContain(`checked="" value="${selected}"`)
     expect(html).toContain('<legend>Choose an integration</legend>')
+    expect(html).not.toMatch(/Unavailable|Deployment required/)
     expect(html.match(/aria-controls="agent-setup"/g)).toHaveLength(3)
   }
   expect(choose).not.toHaveBeenCalled()
@@ -55,8 +55,9 @@ it('renders native MCP copy controls with honest qualification', () => {
       }),
     )
     expect(html).toContain(integration.name)
-    expect(html).toContain('Unavailable')
-    expect(html).toContain('passed locally')
+    expect(html).not.toMatch(
+      /Unavailable|Deployment required|undeployed|inactive/,
+    )
     expect(html).toContain('Stateless HTTP MCP')
     for (const action of [
       'repository_create',
@@ -107,6 +108,7 @@ it('composes onboarding before capabilities while preserving diagrams, docs and 
     const html = renderToStaticMarkup(createElement(Home))
     expect(html).toContain('Version control built for coding agents.')
     expect(html).toContain('Connect your coding agent')
+    expect(html).not.toMatch(/Unavailable|Deployment required|undeployed/)
     expect(html.indexOf('id="connect"')).toBeLessThan(
       html.indexOf('id="capabilities"'),
     )

@@ -11,11 +11,9 @@ export function ConnectionDetails({
       <dl>
         <dt>Transport</dt>
         <dd>{connection.transport}</dd>
-        <dt>Qualification</dt>
-        <dd>{connection.qualification}</dd>
         <dt>Authentication</dt>
         <dd>{connection.authentication}</dd>
-        <dt>Endpoint pattern — inactive</dt>
+        <dt>Endpoint pattern</dt>
         <dd>
           <code>{connection.endpoint}</code>
         </dd>
