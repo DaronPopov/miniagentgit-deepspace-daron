@@ -1,20 +1,6 @@
 import { CodePanel } from './code-panel'
 
-const codexSetup =
-  'codex mcp add miniagentgit --url https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp --bearer-token-env-var MINIGIT_AGENT_TOKEN'
-const claudeSetup = JSON.stringify(
-  {
-    mcpServers: {
-      miniagentgit: {
-        type: 'http',
-        url: 'https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp',
-        headers: { Authorization: 'Bearer ${MINIGIT_AGENT_TOKEN}' },
-      },
-    },
-  },
-  null,
-  2,
-)
+import { claudeSetup, codexSetup } from '../examples/commands'
 
 const tools = [
   ['repository_create', '{name, idempotencyKey}', 'id, name, createdAt'],

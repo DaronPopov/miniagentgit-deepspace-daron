@@ -42,7 +42,7 @@ it('renders native keyboard-operable radios and explicit selected state', () => 
   }
   expect(choose).not.toHaveBeenCalled()
 })
-it('explains locally qualified MCP without installation commands for inactive integrations', () => {
+it('renders native MCP copy controls with honest qualification', () => {
   for (const integration of integrations.slice(0, 2)) {
     const html = renderToStaticMarkup(
       createElement(IntegrationPanel, { integration }),
@@ -67,8 +67,12 @@ it('explains locally qualified MCP without installation commands for inactive in
     expect(html).toContain('same verified account subject')
     expect(html).not.toContain('https://miniagentgit-deepspace-daron.app.space')
     expect(html).toContain('href="/docs#mcp-guide"')
-    expect(html).not.toMatch(
-      /<pre|Copy command|npx |npm install|mcp add|mcpServers/,
+    expect(html).toContain('Copy command')
+    expect(html).toContain('MINIGIT_AGENT_TOKEN')
+    expect(html).toContain(
+      integration.id === 'codex'
+        ? 'codex mcp add miniagentgit --url'
+        : 'Bearer ${MINIGIT_AGENT_TOKEN}',
     )
   }
 })

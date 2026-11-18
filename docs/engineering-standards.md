@@ -243,8 +243,9 @@ unchanged. Forward only the original bearer to the canonical owner, verify it
 again on the dedicated agent path, and use existing readHead/persisted ownership.
 Never use synthetic identity headers or a generic SDK record executor. Agent
 scope is not owner permission. Follow MCP-AUTH-001–010 in agent-tool architecture.
-Onboarding can describe this local qualification while keeping inactive client
-connections unavailable and installation commands disabled.
+Onboarding may copy placeholder-based native HTTP MCP setup for Codex and
+Claude Code. Keep tokens in the client environment and report client and
+hosted qualification separately.
 
 ## PASS 10A repository and CI tools
 

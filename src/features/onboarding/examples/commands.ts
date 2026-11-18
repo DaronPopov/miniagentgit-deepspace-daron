@@ -92,3 +92,19 @@ export function setupCommand(shell: ShellMode): string {
     "$env:MINIAGENTGIT_COMMIT_KEY = [Guid]::NewGuid().ToString('N')",
   ].join('\n')
 }
+
+export const codexSetup =
+  'codex mcp add miniagentgit --url https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp --bearer-token-env-var MINIGIT_AGENT_TOKEN'
+export const claudeSetup = JSON.stringify(
+  {
+    mcpServers: {
+      miniagentgit: {
+        type: 'http',
+        url: 'https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp',
+        headers: { Authorization: 'Bearer ${MINIGIT_AGENT_TOKEN}' },
+      },
+    },
+  },
+  null,
+  2,
+)

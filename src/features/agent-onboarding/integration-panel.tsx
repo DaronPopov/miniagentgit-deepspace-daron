@@ -1,3 +1,5 @@
+import { CodePanel } from '../onboarding/components/code-panel'
+import { claudeSetup, codexSetup } from '../onboarding/examples/commands'
 import type { Integration } from './contracts'
 import { onboardingCopy } from './content'
 import { SiteIcon } from '../product-site/components/site-icon'
@@ -30,6 +32,32 @@ export function IntegrationPanel({
       </p>
       {integration.connection && (
         <ConnectionDetails connection={integration.connection} />
+      )}
+      {integration.id !== 'http' && (
+        <>
+          <p>
+            Replace <code>YOUR-TRUSTED-HOST</code> with your app hostname. Set{' '}
+            <code>MINIGIT_AGENT_TOKEN</code> in the environment that launches
+            your client.
+            {integration.id === 'claude' && (
+              <>
+                {' '}
+                Merge the copied entry into your project’s{' '}
+                <code>.mcp.json</code>.
+              </>
+            )}
+          </p>
+          <CodePanel
+            key={integration.id}
+            id={`agent-${integration.id}-setup`}
+            title={
+              integration.id === 'codex'
+                ? 'Codex CLI · Terminal'
+                : 'Claude Code · .mcp.json'
+            }
+            command={integration.id === 'codex' ? codexSetup : claudeSetup}
+          />
+        </>
       )}
       <h4>What you need</h4>
       <ul>
