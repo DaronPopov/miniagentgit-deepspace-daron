@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { BrowserSession } from './contracts'
 import { mcpLauncher } from './mcp-launcher'
+import type { McpShell } from './mcp-launcher'
 import { protectedRead } from './request-pipeline'
 
 export function McpConnect({
@@ -11,6 +12,7 @@ export function McpConnect({
   readonly client?: 'codex' | 'claude'
 }) {
   const [status, setStatus] = useState('')
+  const [shell, setShell] = useState<McpShell>('bash')
   const pending = useRef<AbortController | null>(null)
   useEffect(() => () => pending.current?.abort(), [])
 
@@ -54,7 +56,7 @@ export function McpConnect({
         session.expiresAt <= Date.now()
       )
         throw new Error('Session unavailable')
-      return new Blob([mcpLauncher(origin, client, token)], {
+      return new Blob([mcpLauncher(origin, client, token, shell)], {
         type: 'text/plain',
       })
     }
@@ -69,7 +71,7 @@ export function McpConnect({
       ])
       if (!signal.aborted)
         setStatus(
-          'Command copied. Paste it into your prepared PowerShell session.',
+          `Command copied. Paste it into your prepared ${shell === 'bash' ? 'Bash' : 'PowerShell'} session.`,
         )
     } catch {
       setStatus(
@@ -94,16 +96,37 @@ export function McpConnect({
       ) : (
         <h2 id="mcp-connect-heading">Connect a coding agent</h2>
       )}
+      <label>
+        Terminal shell{' '}
+        <select
+          value={shell}
+          disabled={status === 'Verifying a connection token…'}
+          onChange={(event) => {
+            setShell(
+              event.target.value === 'powershell' ? 'powershell' : 'bash',
+            )
+            setStatus('')
+          }}
+        >
+          <option value="bash">Bash (Linux or macOS)</option>
+          <option value="powershell">PowerShell 7.3+ (Windows)</option>
+        </select>
+      </label>
       <p>
-        From your project folder on Windows, start PowerShell 7.3+ with{' '}
-        <code>pwsh -NoProfile -Command -</code>. Copy your client’s command
-        below and paste it into that session.
+        From your project folder, start a session with{' '}
+        <code>
+          {shell === 'bash'
+            ? 'HISTFILE=/dev/null bash --noprofile --norc'
+            : 'pwsh -NoProfile -Command -'}
+        </code>
+        . Copy your client’s command and paste it into that session.
       </p>
       <p>
         The copied command contains a short-lived credential. Use a private
-        clipboard and avoid terminals that save input history. The command
-        clears the clipboard and passes the credential through the client’s
-        environment for this run.
+        clipboard and avoid terminals that save input history.
+        {shell === 'bash'
+          ? ' Clear the clipboard after pasting.'
+          : ' The command clears the clipboard before launching the client.'}
       </p>
       <div className="site-actions">
         {(client ? [client] : (['codex', 'claude'] as const)).map((target) => (

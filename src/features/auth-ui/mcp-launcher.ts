@@ -1,7 +1,10 @@
+export type McpShell = 'bash' | 'powershell'
+
 export function mcpLauncher(
   origin: string,
   client: 'codex' | 'claude',
   token: string,
+  shell: McpShell,
 ) {
   if (token.length > 8192 || !/^[\w-]+\.[\w-]+\.[\w-]+$/.test(token))
     throw new Error('Invalid connection credential')
@@ -25,6 +28,8 @@ export function mcpLauncher(
             },
           },
         })}'`
+  if (shell === 'bash')
+    return `(export MINIGIT_AGENT_TOKEN='${token}'; ${launch})`
   return [
     '& {',
     '$previous = $env:MINIGIT_AGENT_TOKEN;',
