@@ -33,7 +33,7 @@ export function createManagedAuthRoutes() {
     return c.redirect(target.href)
   })
   app.get('/oauth-complete', async (c) => {
-    const home = new URL('/dashboard', c.req.url).href
+    const home = new URL('/', c.req.url).href
     const code = c.req.query('code')
     if (!code || code.length > 2048) return c.redirect(home)
     try {

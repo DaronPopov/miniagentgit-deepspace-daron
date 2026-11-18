@@ -8,7 +8,7 @@ const result = await build({
   stdin: {
     contents: `import {createElement} from 'react';
 import {createRoot} from 'react-dom/client';
-import Home from './src/pages/index.tsx';
+import Home from './src/features/product-home.tsx';
 import './src/styles.css';
 createRoot(document.getElementById('root')).render(createElement(Home));`,
     resolveDir: process.cwd(),

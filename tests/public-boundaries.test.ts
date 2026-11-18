@@ -40,8 +40,8 @@ it('rejects server/auth/dashboard imports, re-exports, aliases, effects and muta
     ).toBeGreaterThan(0)
 })
 it('keeps the public route as thin feature composition and the browser entry provider-free', () => {
-  const route = readFileSync('src/pages/index.tsx', 'utf8')
-  expect(publicViolations('src/pages/index.tsx', route)).toEqual([])
+  const route = readFileSync('src/features/product-home.tsx', 'utf8')
+  expect(publicViolations('src/features/product-home.tsx', route)).toEqual([])
   const syntax = ts.createSourceFile(
     'index.tsx',
     route,
@@ -70,7 +70,7 @@ it('bundles the public route for browsers without SDK, server or credential code
   const { build } = await import('esbuild')
   const bundle = await build({
     entryPoints: [
-      'src/pages/index.tsx',
+      'src/features/product-home.tsx',
       'src/pages/docs.tsx',
       'src/styles.css',
     ],

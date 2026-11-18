@@ -8,17 +8,7 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
   const pending = useRef<AbortController | null>(null)
   useEffect(() => () => pending.current?.abort(), [])
 
-  function download(client: 'codex' | 'claude') {
-    const script = mcpLauncher(window.location.origin, client)
-    const url = URL.createObjectURL(new Blob([script], { type: 'text/plain' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `minigit-connect-${client}.ps1`
-    link.click()
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-  }
-
-  async function copyToken() {
+  async function copyCommand(client: 'codex' | 'claude') {
     if (pending.current) return
     const controller = new AbortController()
     pending.current = controller
@@ -58,7 +48,9 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
         session.expiresAt <= Date.now()
       )
         throw new Error('Session unavailable')
-      return new Blob([token], { type: 'text/plain' })
+      return new Blob([mcpLauncher(origin, client, token)], {
+        type: 'text/plain',
+      })
     }
     try {
       if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined')
@@ -70,10 +62,12 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
         new ClipboardItem({ 'text/plain': text }),
       ])
       if (!signal.aborted)
-        setStatus('Token copied. Run the downloaded launcher.')
+        setStatus(
+          'Command copied. Paste it into your prepared PowerShell session.',
+        )
     } catch {
       setStatus(
-        'Could not copy a token. Check clipboard permissions or sign in again.',
+        'Could not copy the command. Check clipboard permissions or sign in again.',
       )
     } finally {
       controller.abort()
@@ -89,34 +83,32 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
     <section aria-labelledby="mcp-connect-heading">
       <h2 id="mcp-connect-heading">Connect a coding agent</h2>
       <p>
-        In PowerShell 7.3+ on Windows, run the downloaded launcher from your
-        project folder with <code>pwsh -File</code> and the script path. Copy a
-        fresh token first. The launcher clears the clipboard and passes the
-        token to the client for this run. Use a private clipboard and copy a new
-        token when yours expires.
+        From your project folder on Windows, start PowerShell 7.3+ with{' '}
+        <code>pwsh -NoProfile -Command -</code>. Copy your client’s command
+        below and paste it into that session.
+      </p>
+      <p>
+        The copied command contains a short-lived credential. Use a private
+        clipboard and avoid terminals that save input history. The command
+        clears the clipboard and passes the credential through the client’s
+        environment for this run.
       </p>
       <div className="site-actions">
         <button
           className="site-button site-button-secondary"
-          onClick={() => download('codex')}
-          type="button"
-        >
-          Download Codex launcher
-        </button>
-        <button
-          className="site-button site-button-secondary"
-          onClick={() => download('claude')}
-          type="button"
-        >
-          Download Claude Code launcher
-        </button>
-        <button
-          className="site-button site-button-primary"
-          onClick={() => void copyToken()}
+          onClick={() => void copyCommand('codex')}
           disabled={status === 'Verifying a connection token…'}
           type="button"
         >
-          Copy connection token
+          Copy Codex command
+        </button>
+        <button
+          className="site-button site-button-secondary"
+          onClick={() => void copyCommand('claude')}
+          disabled={status === 'Verifying a connection token…'}
+          type="button"
+        >
+          Copy Claude Code command
         </button>
       </div>
       <p role="status">{status}</p>

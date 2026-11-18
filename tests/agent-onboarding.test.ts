@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, expectTypeOf, it, vi } from 'vitest'
-import Home from '../src/pages/index'
+import Home from '../src/features/product-home'
 import { McpGuide } from '../src/features/onboarding/components/mcp-guide'
 import {
   integrations,

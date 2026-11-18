@@ -14,6 +14,7 @@ export async function dashboardChecks(page, origin, fixture, capture, assert) {
       origin + '/api/auth/oauth-complete?code=pass11a-local-browser',
     )
     await identity
+    await page.goto(origin + '/dashboard')
     await visible('local-browser-owner')
     await input.waitFor()
   }
@@ -134,9 +135,7 @@ export async function dashboardChecks(page, origin, fixture, capture, assert) {
   await open(fixture.populated)
   await visible('HEAD version 5')
   await button('Sign out').click()
-  await page
-    .getByRole('heading', { name: 'Version control built for coding agents.' })
-    .waitFor()
+  await visible('Sign in to continue.')
   await page.goto(origin + '/dashboard')
   await visible('Sign in to continue.')
   assert(

@@ -21,7 +21,7 @@ import {
   workflow,
   validation,
 } from '../src/features/product-site/content/workflows'
-import Home from '../src/pages/index'
+import Home from '../src/features/product-home'
 import { publicViolations } from './public-boundary-policy'
 
 const vocabulary = {

@@ -30,7 +30,7 @@ it('exchanges official one-time codes and sets only an HttpOnly app cookie', asy
   vi.stubGlobal('fetch', upstream)
   const res = await app.request('/oauth-complete?code=one-time-code', {}, env)
   expect(res.status).toBe(302)
-  expect(res.headers.get('location')).toBe('http://localhost/dashboard')
+  expect(res.headers.get('location')).toBe('http://localhost/')
   expect(res.headers.get('set-cookie')).toBe(
     `${SESSION_COOKIE}=opaque-session; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`,
   )

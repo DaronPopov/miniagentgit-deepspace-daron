@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { existsSync } from 'node:fs'
 import { expect, it, vi } from 'vitest'
-import Home from '../src/pages/index'
+import Home from '../src/features/product-home'
 import {
   capabilities,
   documentation,

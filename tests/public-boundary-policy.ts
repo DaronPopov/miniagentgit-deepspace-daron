@@ -13,7 +13,7 @@ const reusedOnboarding = new Set(
   ].map((name) => onboarding + name),
 )
 function allowedDependency(path: string, resolved: string, typeOnly: boolean) {
-  if (path === 'src/pages/index.tsx')
+  if (path === 'src/features/product-home.tsx')
     return (
       resolved === root + 'components/product-foundation' ||
       resolved === agents + 'agent-onboarding'

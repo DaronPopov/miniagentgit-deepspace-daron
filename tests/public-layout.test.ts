@@ -13,7 +13,7 @@ it('renders one main landmark, ordered headings, labelled navigation and a skip 
   vi.stubGlobal('fetch', fetch)
   try {
     vi.resetModules()
-    const { default: Home } = await import('../src/pages/index')
+    const { default: Home } = await import('../src/features/product-home')
     const html = renderToStaticMarkup(createElement(Home))
     expect(html.match(/<main\b/g)).toHaveLength(1)
     expect(html.match(/<h1\b/g)).toHaveLength(1)

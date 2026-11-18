@@ -1,5 +1,18 @@
 export async function publicChecks(page, origin, capture, assert) {
   await page.goto(origin)
+  await page.getByText('Sign in to continue.', { exact: true }).waitFor()
+  assert(
+    (await page
+      .getByRole('heading', {
+        name: 'Version control built for coding agents.',
+      })
+      .count()) === 0,
+    'Home is gated until sign-in',
+  )
+  await capture('signed-out')
+  await page.goto(
+    origin + '/api/auth/oauth-complete?code=pass11a-local-browser',
+  )
   await page
     .getByRole('heading', { name: 'Version control built for coding agents.' })
     .waitFor()
@@ -37,12 +50,8 @@ export async function publicChecks(page, origin, capture, assert) {
   await page.getByRole('link', { name: 'Native MCP', exact: true }).click()
   await capture('docs')
   await page.getByRole('link', { name: 'Account', exact: true }).click()
+  await page.getByRole('button', { name: 'Sign out', exact: true }).click()
   await page.getByText('Sign in to continue.', { exact: true }).waitFor()
-  assert(
-    (await page.getByRole('textbox', { name: 'Repository ID' }).count()) === 0,
-    'No repository controls appear signed out',
-  )
-  await capture('signed-out')
   const missing = await page.goto(origin + '/pass11b-missing')
   assert(missing.status() === 404, 'Unknown route returns 404')
   const denied = await page.goto(origin + '/api/me')

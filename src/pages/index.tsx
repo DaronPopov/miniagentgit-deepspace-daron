@@ -1,10 +1,10 @@
-import { AgentOnboarding } from '../features/agent-onboarding/agent-onboarding'
-import { ProductFoundation } from '../features/product-site/components/product-foundation'
+import { AuthBoundary } from '../features/auth-ui/auth-boundary'
+import Home from '../features/product-home'
 
-export default function Home() {
+export default function HomeEntry() {
   return (
-    <ProductFoundation>
-      <AgentOnboarding />
-    </ProductFoundation>
+    <AuthBoundary>
+      <Home />
+    </AuthBoundary>
   )
 }
