@@ -20,6 +20,7 @@ it('explains the real local capabilities, commit workflow and bounded non-execut
   const html = renderToStaticMarkup(createElement(Home))
   expect(html).toContain(hero.title)
   expect(html).toContain(hero.description)
+  expect(html).not.toMatch(/hosted service is inactive/i)
   for (const item of [...capabilities, ...workflow, ...validation.checks])
     expect(html).toContain(item.title)
   for (const section of Object.values(sections))

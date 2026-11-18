@@ -21,7 +21,6 @@ export function Hero() {
             Open your account
           </a>
         </div>
-        <p className="site-muted site-small">{hero.scope}</p>
       </div>
       <aside
         className="site-surface site-contract"
