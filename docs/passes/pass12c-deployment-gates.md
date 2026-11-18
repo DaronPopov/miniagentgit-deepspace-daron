@@ -1,0 +1,23 @@
+# PASS 12C deployment gates
+
+Decision: **NO-GO** for a hosted coding-agent MCP test. Evidence date:
+November 18, 2026. The production app remained undeployed. DeepSpace report
+`8934f453-b71a-4dfb-bcac-54749cab8b48` was acknowledged without an answer.
+
+| Requirement                            | Evidence and method                                                            | Mechanism                                    | Residual risk                                                                     | Status  | Required follow-up                                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- | --------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canonical ingress before billable work | Authenticated zero-route metadata, CLI, official docs; no live probe           | Existing post-entry ledger                   | Direct canonical traffic, edge rejection billing and safe abort unqualified       | BLOCKED | DeepSpace confirms canonical perimeter or equivalent hard provider quota. PASS 12D verifies legitimate and unauthorized paths.               |
+| Bounded financial exposure             | Production account usage snapshots and Terms                                   | Free allocation and usage counters           | Exhaustion, overages, maturing charges and reporting delay unknown                | BLOCKED | DeepSpace provides hard cap, metering and exhaustion terms for this app. Operator accepts exact maximum.                                     |
+| Hard parser containment                | Offline SDK manifest probe, corpus, workerd lifecycle tests                    | Existing Babel and durable fencing           | Synchronous CPU/RSS limits and kill/recovery unverified                           | BLOCKED | DeepSpace supplies supported private bounded execution or proves an equivalent production limit and recovery; qualify before hosted testing. |
+| Non-destructive suspend and restore    | Conflicting official undeploy descriptions and exact local fresh restore       | Local stopped snapshot only                  | Hosted traffic suspension, custom classes, identity and alarm recovery unverified | BLOCKED | DeepSpace supplies production-specific supported path and coverage. Qualify an isolated restore before publication.                          |
+| JWT, owner and shared admission        | Full and targeted local tests                                                  | Existing app gates in actual local Worker    | Live provider issuance, expiry and owner isolation remain future test items       | PASS    | Repeat with production identities after independent GO.                                                                                      |
+| CI durability and receipts             | Opt-in stages and local snapshot restore                                       | Existing owner and JobRoom generation fences | Hosted termination and persisted job delivery remain unverified                   | PASS    | Verify real receipts, reconnect and test supported recovery without destructive operations.                                                  |
+| Dependency assessment                  | Registry audit, advisory versions, build reachability review                   | Locked supported SDK tree                    | Two existing build-tool advisories                                                | PASS    | Re-evaluate supported patches and applicability before the hosted run.                                                                       |
+| Operate without purchases or deletes   | Same production app/ledger, no provider state writes except support submission | Existing slot only                           | Actual hosted cost and safe stop are gated above                                  | BLOCKED | Confirm the hosted procedure meets the Free and non-destructive constraints before authorizing it.                                           |
+
+PASS applies to the stated local and assessment gates. No production-critical
+gate reached CONDITIONAL because none has the required underlying supported
+guarantee. [Ingress](../security/pass12c-ingress-qualification.md)
+· [Financial exposure](../security/pass12c-financial-boundary.md)
+· [Parser](../security/pass12c-parser-containment.md)
+· [Recovery](../operations/pass12c-production-recovery.md)

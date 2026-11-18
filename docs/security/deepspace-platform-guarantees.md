@@ -37,3 +37,23 @@ Prepared for the supported `deepspace feedback` channel. No message was sent.
 > data on this app, and how can we disable all ingress without deletion? What
 > supported backup and restore procedure covers custom SQLite classes, identities
 > and alarms, and how can we verify restoration in isolation?
+
+## PASS 12C escalation
+
+The PASS 12B draft above was expanded to cover rejection billing, maximum
+usage reporting delay, independent parser budgets and post-restore alarms.
+On November 18, 2026 at 14:12:44 UTC, DeepSpace accepted it as report
+`8934f453-b71a-4dfb-bcac-54749cab8b48` with status `open`. The receipt
+contained no provider answer.
+
+The official CLI command reference and installed 0.44.2 implementation
+identify an authenticated POST to the production API worker's
+`/api/feedback` endpoint. The confirmed destination was
+`https://api-worker.deep.space`. The command ran outside the repository
+to omit automatic app-name context. It sent the public app ID, sanitized
+questions and standard CLI/runtime metadata. The authenticated receipt
+included private account fields, which are excluded from Git. CLI help
+exposes submission. Supported triage tracking is through the dashboard.
+No duplicate request or undocumented polling ran.
+[Feedback documentation](https://docs.deep.space/cli-reference/commands#feedback)
+· [DeepSpace dashboard](https://dashboard.deep.space/)
