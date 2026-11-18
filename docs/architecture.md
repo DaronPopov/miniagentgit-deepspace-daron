@@ -1,5 +1,17 @@
 # MiniAgentGit architecture
 
+## Current entry points
+
+The hosted app opens to sign-in. Verified users can copy native MCP setup from
+the homepage or dashboard. Public `/docs` offers manual examples. The dashboard
+opens a known repository ID and reads snapshots and CI state. The backend
+retains shared durable admission, verified identity and canonical owner checks
+across HTTP and MCP. See the [README](../README.md) for the live workflow and
+current verification status.
+
+The pass sections below record architecture and evidence at the time of each
+pass, including historical deployment states.
+
 ## Scope and boundaries
 
 Pass 04 implements a local repository vertical slice: create/read repository,

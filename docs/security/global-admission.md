@@ -15,8 +15,9 @@ public HTTP. Canonical binding delivery and owner authorization remain intact.
 The Worker checks the bounded server-only `MINIGIT_TRUSTED_SUBJECTS` setting,
 then acquires global admission before JWT verification or request body parsing.
 The setting is a comma-separated list of up to 16 exact signed subjects.
-Missing, empty, malformed and duplicate configurations fail closed. Production
-configuration was left untouched. The local preview injects only fixture
+Missing, empty, malformed and duplicate configurations fail closed. The
+assigned deployment stores its approved subjects in the production secrets
+configuration. The local preview injects only fixture
 identities with ephemeral signing keys.
 
 After JWT verification, the HTTP or tool adapter checks the exact subject

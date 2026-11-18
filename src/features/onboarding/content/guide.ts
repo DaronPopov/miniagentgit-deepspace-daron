@@ -55,16 +55,16 @@ export const guideSections = [
     title: 'Bring a verified API credential',
     paragraphs: [
       'All examples except health require a Bearer JWT accepted by the configured SDK verifier, including signature, issuer, audience and expiration. The repository authority separately checks persisted ownership. Missing trusted configuration fails closed.',
-      'DeepSpace CLI developer login is not automatically a user API credential. This guide does not provide a token issuer, browser exchange or login flow. Obtain a compatible credential only through the application’s supported authentication integration once available. Never place a real token in source control, URLs or screenshots.',
+      'DeepSpace CLI developer login is not automatically a user API credential. Sign in to MiniAgentGit with an approved account. The managed session can exchange for a user bearer JWT through same-origin POST /api/auth/token. Keep that token out of source control, URLs and screenshots.',
     ],
   },
   {
     id: 'availability',
     title: 'Availability and boundaries',
     paragraphs: [
-      'The HTTP repository and CI workflow was previously tested on a hosted application, which is now undeployed. Use an operator-provided running application for these examples. Hosted user authentication through a fresh browser sign-in and provider runtime quotas still require qualification.',
+      'Use the trusted MiniAgentGit origin and a supported user bearer token for these HTTP examples. For authenticated MCP setup, sign in and copy a command from the homepage or dashboard.',
       'Use a service origin supplied by the operator for BASE_URL, without a trailing slash. Replace BEARER_JWT in your terminal with a compatible credential. Repository, commit and job IDs come from actual responses; no public test credentials are supplied here.',
-      'The separate native MCP endpoint exposes six locally qualified repository and CI tools. These HTTP examples do not require MCP. CI checks snapshot integrity, source policy, supported syntax, fixed lint rules and local imports without running submitted code. Semantic TypeScript checking is deferred.',
+      'The separate native MCP endpoint exposes six repository and CI tools. These HTTP examples do not require MCP. CI checks snapshot integrity, source policy, supported syntax, fixed lint rules and local imports without running submitted code. Semantic TypeScript checking is deferred.',
     ],
   },
   {

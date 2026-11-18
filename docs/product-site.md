@@ -2,7 +2,9 @@
 
 The existing Vite/Generouted browser root discovers `src/pages/index.tsx` and
 `src/pages/docs.tsx` as `/` and `/docs`. Both routes only compose features.
-There is no SSR, Dynamic Worker or public authentication provider. The server's
+There is no SSR or Dynamic Worker. The home route uses the shared route-scoped
+auth boundary before rendering the product home. Public `/docs` remains
+provider-free. The server's
 exact GET /docs handler maps to the existing static asset root because Wrangler
 uses not_found_handling=none; refreshes must not depend on a catch-all SPA fallback.
 Unknown API paths keep typed errors, not HTML.
@@ -22,6 +24,12 @@ auth-ui or dashboard implementations. Lucide stays isolated in SiteIcon.
 The only additional browser capability is write-only clipboard access in the
 onboarding clipboard adapter, invoked from an explicit button click. No effect,
 fetch, WebSocket, hidden substitution or persistent browser token storage.
+
+The signed-in home and dashboard use the same MCP command-copy component.
+The homepage selector supplies the selected client through a presentation
+slot. Credentials remain in the auth feature, and each copy checks MCP
+discovery. The status badges from the early onboarding passes were removed.
+The pass sections below describe historical behavior.
 
 ## Documentation invariants
 

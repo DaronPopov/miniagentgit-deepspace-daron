@@ -37,29 +37,35 @@ organizations, invitations or global repository enumeration.
   configuration returns unavailable rather than disabling verification.
 - **AUTH-006:** browser integration introduces no writable repository state or HEAD.
 - **AUTH-007:** credentials are absent from URLs, rendered state, diagnostics and
-  persistent browser storage. Errors shown by the UI are fixed, generic messages.
+  persistent browser storage. Explicit clipboard export uses the verified MCP
+  connection flow.
 - **AUTH-008:** account/session changes unmount the previous session boundary,
   abort protected requests and discard late results. Sign-out clears protected
-  state before the SDK action and reloads the public page on success.
+  state before the SDK action and returns to the homepage gate on success.
 - **AUTH-009:** repositories remain private and owner-only.
 - **AUTH-010:** commit transactions, expected-HEAD handling, durable idempotency,
   per-repository scheduling and CI fencing remain unchanged.
 
 ## Browser integration
 
-Only `/dashboard` mounts authentication. `/` and `/docs` remain public, statically
-bundled and provider-free. The route is a shell with no repository requests,
-repository lists, commit viewers or CI panels. Loading, signed-out, expired,
-checking, signed-in, error, token-unavailable and configuration-unavailable states
-use shared presentation primitives. Only a verified `/api/me` response matching
-the session subject permits the signed-in display.
+The homepage and dashboard each mount the route-scoped authentication
+provider. The homepage shows the sign-in gate until `/api/me` verifies the
+session subject. The dashboard uses the same gate and loads repository views
+by known ID. Public `/docs` remains provider-free. Sign-out clears protected
+state and returns the browser to the homepage gate.
+
+The explicit MCP copy action obtains a fresh user JWT through the managed
+bridge, verifies the same account and checks native MCP discovery before
+copying. The clipboard command contains the credential for the new client
+process. The UI keeps it out of rendered text and client configuration. The
+generated command is private and should be used without saved terminal history.
 
 Installed `deepspace@0.44.2` APIs actually used are `DeepSpaceAuthProvider`,
 `useAuth`, `useSession`, `signOut`,
 `getAuthToken` and `clearAuthToken`. Providers are the SDK-supported GitHub and
 Google values. Sign-in now uses the same `/api/auth/social-redirect` navigation as
 the installed SDK AuthOverlay; the official code-exchange callback returns to
-same-origin `/dashboard`. No custom OAuth flow,
+same-origin `/`. No custom OAuth flow,
 JWT decoder, token issuer or authentication dependency was added.
 
 The SDK browser session uses managed cookies. Its supported `getAuthToken()`

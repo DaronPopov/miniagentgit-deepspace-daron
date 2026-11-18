@@ -1,26 +1,35 @@
 # MiniAgentGit MCP repository workflow
 
-PASS 10A qualifies the six-tool workflow with the installed DeepSpace SDK MCP
-test client against local workerd, SQLite and JobRoom alarms. The app is
-undeployed. Hosted credential acquisition and real Codex and Claude Code
-connections still require qualification.
+## Connect Codex or Claude Code
+
+Open the [hosted app](https://miniagentgit-deepspace-daron.app.space/#connect)
+and sign in with an approved account. Choose your client and terminal shell.
+Use the displayed terminal instructions, copy a fresh authenticated command,
+and paste it from your project directory. The copy action verifies the
+account and calls MCP discovery with the new token before writing to the
+clipboard. The command contains a short-lived credential and applies only to
+the client process it starts. Use `/mcp` inside that session to inspect
+the available tools. Copy a new command after expiry.
+
+Codex discovered all six tools through hosted native MCP. The full
+failing-to-passing lifecycle ran locally with Codex. Hosted writes, CI and
+Claude Code interoperability remain unverified.
 
 ## Credential and transport
 
-Use a trusted running origin and an unexpired DeepSpace agent JWT issued for
-that exact origin. The server checks the configured ES256 key, configured issuer
-with the SDK's `/agent` suffix, exact string audience, `agent` scope, expiration and
-signed nonanonymous account subject. An existing supported user JWT also works.
-The account may create repositories under its identity and operate on
-repositories it owns. A separate account needs its own repositories.
+The signed-in UI uses a supported DeepSpace user JWT. Native tools also accept
+an unexpired DeepSpace agent JWT issued for the exact app origin. Agent tokens
+require the configured ES256 key, issuer with the SDK's `/agent` suffix, exact
+origin audience, `agent` scope, and signed nonanonymous subject. Either identity
+must pass the configured admission policy and own the repository it accesses.
+An ordinary user JWT uses the configured user audience instead of the agent
+audience. Do not send agent-scoped credentials to user-only API routes.
 
-The credential prerequisite is a trusted issuer and eligible DeepSpace account.
-The installed DeepSpace CLI can exchange a session for a target-origin token.
-DeepSpace also documents an agent-account credential exchange on staging.
-The operator must verify issuance and renewal for the actual target before
-offering any installation command. Keep the bearer private and send it only in
-`Authorization: Bearer <token>` to the trusted origin. The local tests use
-ephemeral signing keys.
+For manual client setup, see the [public MCP guide](https://miniagentgit-deepspace-daron.app.space/docs#mcp-guide).
+The DeepSpace CLI's `agent tools` command handles its own credential exchange
+and lists REST tool metadata. That command does not attach tools to a different
+Codex or Claude session. Send credentials only as bearer authorization to
+the intended trusted service. [DeepSpace account credentials](https://docs.deep.space/agents/account-api.md)
 
 The native endpoint is `POST /_deepspace/agent/mcp`. Initialize and discover
 the tools with `tools/list`, then use `tools/call`. The SDK's stateless HTTP

@@ -76,10 +76,10 @@ export function McpGuide() {
         command={claudeSetup}
       />
       <p>
-        Codex completed the six-tool workflow against the local Worker. Hosted
-        credentials and Claude Code interoperability still require testing. HTTP
-        503 indicates that the operator should check server admission before
-        retrying.
+        Codex discovered all six tools on the hosted app. The full Codex
+        repository and CI workflow passed locally. Hosted writes, CI and Claude
+        Code interoperability remain unverified. For HTTP 503, ask your operator
+        to check server admission.
       </p>
       <h3>Available tools</h3>
       <dl className="docs-mcp-tools">

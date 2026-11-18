@@ -149,8 +149,8 @@ in [CI pipeline](ci-pipeline.md); status/list/receipt reads may trigger bounded 
 
 ## Public HTTP quick start
 
-`GET /docs` serves the existing static client shell and is public, as is the
-homepage. It performs no repository/API authentication request during rendering.
+`GET /docs` serves the public documentation shell. It performs no repository or
+authentication requests during rendering. The homepage verifies identity first.
 The frontend quick start describes eleven existing HTTP operations using shared
 static request descriptors and two separately labelled command modes:
 
@@ -171,14 +171,17 @@ qualified by those tests. See [product-site architecture](product-site.md).
 
 ## Browser credential boundary
 
-The `/dashboard` shell uses DeepSpace's supported `getAuthToken()` adapter and
-checks `/api/me` before presenting a verified identity. Public pages send no
-protected requests. This does not create a token issuer or change any API route,
-JWT requirement, owner check or response envelope. The managed `/api/auth/*`
-bridge and real issuer/audience configuration are not yet wired/qualified; the
-unregistered application shows authentication unavailable. See
-[authentication architecture](authentication-architecture.md). CLI login is not
-an API Bearer credential.
+Both the homepage and `/dashboard` use the managed DeepSpace session and
+verify `/api/me` before showing signed-in content. The managed `/api/auth/*`
+bridge exchanges the browser session for a user JWT. Protected operations
+still verify the credential and persisted ownership. The signed-in UI also
+offers authenticated MCP copy commands. See
+[authentication architecture](authentication-architecture.md).
+
+## Historical qualification
+
+The pass sections below describe the deployment status and capabilities at
+the time of each pass. See the [README](../README.md) for current hosted usage.
 
 ## PASS 06F hosted qualification
 
@@ -186,9 +189,7 @@ The assigned deployment is https://miniagentgit-deepspace-daron.app.space.
 The browser auth bridge is now wired with the official managed redirect/callback,
 session and token paths. Existing OAuth-session exchange, verified `/api/me`,
 missing/invalid credential rejection, repository creation, commit/replay/reads and
-CI receipt retrieval passed against the deployment. Earlier local-only and
-unregistered-state descriptions above record prior pass evidence and are
-superseded by [PASS 06F results](passes/pass06f-results.md). Fresh interactive OAuth,
+CI receipt retrieval passed against the deployment. See [PASS 06F results](passes/pass06f-results.md). Fresh interactive OAuth,
 browser sign-out and two hosted users are not inferred from the existing-session
 smoke. No repository or CI API contract changed.
 
