@@ -45,7 +45,14 @@ it('renders native keyboard-operable radios and explicit selected state', () => 
 it('renders native MCP copy controls with honest qualification', () => {
   for (const integration of integrations.slice(0, 2)) {
     const html = renderToStaticMarkup(
-      createElement(IntegrationPanel, { integration }),
+      createElement(IntegrationPanel, {
+        integration,
+        setup: createElement(
+          'button',
+          null,
+          `Copy ${integration.name} command`,
+        ),
+      }),
     )
     expect(html).toContain(integration.name)
     expect(html).toContain('Unavailable')
@@ -67,13 +74,8 @@ it('renders native MCP copy controls with honest qualification', () => {
     expect(html).toContain('same verified account subject')
     expect(html).not.toContain('https://miniagentgit-deepspace-daron.app.space')
     expect(html).toContain('href="/docs#mcp-guide"')
-    expect(html).toContain('Copy command')
-    expect(html).toContain('MINIGIT_AGENT_TOKEN')
-    expect(html).toContain(
-      integration.id === 'codex'
-        ? 'codex mcp add miniagentgit --url'
-        : 'Bearer ${MINIGIT_AGENT_TOKEN}',
-    )
+    expect(html).toContain(`Copy ${integration.name} command`)
+    expect(html).not.toContain('YOUR-TRUSTED-HOST')
   }
 })
 it('reuses exact setup, command generation and clipboard handling without substitution', async () => {

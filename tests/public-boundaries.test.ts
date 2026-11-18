@@ -49,8 +49,8 @@ it('keeps the public route as thin feature composition and the browser entry pro
     true,
     ts.ScriptKind.TSX,
   )
-  expect(syntax.statements).toHaveLength(3)
-  const component = syntax.statements[2]
+  expect(syntax.statements).toHaveLength(4)
+  const component = syntax.statements[3]
   expect(
     component &&
       ts.isFunctionDeclaration(component) &&

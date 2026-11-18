@@ -3,7 +3,13 @@ import type { BrowserSession } from './contracts'
 import { mcpLauncher } from './mcp-launcher'
 import { protectedRead } from './request-pipeline'
 
-export function McpConnect({ session }: { readonly session: BrowserSession }) {
+export function McpConnect({
+  session,
+  client,
+}: {
+  readonly session: BrowserSession
+  readonly client?: 'codex' | 'claude'
+}) {
   const [status, setStatus] = useState('')
   const pending = useRef<AbortController | null>(null)
   useEffect(() => () => pending.current?.abort(), [])
@@ -81,7 +87,13 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
 
   return (
     <section aria-labelledby="mcp-connect-heading">
-      <h2 id="mcp-connect-heading">Connect a coding agent</h2>
+      {client ? (
+        <h4 id="mcp-connect-heading">
+          Connect {client === 'codex' ? 'Codex' : 'Claude Code'}
+        </h4>
+      ) : (
+        <h2 id="mcp-connect-heading">Connect a coding agent</h2>
+      )}
       <p>
         From your project folder on Windows, start PowerShell 7.3+ with{' '}
         <code>pwsh -NoProfile -Command -</code>. Copy your client’s command
@@ -94,22 +106,17 @@ export function McpConnect({ session }: { readonly session: BrowserSession }) {
         environment for this run.
       </p>
       <div className="site-actions">
-        <button
-          className="site-button site-button-secondary"
-          onClick={() => void copyCommand('codex')}
-          disabled={status === 'Verifying a connection token…'}
-          type="button"
-        >
-          Copy Codex command
-        </button>
-        <button
-          className="site-button site-button-secondary"
-          onClick={() => void copyCommand('claude')}
-          disabled={status === 'Verifying a connection token…'}
-          type="button"
-        >
-          Copy Claude Code command
-        </button>
+        {(client ? [client] : (['codex', 'claude'] as const)).map((target) => (
+          <button
+            key={target}
+            className="site-button site-button-secondary"
+            onClick={() => void copyCommand(target)}
+            disabled={status === 'Verifying a connection token…'}
+            type="button"
+          >
+            Copy {target === 'codex' ? 'Codex' : 'Claude Code'} command
+          </button>
+        ))}
       </div>
       <p role="status">{status}</p>
       <a href="/docs#mcp-guide">Manual MCP setup</a>

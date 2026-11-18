@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Dashboard } from '../dashboard/dashboard'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { AuthState, SessionState } from './contracts'
+import type { AuthState, BrowserSession, SessionState } from './contracts'
 import { createSessionClient } from './session-client'
 import { AuthShell } from './auth-shell'
 import { AuthControls } from './auth-controls'
@@ -15,12 +15,14 @@ import {
   useManagedSession,
 } from './sdk'
 
+export type SignedInHome = (session: BrowserSession) => ReactNode
+
 function SessionView({
   snapshot,
-  children,
+  home,
 }: {
   readonly snapshot: SessionState
-  readonly children?: ReactNode
+  readonly home?: SignedInHome
 }) {
   const client = useMemo(
     () =>
@@ -114,7 +116,8 @@ function SessionView({
       returnToPublicPage()
     },
   }
-  if (state.status === 'signed-in' && children) return <>{children}</>
+  if (state.status === 'signed-in' && snapshot.status === 'signed-in' && home)
+    return <>{home(snapshot.session)}</>
   return (
     <AuthShell state={state}>
       {!['loading', 'unavailable', 'checking'].includes(state.status) && (
@@ -138,7 +141,7 @@ function SessionView({
     </AuthShell>
   )
 }
-export function AuthSession({ children }: { readonly children?: ReactNode }) {
+export function AuthSession({ home }: { readonly home?: SignedInHome }) {
   const snapshot = useManagedSession()
   const key =
     snapshot.status === 'signed-in'
@@ -148,9 +151,5 @@ export function AuthSession({ children }: { readonly children?: ReactNode }) {
           snapshot.session.expiresAt,
         ])
       : snapshot.status
-  return (
-    <SessionView key={key} snapshot={snapshot}>
-      {children}
-    </SessionView>
-  )
+  return <SessionView key={key} snapshot={snapshot} home={home} />
 }
