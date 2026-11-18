@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { BrowserSession } from './contracts'
+import { discoverMcp } from './mcp-discovery'
 import { mcpLauncher } from './mcp-launcher'
 import type { McpShell } from './mcp-launcher'
 import { protectedRead } from './request-pipeline'
@@ -23,8 +24,9 @@ export function McpConnect({
     const { signal } = controller
     const timeout = window.setTimeout(() => controller.abort(), 10000)
     setStatus('Verifying a connection token…')
+    let discoveryError: number | undefined
     async function credential() {
-      const result = await fetch('/api/auth/token', {
+      const exchange = await fetch('/api/auth/token', {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -32,8 +34,8 @@ export function McpConnect({
         redirect: 'error',
         signal,
       })
-      if (!result.ok) throw new Error('Token unavailable')
-      const data: unknown = await result.json()
+      if (!exchange.ok) throw new Error('Token unavailable')
+      const data: unknown = await exchange.json()
       const token =
         data && typeof data === 'object' && 'token' in data ? data.token : null
       if (
@@ -56,6 +58,14 @@ export function McpConnect({
         session.expiresAt <= Date.now()
       )
         throw new Error('Session unavailable')
+      const discovery = await discoverMcp(token, signal)
+      if (discovery.status === 'rejected') discoveryError = discovery.code
+      if (
+        discovery.status !== 'ok' ||
+        signal.aborted ||
+        session.expiresAt <= Date.now()
+      )
+        throw new Error('MCP discovery failed')
       return new Blob([mcpLauncher(origin, client, token, shell)], {
         type: 'text/plain',
       })
@@ -75,7 +85,9 @@ export function McpConnect({
         )
     } catch {
       setStatus(
-        'Could not copy the command. Check clipboard permissions or sign in again.',
+        discoveryError
+          ? `MiniAgentGit MCP rejected discovery (HTTP ${discoveryError}). No command was copied.`
+          : 'Could not copy the command. Check clipboard permissions or sign in again.',
       )
     } finally {
       controller.abort()
@@ -141,6 +153,10 @@ export function McpConnect({
           </button>
         ))}
       </div>
+      <p>
+        Use the new client session opened by the command. In that session, run{' '}
+        <code>/mcp</code> to check the MiniAgentGit tools.
+      </p>
       <p role="status">{status}</p>
       <a href="/docs#mcp-guide">Manual MCP setup</a>
     </section>
