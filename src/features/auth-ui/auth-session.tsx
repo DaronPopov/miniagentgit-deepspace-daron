@@ -4,6 +4,7 @@ import type { AuthState, SessionState } from './contracts'
 import { createSessionClient } from './session-client'
 import { AuthShell } from './auth-shell'
 import { AuthControls } from './auth-controls'
+import { McpConnect } from './mcp-connect'
 import {
   browserOrigin,
   managedSignIn,
@@ -120,7 +121,12 @@ function SessionView({ snapshot }: { readonly snapshot: SessionState }) {
           onAction={onAction}
         />
       )}
-      {state.status === 'signed-in' && <Dashboard read={read} />}
+      {state.status === 'signed-in' && snapshot.status === 'signed-in' && (
+        <>
+          <Dashboard read={read} />
+          <McpConnect session={snapshot.session} />
+        </>
+      )}
     </AuthShell>
   )
 }
