@@ -1,3 +1,9 @@
+import {
+  admissionLane,
+  admitRequest,
+  withProtectedAdmission,
+} from './admission/control'
+import type { AdmissionEnvironment } from './admission/control'
 import { registerRepositoryTools } from './deepspace/agent-tools'
 import { Hono } from 'hono'
 import {
@@ -12,7 +18,8 @@ import { createRepositoryRoutes } from './api/repositories'
 import { routeRepository } from './storage/routing'
 import type { AuthEnvironment } from './deepspace/auth'
 
-export interface Env extends AuthEnvironment, ManagedAuthEnvironment {
+export interface Env
+  extends AuthEnvironment, ManagedAuthEnvironment, AdmissionEnvironment {
   REPOSITORY_ROOMS: DurableObjectNamespace
   ASSETS: Fetcher
   OWNER_USER_ID: string
@@ -20,19 +27,35 @@ export interface Env extends AuthEnvironment, ManagedAuthEnvironment {
   readonly DEEPSPACE_APP_ID: string
 }
 
-export function createApp() {
+export function createApp(enforceAdmission = false) {
   const app = new Hono<{ Bindings: Env }>()
-  registerRepositoryTools(app)
+  if (enforceAdmission)
+    app.use('*', async (c, next) => {
+      const lane = admissionLane(c.req.path)
+      if (lane === 'protected') {
+        const result = await withProtectedAdmission(c.env, next, (release) =>
+          c.executionCtx.waitUntil(release),
+        )
+        if (!result.ok) return resultResponse(result)
+        return
+      }
+      if (lane === 'auth' || lane === 'token') {
+        const admitted = await admitRequest(c.env, lane)
+        if (!admitted.ok) return resultResponse(admitted)
+      }
+      await next()
+    })
+  registerRepositoryTools(app, enforceAdmission)
   app.route('/api/auth', createManagedAuthRoutes())
   app.route('/api', createHealthRoutes())
-  app.route('/api', createPrincipalRoutes())
+  app.route('/api', createPrincipalRoutes(enforceAdmission))
   app.route(
     '/api',
     createRepositoryRoutes<Env>((env, id) => {
       const owner = routeRepository(env.REPOSITORY_ROOMS, id)
       if (!owner.ok) throw new Error('Invalid owner route')
       return { fetch: (request) => owner.value.fetch(request) }
-    }),
+    }, enforceAdmission),
   )
   app.all('/api/*', () =>
     resultResponse({

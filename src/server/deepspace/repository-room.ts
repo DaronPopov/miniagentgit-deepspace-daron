@@ -1,3 +1,5 @@
+import { controlRequest } from '../admission/control'
+import { admissionRoom, initializeAdmission } from '../admission/ledger'
 import { enqueueCi } from './ci-enqueue'
 import { validDispatch } from '../../application/ci/stages'
 import {
@@ -28,11 +30,18 @@ interface RepositoryEnvironment extends AuthEnvironment {
 export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
   private owner: ReturnType<typeof createOwnerRoutes> | undefined
   private agentOwner: ReturnType<typeof createAgentOwnerRoutes> | undefined
+  private readonly admission: boolean
   constructor(state: DurableObjectState, env: RepositoryEnvironment) {
     super(state, env)
-    initializeDatabase(durableDatabase(state.storage))
+    this.admission = state.id.equals(
+      env.REPOSITORY_ROOMS.idFromName(admissionRoom),
+    )
+    const db = durableDatabase(state.storage)
+    if (this.admission) initializeAdmission(db)
+    else initializeDatabase(db)
   }
   async alarm() {
+    if (this.admission) return
     const deadline = reconcileStageDeadlines(
       durableDatabase(this.ctx.storage),
       Date.now(),
@@ -57,6 +66,12 @@ export class RepositoryRoom extends DurableObject<RepositoryEnvironment> {
   }
 
   async fetch(request: Request): Promise<Response> {
+    if (this.admission)
+      return controlRequest(
+        durableDatabase(this.ctx.storage),
+        request,
+        Date.now(),
+      )
     const pathname = new URL(request.url).pathname
     const agent = pathname.match(
       /^\/_deepspace\/agent\/repositories\/(repo_[a-z0-9]{16,32})(?:\/|$)/,

@@ -18,7 +18,8 @@ export function resultResponse<T>(
               ? 409
               : error.code === 'QUOTA_EXCEEDED'
                 ? error.resource === 'pendingCommits' ||
-                  error.resource === 'ciOutstanding'
+                  error.resource === 'ciOutstanding' ||
+                  error.resource.startsWith('admission:')
                   ? 429
                   : 413
                 : 503

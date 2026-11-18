@@ -30,9 +30,10 @@ const policyFailures = new Set([
 it.skipIf(process.env.CI_VERIFY_PARSER_CORPUS !== '1')(
   'qualifies the bounded corpus through real workerd CI alarms',
   async () => {
-    const { worker, value } = await ciWorkerClient()
-    try {
-      for (let offset = 0; offset < corpus.length; offset += 16) {
+    // Each bounded batch uses a fresh app fixture under the real CI admission lane.
+    for (let offset = 0; offset < corpus.length; offset += 10) {
+      const { worker, value } = await ciWorkerClient()
+      try {
         const repo = stringColumn(
           await value('/api/repositories', {
             ...creation,
@@ -45,7 +46,7 @@ it.skipIf(process.env.CI_VERIFY_PARSER_CORPUS !== '1')(
         let head: string | null = null
         let previousPath: string | undefined
         for (const [index, fixture] of corpus
-          .slice(offset, offset + 16)
+          .slice(offset, offset + 10)
           .entries()) {
           const path = 'input' + fixture.extension
           const result = await value(`${base}/commits`, {
@@ -113,9 +114,9 @@ it.skipIf(process.env.CI_VERIFY_PARSER_CORPUS !== '1')(
             }) + '\n',
           )
         }
+      } finally {
+        await worker.close()
       }
-    } finally {
-      await worker.close()
     }
   },
   60000,

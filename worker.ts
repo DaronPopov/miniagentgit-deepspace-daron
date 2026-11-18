@@ -39,4 +39,4 @@ export class AppCronRoom extends CronRoom<Env> {
 }
 export { AppJobRoom } from './src/server/deepspace/ci-job-room'
 
-export default createApp()
+export default createApp(true)

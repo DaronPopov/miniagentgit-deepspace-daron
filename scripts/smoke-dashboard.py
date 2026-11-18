@@ -83,7 +83,7 @@ async (mcpPage) => {
 """
 
 
-def run_mcp(scratch, origin, fixture):
+def run_mcp(scratch, origin, fixture, width, height, theme):
     command = [
         'npx.cmd' if os.name == 'nt' else 'npx',
         '--yes', '@playwright/mcp@0.0.85', '--browser', 'chrome', '--headless',
@@ -111,39 +111,45 @@ def run_mcp(scratch, origin, fixture):
             server = call('initialize', dict(protocolVersion='2025-03-26', capabilities={},
                                             clientInfo=dict(name='pass11b-browser', version='1')))
             call('notifications/initialized', {}, notification=True)
-            results = []
-            for width, height in [(1440, 1000), (390, 844)]:
-                for theme in ['light', 'dark']:
-                    settings = dict(origin=origin, fixture=fixture, width=width, height=height,
-                                    theme=theme, scratch=scratch.as_posix())
-                    code = PROBE.replace('SETTINGS', json.dumps(settings)).replace(
-                        'PUBLIC_FLOW', (ROOT / 'dashboard-browser-public.mjs').read_text(encoding='utf-8').removeprefix('export ')).replace(
-                        'DASHBOARD_FLOW', (ROOT / 'dashboard-browser-scenarios.mjs').read_text(encoding='utf-8').removeprefix('export '))
-                    result = call('tools/call', dict(name='browser_run_code_unsafe', arguments=dict(code=code)))
-                    detail = result['content'][0]['text']
-                    if result.get('isError'):
-                        raise RuntimeError(detail.split('### Ran Playwright code')[0])
-                    row = json.loads(detail.split('### Result\n', 1)[1].split('\n###', 1)[0])
-                    for screenshot in row['screenshots']:
-                        filename = screenshot['filename']
-                        shutil.copyfile(scratch / filename, output / filename)
-                    results.append(row)
-                    print(f'{width} × {height} {theme}: PASS', flush=True)
-            (output / 'inspection.json').write_text(
-                json.dumps(dict(server=server['serverInfo'], scenarios=results), indent=2) + '\n',
-                encoding='utf-8')
+            settings = dict(origin=origin, fixture=fixture, width=width, height=height,
+                            theme=theme, scratch=scratch.as_posix())
+            code = PROBE.replace('SETTINGS', json.dumps(settings)).replace(
+                'PUBLIC_FLOW', (ROOT / 'dashboard-browser-public.mjs').read_text(encoding='utf-8').removeprefix('export ')).replace(
+                'DASHBOARD_FLOW', (ROOT / 'dashboard-browser-scenarios.mjs').read_text(encoding='utf-8').removeprefix('export '))
+            result = call('tools/call', dict(name='browser_run_code_unsafe', arguments=dict(code=code)))
+            detail = result['content'][0]['text']
+            if result.get('isError'):
+                raise RuntimeError(detail.split('### Ran Playwright code')[0])
+            row = json.loads(detail.split('### Result\n', 1)[1].split('\n###', 1)[0])
+            for screenshot in row['screenshots']:
+                filename = screenshot['filename']
+                shutil.copyfile(scratch / filename, output / filename)
+            print(f'{width} × {height} {theme}: PASS', flush=True)
+            return server['serverInfo'], row
         finally:
             process.stdin.close()
 
 
-with tempfile.TemporaryDirectory(prefix='miniagentgit-dashboard-') as directory:
-    with subprocess.Popen(['node', 'scripts/preview-frontend.mjs', '--repository-fixture'],
-                          stdout=subprocess.PIPE, text=True, encoding='utf-8') as preview:
-        try:
-            fixture = json.loads(preview.stdout.readline())
-            origin = preview.stdout.readline().strip().rstrip('/')
-            if not origin.startswith('http://127.0.0.1:'):
-                raise RuntimeError('Expected isolated loopback preview')
-            run_mcp(pathlib.Path(directory), origin, fixture)
-        finally:
-            preview.terminate()
+def run_viewport(width, height, theme):
+    # A viewport is one bounded operator workflow, with its own app budget.
+    with tempfile.TemporaryDirectory(prefix='miniagentgit-dashboard-') as directory:
+        with subprocess.Popen(['node', 'scripts/preview-frontend.mjs', '--repository-fixture'],
+                              stdout=subprocess.PIPE, text=True, encoding='utf-8') as preview:
+            try:
+                fixture = json.loads(preview.stdout.readline())
+                origin = preview.stdout.readline().strip().rstrip('/')
+                if not origin.startswith('http://127.0.0.1:'):
+                    raise RuntimeError('Expected isolated loopback preview')
+                return run_mcp(pathlib.Path(directory), origin, fixture, width, height, theme)
+            finally:
+                preview.terminate()
+
+
+results = []
+for width, height in [(1440, 1000), (390, 844)]:
+    for theme in ['light', 'dark']:
+        server, row = run_viewport(width, height, theme)
+        results.append(row)
+(output / 'inspection.json').write_text(
+    json.dumps(dict(server=server, scenarios=results), indent=2) + '\n',
+    encoding='utf-8')

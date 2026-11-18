@@ -1,3 +1,4 @@
+import { admitOwner, approve } from '../admission/control'
 import type { Hono } from 'hono'
 import { registerAgentToolTransports } from 'deepspace/worker'
 import { CI_DEFAULT_LIMITS } from '../../application/ci/limits'
@@ -39,6 +40,7 @@ import { toolFailure } from './agent-errors'
 import type { AuthEnvironment } from './auth'
 
 interface ToolEnvironment extends AuthEnvironment {
+  readonly MINIGIT_TRUSTED_SUBJECTS?: string
   readonly REPOSITORY_ROOMS: DurableObjectNamespace
   readonly APP_NAME: string
   readonly DEEPSPACE_APP_ID: string
@@ -58,6 +60,7 @@ const descriptions = {
 
 export function registerRepositoryTools<E extends ToolEnvironment>(
   app: Hono<{ Bindings: E }>,
+  enforceAdmission = false,
 ) {
   app.use(AGENT_BASE + '/*', async (c, next) => {
     if (c.req.url.length > 2048 || c.req.url.includes('?'))
@@ -82,6 +85,10 @@ export function registerRepositoryTools<E extends ToolEnvironment>(
     resolveTools: async (request, env) => {
       const identity = await authenticateTool(request, env)
       if (!identity.ok) return resultResponse(identity)
+      if (enforceAdmission) {
+        const approved = approve(env.MINIGIT_TRUSTED_SUBJECTS, identity.value)
+        if (!approved.ok) return resultResponse(approved)
+      }
       return {
         [REPOSITORY_HEAD_TOOL]: {
           description:
@@ -90,6 +97,10 @@ export function registerRepositoryTools<E extends ToolEnvironment>(
           outputSchema: headOutputSchema,
           execute: async (input: unknown) => {
             const result = await repositoryHead(input, async (id) => {
+              if (enforceAdmission) {
+                const admitted = await admitOwner(env, id, false, false)
+                if (!admitted.ok) return admitted
+              }
               const response = await callOwner(
                 env.REPOSITORY_ROOMS,
                 request,
@@ -120,6 +131,15 @@ export function registerRepositoryTools<E extends ToolEnvironment>(
                   identity.value,
                 )
                 if (!route.ok) return toolFailure(route.error)
+                if (enforceAdmission) {
+                  const admitted = await admitOwner(
+                    env,
+                    route.value.id,
+                    operation === 'repository_create',
+                    operation === 'ci_request',
+                  )
+                  if (!admitted.ok) return toolFailure(admitted.error)
+                }
                 const response = await callOwner(
                   env.REPOSITORY_ROOMS,
                   request,

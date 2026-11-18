@@ -30,6 +30,7 @@ const worker = new Miniflare(
     bindings: {
       APP_NAME: config.vars.APP_NAME,
       DEEPSPACE_APP_ID: config.vars.DEEPSPACE_APP_ID,
+      MINIGIT_TRUSTED_SUBJECTS: 'local-browser-owner,local-browser-foreign',
       ...identity.env,
     },
     outboundService:

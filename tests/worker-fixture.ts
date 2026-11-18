@@ -1,13 +1,17 @@
 import { build } from 'esbuild'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import type { V4MiniflareOptions } from 'miniflare'
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import type { AuthEnvironment } from '../src/server/deepspace/auth'
 
 /** Actual bundled server worker + workerd SQLite DOs; no Vite/frontend or deploy. */
-export async function workerFixture(env: AuthEnvironment, jobs = false) {
+export async function workerFixture(
+  env: AuthEnvironment & { MINIGIT_TRUSTED_SUBJECTS?: string },
+  jobs = false,
+  snapshot?: string,
+) {
   const appId = readFileSync(resolve('wrangler.toml'), 'utf8').match(
     /^DEEPSPACE_APP_ID = "([^"]+)"/m,
   )?.[1]
@@ -25,6 +29,8 @@ export async function workerFixture(env: AuthEnvironment, jobs = false) {
     external: ['cloudflare:*', 'node:*'],
     mainFields: ['module', 'main'],
   })
+  const objects = join(directory, 'objects')
+  if (snapshot) cpSync(snapshot, objects, { recursive: true })
   const options: V4MiniflareOptions = {
     name: 'miniagentgit-local',
     modules: true,
@@ -36,6 +42,7 @@ export async function workerFixture(env: AuthEnvironment, jobs = false) {
     unsafeInspectDurableObjects: true,
     bindings: {
       APP_NAME: 'MiniAgentGit',
+      MINIGIT_TRUSTED_SUBJECTS: 'owner,other,Alice,Bob,Charlie,charlie',
       // Use the assigned public ID, never a fabricated deployment identity.
       DEEPSPACE_APP_ID: appId,
       ...env,
@@ -46,7 +53,7 @@ export async function workerFixture(env: AuthEnvironment, jobs = false) {
         ? { JOB_ROOMS: { className: 'AppJobRoom', useSQLite: true } }
         : {}),
     },
-    resourcePersistencePath: join(directory, 'objects'),
+    resourcePersistencePath: objects,
   }
   let worker = new Miniflare(convertV4MiniflareOptions(options))
   return {
@@ -64,6 +71,18 @@ export async function workerFixture(env: AuthEnvironment, jobs = false) {
     restart: async () => {
       await worker.dispose()
       worker = new Miniflare(convertV4MiniflareOptions(options))
+    },
+    backup: async (destination: string) => {
+      await worker.dispose()
+      try {
+        cpSync(objects, destination, {
+          recursive: true,
+          force: false,
+          errorOnExist: true,
+        })
+      } finally {
+        worker = new Miniflare(convertV4MiniflareOptions(options))
+      }
     },
     close: async () => {
       await worker.dispose()
