@@ -43,7 +43,7 @@ it('verifies the API principal before repository data and rejects identity misma
   })
   client.update(alice)
   expect(await client.read('/api/repositories/repo_abcdefghijklmnop')).toEqual({
-    status: 'unavailable',
+    status: 'identity-mismatch',
   })
   expect(fetch).toHaveBeenCalledOnce()
   expect(await client.read('/api/me')).toEqual({ status: 'signed-out' })
@@ -94,7 +94,7 @@ it('does not release noncooperative execution slots early and bounds network dea
     for (let n = 0; n < 4; n++) {
       const work = client.read('/api/me')
       await vi.advanceTimersByTimeAsync(100)
-      expect(await work).toEqual({ status: 'cancelled' })
+      expect(await work).toEqual({ status: 'timeout' })
     }
     expect(await client.read('/api/me')).toEqual({ status: 'unavailable' })
     gate.resolve(identity('Alice'))

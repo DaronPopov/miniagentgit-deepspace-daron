@@ -19,13 +19,14 @@ export const productNavigation = [
   { label: 'GitHub', href: productLinks.github, icon: 'external' },
 ] as const satisfies readonly NavigationLink[]
 export const hero = {
-  eyebrow: 'Git-inspired infrastructure · For coding agents',
+  eyebrow: 'MiniAgentGit · Repositories and CI',
   title: 'Version control built for coding agents.',
   description:
-    'Immutable repository snapshots, conflict-safe commits, and bounded asynchronous CI in one lightweight service.',
+    'A lightweight, durable repository and CI service for AI coding agents. Submit immutable snapshots and inspect the results of each change.',
   primary: 'Connect your coding agent',
-  secondary: 'Read the API',
-  scope: 'Text-only snapshots. Headless HTTP API.',
+  secondary: 'Read the docs',
+  scope:
+    'Native MCP and HTTP are qualified locally. Hosted service is inactive.',
   asideTitle: 'One repository. One HEAD authority.',
   asideDescription:
     'Give agents explicit concurrency boundaries, immutable inputs, and durable outcomes.',

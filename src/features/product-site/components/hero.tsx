@@ -1,5 +1,5 @@
 import { SiteIcon } from './site-icon'
-import { hero, productLinks } from '../content/landing'
+import { hero } from '../content/landing'
 
 export function Hero() {
   return (
@@ -13,12 +13,12 @@ export function Hero() {
             {hero.primary}
             <SiteIcon name="next" />
           </a>
-          <a
-            className="site-button site-button-secondary"
-            href={productLinks.api}
-          >
+          <a className="site-button site-button-secondary" href="/docs">
             <SiteIcon name="api" />
             {hero.secondary}
+          </a>
+          <a href="/dashboard" className="site-button site-button-secondary">
+            Open your account
           </a>
         </div>
         <p className="site-muted site-small">{hero.scope}</p>

@@ -94,10 +94,13 @@ and compatible Bearer JWT; CLI developer login is not that credential. See
 [product-site architecture](docs/product-site.md) and
 [PASS 06C results](docs/passes/pass06c-results.md) for validation and limitations.
 
-### Authentication shell
+### Repository inspection
 
-`/dashboard` contains the route-scoped DeepSpace authentication boundary only;
-it does not load repositories or CI data. `/` and `/docs` remain public.
+`/dashboard` verifies the managed account before opening a repository by its
+known ID. Inspect HEAD, parent commits, paginated files, CI jobs and receipts.
+Repository creation and CI requests remain available through the API and MCP.
+`/` and `/docs` remain public. Run `python3 scripts/smoke-dashboard.py test-results/pass11b`
+after the production build for the isolated dashboard browser matrix.
 The previously deployed application is currently inactive. PASS 06F wired the managed auth
 bridge and verifies existing-session Bearer identity, repository and CI APIs.
 Fresh interactive provider login/sign-out qualification is tracked separately

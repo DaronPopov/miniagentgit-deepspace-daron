@@ -64,3 +64,28 @@
   color: var(--site-accent);
   font-weight: 600;
 }
+
+.docs-mcp-tools {
+  display: grid;
+  gap: var(--site-space-3);
+}
+
+.docs-mcp-tools div {
+  padding: var(--site-space-4);
+}
+
+.docs-mcp-tools dt {
+  font-weight: 700;
+}
+
+.docs-mcp-tools dd {
+  margin: var(--site-space-1) 0 0;
+}
+
+#mcp-guide {
+  overflow-wrap: anywhere;
+}
+
+#mcp-guide li + li {
+  margin-block-start: var(--site-space-2);
+}

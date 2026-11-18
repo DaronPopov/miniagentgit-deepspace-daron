@@ -2,6 +2,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
+import { seedRepositories } from './preview-frontend-repositories.mjs'
 import { localBrowserIdentity } from './preview-frontend-identity.mjs'
 
 const folders = readdirSync('dist', { withFileTypes: true }).filter(
@@ -10,9 +11,11 @@ const folders = readdirSync('dist', { withFileTypes: true }).filter(
 if (folders.length !== 1) throw new Error('Run npm run build first')
 const root = resolve('dist', folders[0].name)
 const config = JSON.parse(readFileSync(resolve(root, 'wrangler.json'), 'utf8'))
-const identity = process.argv.includes('--local-identity')
-  ? await localBrowserIdentity()
-  : { env: {} }
+const seed = process.argv.includes('--repository-fixture')
+const identity =
+  seed || process.argv.includes('--local-identity')
+    ? await localBrowserIdentity()
+    : { env: {} }
 const worker = new Miniflare(
   convertV4MiniflareOptions({
     name: config.name,
@@ -49,7 +52,14 @@ const worker = new Miniflare(
 process.once('SIGINT', () => void worker.dispose())
 process.once('SIGTERM', () => void worker.dispose())
 try {
-  console.log(String(await worker.ready))
+  const origin = String(await worker.ready)
+  if (seed)
+    console.log(
+      JSON.stringify(
+        await seedRepositories(worker, await identity.fixtureTokens()),
+      ),
+    )
+  console.log(origin)
 } catch (error) {
   await worker.dispose()
   throw error

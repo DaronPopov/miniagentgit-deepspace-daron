@@ -1,0 +1,112 @@
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--site-space-4);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-panel {
+  padding: clamp(var(--site-space-4), 3vw, var(--site-space-8));
+}
+
+.dashboard-form,
+.dashboard-list {
+  display: grid;
+  gap: var(--site-space-2);
+}
+
+.dashboard-actions,
+.dashboard-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--site-space-3);
+}
+
+.dashboard input {
+  min-inline-size: 0;
+  inline-size: min(100%, 24rem);
+  padding: var(--site-space-3);
+  min-block-size: var(--site-control-size);
+  font: inherit;
+  color: var(--site-text);
+  background: var(--site-background);
+  border: var(--site-border-width) solid var(--site-border);
+  border-radius: var(--site-radius);
+}
+
+.dashboard h3,
+.dashboard h4,
+.dashboard h5,
+.dashboard h6 {
+  font-size: var(--site-text-body);
+  margin-block: var(--site-space-4) var(--site-space-2);
+}
+
+.dashboard-details dt {
+  color: var(--site-muted);
+  font-weight: 600;
+}
+
+.dashboard-details dd {
+  margin: 0 0 var(--site-space-2);
+}
+
+.dashboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-source {
+  overflow: auto;
+  max-block-size: 28rem;
+  padding: var(--site-space-4);
+  background: var(--site-surface-code);
+  border: var(--site-border-width) solid var(--site-border);
+  border-radius: var(--site-radius);
+}
+
+.dashboard-message {
+  white-space: pre-wrap;
+}
+
+.dashboard-feedback {
+  color: var(--site-muted);
+  margin-block: var(--site-space-2);
+}
+
+.dashboard [aria-pressed='true'] {
+  border-color: var(--site-accent);
+  text-decoration: underline;
+}
+
+.dashboard [data-ci-state='passed'] {
+  color: var(--site-success);
+}
+
+.dashboard [data-ci-state='failed'] {
+  color: var(--site-danger);
+}
+
+.dashboard [data-ci-state='queued'],
+.dashboard [data-ci-state='running'] {
+  color: var(--site-warning);
+}
+
+.dashboard-workspace {
+  display: grid;
+  gap: var(--site-space-4);
+  align-items: start;
+}
+
+@media (min-width: 64rem) {
+  .dashboard-workspace {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dashboard > .site-button {
+  justify-self: start;
+}

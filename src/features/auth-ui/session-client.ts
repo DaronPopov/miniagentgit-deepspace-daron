@@ -36,7 +36,11 @@ export function createSessionClient(options: SessionClientOptions) {
     invalidate()
     current = session ? Object.freeze({ ...session }) : null
   }
-  async function read(path: string): Promise<ProtectedResult> {
+  async function read(
+    path: string,
+    signal?: AbortSignal,
+  ): Promise<ProtectedResult> {
+    if (signal?.aborted) return { status: 'cancelled' }
     const url = protectedUrl(path, options.origin)
     if (!url) return { status: 'invalid' }
     const session = current,
@@ -49,15 +53,26 @@ export function createSessionClient(options: SessionClientOptions) {
     if (active.size >= 4) return { status: 'unavailable' }
     const controller = new AbortController()
     active.add(controller)
-    const timer = setTimeout(() => controller.abort(), deadline)
+    let timedOut = false
+    const cancel = () => controller.abort()
+    signal?.addEventListener('abort', cancel, { once: true })
+    const timer = setTimeout(() => {
+      timedOut = true
+      cancel()
+    }, deadline)
+    const aborted = () => ({
+      status:
+        timedOut && !signal?.aborted && epoch === generation
+          ? ('timeout' as const)
+          : ('cancelled' as const),
+    })
     let execution: Promise<ProtectedResult> | undefined
     try {
       const token = await acquire(
         controller.signal,
         JSON.stringify([session.subject, session.sessionId]),
       )
-      if (controller.signal.aborted || epoch !== generation)
-        return { status: 'cancelled' }
+      if (controller.signal.aborted || epoch !== generation) return aborted()
       if (!token) return { status: 'unavailable' }
       if (session.expiresAt <= now()) {
         invalidate()
@@ -65,20 +80,20 @@ export function createSessionClient(options: SessionClientOptions) {
       }
       execution = protectedRead(options, url, session, token, controller.signal)
       const result = await abortable(execution, controller.signal)
-      if (controller.signal.aborted || epoch !== generation)
-        return { status: 'cancelled' }
+      if (controller.signal.aborted || epoch !== generation) return aborted()
       if (session.expiresAt <= now()) {
         invalidate()
         return { status: 'expired' }
       }
       if (!result) return { status: 'error' }
-      if (result.status === 'expired' || result.status === 'unavailable')
+      if (result.status === 'expired' || result.status === 'identity-mismatch')
         invalidate()
       return result
     } catch {
-      return { status: controller.signal.aborted ? 'cancelled' : 'error' }
+      return controller.signal.aborted ? aborted() : { status: 'error' }
     } finally {
       clearTimeout(timer)
+      signal?.removeEventListener('abort', cancel)
       if (execution)
         void execution.then(
           () => active.delete(controller),

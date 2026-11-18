@@ -4,6 +4,7 @@ import type { NavigationLink } from '../../product-site/contracts/presentation'
 export const docsNavigation = [
   { label: 'Home', href: '/' },
   { label: 'Account', href: '/dashboard' },
+  { label: 'Native MCP', href: '#mcp-guide' },
   { label: 'Connect your agent', href: '#quick-start' },
   { label: 'API guide', href: '#api-guide' },
 ] as const satisfies readonly NavigationLink[]

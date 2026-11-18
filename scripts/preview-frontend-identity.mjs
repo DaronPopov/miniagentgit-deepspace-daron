@@ -12,6 +12,10 @@ export async function localBrowserIdentity() {
   let active = false
   return {
     env: { ...keys.env, AUTH_WORKER_URL: upstream },
+    fixtureTokens: async () => ({
+      own: await keys.token(subject),
+      foreign: await keys.token('local-browser-foreign'),
+    }),
     async fetch(request) {
       const url = new URL(request.url)
       if (url.origin !== upstream) return new Response(null, { status: 502 })

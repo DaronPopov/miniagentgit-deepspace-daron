@@ -11,6 +11,8 @@ const messages = {
   error: 'Authentication failed. Please reload or try signing in again.',
   unavailable:
     'Authentication is unavailable until the application identity and hosted authentication are configured.',
+  'identity-failed':
+    'The API identity does not match this account. Sign out and sign in again.',
   'token-unavailable':
     'An API credential is unavailable. Protected data has not been loaded.',
 } as const

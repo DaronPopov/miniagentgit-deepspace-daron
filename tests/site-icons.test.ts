@@ -72,6 +72,7 @@ it('enhances each major component without removing visible labels or changing se
     'validation',
   ])
   expect(workflow.map((item) => item.icon)).toEqual([
+    'repository',
     'source',
     'validation',
     'persistence',
@@ -80,6 +81,7 @@ it('enhances each major component without removing visible labels or changing se
   expect(validation.checks.map((item) => item.icon)).toEqual([
     'validation',
     'source',
+    'api',
     'commit',
   ])
   const html = renderToStaticMarkup(createElement(Home))

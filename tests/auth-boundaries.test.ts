@@ -32,6 +32,8 @@ it('isolates SDK auth and browser capabilities from public presentation and back
           expect(
             name.text === 'react' ||
               (path === root + 'sdk.ts' && name.text === 'deepspace') ||
+              (path === root + 'auth-session.tsx' &&
+                name.text === '../dashboard/dashboard') ||
               (name.text.startsWith('.') &&
                 (resolved.startsWith(root) || shared.has(resolved))),
             `${path}: ${name.text}`,

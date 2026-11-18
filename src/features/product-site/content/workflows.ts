@@ -2,6 +2,13 @@ import type { FeatureDescription } from '../contracts/presentation'
 
 export const workflow = [
   {
+    id: 'identity',
+    icon: 'repository',
+    title: 'Connect and create a repository',
+    description:
+      'Authorize MCP with a trusted bearer credential, discover the tools, and save the repository ID returned by creation.',
+  },
+  {
     id: 'prepare',
     icon: 'source',
     title: 'Name the expected state',
@@ -35,7 +42,7 @@ export const validation = {
   steps: [
     'Request validation for a specific commit ID.',
     'Receive a durable job ID before the checks finish.',
-    'Retrieve status and a persistent CI receipt.',
+    'Acceptance confirms the job was stored. Check its execution state and retrieve the durable receipt when it settles.',
   ],
   checks: [
     {
@@ -53,6 +60,13 @@ export const validation = {
         'Check supported text paths, size and line limits, malformed text, whitespace, and final newlines.',
     },
     {
+      id: 'analysis',
+      icon: 'api',
+      title: 'Syntax, fixed lint and local imports',
+      description:
+        'Parse supported source as data, apply bounded lint rules, and resolve local imports against the committed snapshot.',
+    },
+    {
       id: 'receipts',
       icon: 'commit',
       title: 'Persistent results',
@@ -60,7 +74,8 @@ export const validation = {
         'Repeated requests for the same commit and checks reuse the existing job or receipt.',
     },
   ],
-  boundary: 'Fixed checks inspect source as data without executing it.',
+  boundary:
+    'Fixed checks inspect source as data without executing it. Semantic TypeScript checking is deferred.',
 } as const satisfies {
   readonly label: string
   readonly steps: readonly string[]

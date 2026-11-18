@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Dashboard } from '../dashboard/dashboard'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AuthState, SessionState } from './contracts'
 import { createSessionClient } from './session-client'
 import { AuthShell } from './auth-shell'
@@ -49,7 +50,13 @@ function SessionView({ snapshot }: { readonly snapshot: SessionState }) {
           ? { status: 'signed-in', subject: snapshot.session.subject }
           : {
               status:
-                result.status === 'expired' ? 'expired' : 'token-unavailable',
+                result.status === 'expired'
+                  ? 'expired'
+                  : result.status === 'identity-mismatch'
+                    ? 'identity-failed'
+                    : result.status === 'error' || result.status === 'timeout'
+                      ? 'error'
+                      : 'token-unavailable',
             },
       )
     })
@@ -59,6 +66,22 @@ function SessionView({ snapshot }: { readonly snapshot: SessionState }) {
       client.invalidate()
     }
   }, [client, snapshot])
+  const read = useCallback(
+    async (path: string, signal: AbortSignal) => {
+      const result = await client.read(path, signal)
+      if (
+        result.status === 'expired' ||
+        result.status === 'identity-mismatch'
+      ) {
+        blocked.current = true
+        setState({
+          status: result.status === 'expired' ? 'expired' : 'identity-failed',
+        })
+      }
+      return result
+    },
+    [client],
+  )
   async function onAction(action: () => Promise<void>) {
     setBusy(true)
     try {
@@ -97,6 +120,7 @@ function SessionView({ snapshot }: { readonly snapshot: SessionState }) {
           onAction={onAction}
         />
       )}
+      {state.status === 'signed-in' && <Dashboard read={read} />}
     </AuthShell>
   )
 }
@@ -104,7 +128,11 @@ export function AuthSession() {
   const snapshot = useManagedSession()
   const key =
     snapshot.status === 'signed-in'
-      ? `${snapshot.session.subject}:${snapshot.session.sessionId}:${snapshot.session.expiresAt}`
+      ? JSON.stringify([
+          snapshot.session.subject,
+          snapshot.session.sessionId,
+          snapshot.session.expiresAt,
+        ])
       : snapshot.status
   return <SessionView key={key} snapshot={snapshot} />
 }

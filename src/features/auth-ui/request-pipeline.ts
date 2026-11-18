@@ -67,15 +67,28 @@ export async function protectedRead(
   if (signal.aborted) return { status: 'cancelled' }
   const identity = await deps.fetch(new URL('/api/me', deps.origin), options)
   if (identity.status === 401) return { status: 'expired' }
-  if (!identity.ok) return { status: 'unavailable' }
+  if (identity.status === 403) return { status: 'identity-mismatch' }
+  if (!identity.ok) return { status: 'error' }
   const verified: unknown = await identity.json()
   if (signal.aborted) return { status: 'cancelled' }
-  if (!principal(verified, session.subject)) return { status: 'unavailable' }
+  if (!principal(verified, session.subject))
+    return { status: 'identity-mismatch' }
   if (url.pathname === '/api/me') return { status: 'ok', value: verified.value }
   const response = await deps.fetch(url, options)
   if (response.status === 401) return { status: 'expired' }
   if (response.status === 403) return { status: 'forbidden' }
+  if (response.status === 404) return { status: 'missing' }
+  if (response.status === 409) return { status: 'conflict' }
+  if (response.status === 400) return { status: 'invalid' }
   if (!response.ok) return { status: 'error' }
-  const value: unknown = await response.json()
-  return { status: 'ok', value }
+  const envelope: unknown = await response.json()
+  if (
+    !envelope ||
+    typeof envelope !== 'object' ||
+    !('ok' in envelope) ||
+    envelope.ok !== true ||
+    !('value' in envelope)
+  )
+    return { status: 'error' }
+  return { status: 'ok', value: envelope.value }
 }

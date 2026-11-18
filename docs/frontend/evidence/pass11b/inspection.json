@@ -1,0 +1,552 @@
+{
+  "server": {
+    "name": "Playwright",
+    "version": "1.66.0-alpha-2026-11-09"
+  },
+  "scenarios": [
+    {
+      "screenshots": [
+        {
+          "filename": "1440-light-landing.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-onboarding.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-docs.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-signed-out.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-empty-head.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-populated-head.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-committed-file.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-pending-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-failed-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-passing-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-missing-repository.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-light-session-expired.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        }
+      ],
+      "network": [
+        ["/pass11b-missing", 404],
+        ["/api/me", 401],
+        [
+          "/api/repositories/repo_93e0b16e15e8f161e59d66672d083670/ci/jobs/ci_12a5e03f7098f33b7b5d11e0caf90b71583c122a4e82c3e09e0af2ab364d3f3b/receipt",
+          409
+        ],
+        ["/api/repositories/repo_d0c7bd85cb59fc5d1e3c053e3324bf64", 403],
+        ["/api/repositories/repo_00000000000000000000000000000000", 404]
+      ],
+      "errors": [],
+      "warnings": [
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'."
+      ],
+      "consoleHttp": [404, 401, 409, 403, 404],
+      "aborted": 1,
+      "theme": "light",
+      "viewport": [1440, 1000]
+    },
+    {
+      "screenshots": [
+        {
+          "filename": "1440-dark-landing.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-onboarding.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-docs.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-signed-out.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-empty-head.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-populated-head.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-committed-file.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-pending-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-failed-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-passing-receipt.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-missing-repository.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "1440-dark-session-expired.png",
+          "layout": {
+            "width": 1440,
+            "content": 1440,
+            "mains": 1,
+            "h1": 1
+          }
+        }
+      ],
+      "network": [
+        ["/pass11b-missing", 404],
+        ["/api/me", 401],
+        [
+          "/api/repositories/repo_93e0b16e15e8f161e59d66672d083670/ci/jobs/ci_12a5e03f7098f33b7b5d11e0caf90b71583c122a4e82c3e09e0af2ab364d3f3b/receipt",
+          409
+        ],
+        ["/api/repositories/repo_d0c7bd85cb59fc5d1e3c053e3324bf64", 403],
+        ["/api/repositories/repo_00000000000000000000000000000000", 404]
+      ],
+      "errors": [],
+      "warnings": [
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'."
+      ],
+      "consoleHttp": [404, 401, 409, 403, 404],
+      "aborted": 1,
+      "theme": "dark",
+      "viewport": [1440, 1000]
+    },
+    {
+      "screenshots": [
+        {
+          "filename": "390-light-landing.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-onboarding.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-docs.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-signed-out.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-empty-head.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-populated-head.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-committed-file.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-pending-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-failed-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-passing-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-missing-repository.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-light-session-expired.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        }
+      ],
+      "network": [
+        ["/pass11b-missing", 404],
+        ["/api/me", 401],
+        [
+          "/api/repositories/repo_93e0b16e15e8f161e59d66672d083670/ci/jobs/ci_12a5e03f7098f33b7b5d11e0caf90b71583c122a4e82c3e09e0af2ab364d3f3b/receipt",
+          409
+        ],
+        ["/api/repositories/repo_d0c7bd85cb59fc5d1e3c053e3324bf64", 403],
+        ["/api/repositories/repo_00000000000000000000000000000000", 404]
+      ],
+      "errors": [],
+      "warnings": [
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'."
+      ],
+      "consoleHttp": [404, 401, 409, 403, 404],
+      "aborted": 1,
+      "theme": "light",
+      "viewport": [390, 844]
+    },
+    {
+      "screenshots": [
+        {
+          "filename": "390-dark-landing.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-onboarding.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-docs.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-signed-out.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-empty-head.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-populated-head.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-committed-file.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-pending-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-failed-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-passing-receipt.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-missing-repository.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        },
+        {
+          "filename": "390-dark-session-expired.png",
+          "layout": {
+            "width": 390,
+            "content": 390,
+            "mains": 1,
+            "h1": 1
+          }
+        }
+      ],
+      "network": [
+        ["/pass11b-missing", 404],
+        ["/api/me", 401],
+        [
+          "/api/repositories/repo_93e0b16e15e8f161e59d66672d083670/ci/jobs/ci_12a5e03f7098f33b7b5d11e0caf90b71583c122a4e82c3e09e0af2ab364d3f3b/receipt",
+          409
+        ],
+        ["/api/repositories/repo_d0c7bd85cb59fc5d1e3c053e3324bf64", 403],
+        ["/api/repositories/repo_00000000000000000000000000000000", 404]
+      ],
+      "errors": [],
+      "warnings": [
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'.",
+        "Error with Permissions-Policy header: Unrecognized feature: 'document-domain'."
+      ],
+      "consoleHttp": [404, 401, 409, 403, 404],
+      "aborted": 1,
+      "theme": "dark",
+      "viewport": [390, 844]
+    }
+  ]
+}

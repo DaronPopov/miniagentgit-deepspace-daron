@@ -17,6 +17,7 @@ export type AuthState =
         | 'unavailable'
         | 'checking'
         | 'token-unavailable'
+        | 'identity-failed'
     }
   | { readonly status: 'signed-in'; readonly subject: string }
 export type ProtectedResult =
@@ -27,6 +28,10 @@ export type ProtectedResult =
         | 'expired'
         | 'unavailable'
         | 'cancelled'
+        | 'timeout'
+        | 'missing'
+        | 'conflict'
+        | 'identity-mismatch'
         | 'forbidden'
         | 'invalid'
         | 'error'

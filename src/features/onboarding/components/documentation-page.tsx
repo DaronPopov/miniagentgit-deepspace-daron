@@ -3,6 +3,7 @@ import { SiteContainer } from '../../product-site/components/site-container'
 import { SiteFooter } from '../../product-site/components/site-footer'
 import { docsNavigation, guideSections, quickStart } from '../content/guide'
 import { curlExamples, powershellExamples } from '../examples/commands'
+import { McpGuide } from './mcp-guide'
 import { CommandMode } from './command-mode'
 
 export function DocumentationPage() {
@@ -18,9 +19,11 @@ export function DocumentationPage() {
             <p className="site-eyebrow">MiniAgentGit · Documentation</p>
             <h1>Connect your agent over HTTP.</h1>
             <p className="site-lead">
-              Understand the API. Submit text changes. Inspect durable results.
+              Discover the native MCP tools, follow a commit through CI and use
+              the HTTP quick start.
             </p>
           </div>
+          <McpGuide />
           <section
             id="api-guide"
             className="site-section"
