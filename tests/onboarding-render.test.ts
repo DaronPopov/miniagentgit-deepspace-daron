@@ -23,9 +23,9 @@ it('renders public documentation without credentials or protected requests and p
     expect(html).toContain('not proof of rollback')
     expect(html).toContain('not automatically a user API credential')
     expect(html).toContain('Hosted user authentication')
-    expect(html.match(/<button /g)).toHaveLength(24)
-    expect(html.match(/role="status"/g)).toHaveLength(24)
-    expect(html.match(/<pre tabindex="0"/g)).toHaveLength(24)
+    expect(html.match(/<button /g)).toHaveLength(26)
+    expect(html.match(/role="status"/g)).toHaveLength(26)
+    expect(html.match(/<pre tabindex="0"/g)).toHaveLength(26)
     expect(html).not.toMatch(
       /eyJ[A-Za-z0-9_-]+\.|BEGIN (?:PRIVATE|PUBLIC) KEY|issuer\.test|npm install|npx miniagentgit|dangerouslySetInnerHTML|<script/,
     )

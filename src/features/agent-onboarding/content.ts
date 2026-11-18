@@ -53,7 +53,7 @@ export const integrations = [
     capability: {
       state: 'unavailable',
       message:
-        'Application currently undeployed. The repository and CI workflow is locally qualified with the DeepSpace SDK client; an actual Codex connection and hosted credential flow are not yet verified.',
+        'The repository and CI workflow passed with Codex on the local Worker. Hosted credentials and production admission still require qualification.',
     },
     connection: mcpConnection,
     clientGuide: {
@@ -72,7 +72,7 @@ export const integrations = [
     capability: {
       state: 'unavailable',
       message:
-        'Application currently undeployed. The repository and CI workflow is locally qualified with the DeepSpace SDK client; an actual Claude Code connection and hosted credential flow are not yet verified.',
+        'The repository and CI workflow is locally qualified with the DeepSpace SDK client. Claude Code and hosted credentials still require qualification.',
     },
     connection: mcpConnection,
     clientGuide: {

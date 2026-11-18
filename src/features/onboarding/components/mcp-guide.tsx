@@ -1,3 +1,21 @@
+import { CodePanel } from './code-panel'
+
+const codexSetup =
+  'codex mcp add miniagentgit --url https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp --bearer-token-env-var MINIGIT_AGENT_TOKEN'
+const claudeSetup = JSON.stringify(
+  {
+    mcpServers: {
+      miniagentgit: {
+        type: 'http',
+        url: 'https://YOUR-TRUSTED-HOST/_deepspace/agent/mcp',
+        headers: { Authorization: 'Bearer ${MINIGIT_AGENT_TOKEN}' },
+      },
+    },
+  },
+  null,
+  2,
+)
+
 const tools = [
   ['repository_create', '{name, idempotencyKey}', 'id, name, createdAt'],
   ['repository_head', '{repositoryId}', 'repositoryId, commitId, version'],
@@ -49,9 +67,33 @@ export function McpGuide() {
         <code>structuredContent</code>. REST discovery is available under{' '}
         <code>GET /_deepspace/agent/tools</code>.
       </p>
+      <h3>Configure your coding client</h3>
       <p>
-        The six tools were qualified locally. Hosted service and external
-        coding-client connections await qualification.
+        Replace <code>YOUR-TRUSTED-HOST</code> with the hostname confirmed by
+        your operator. Load an unexpired, origin-bound agent token into
+        <code> MINIGIT_AGENT_TOKEN</code> in the environment that launches your
+        client. Keep the token in your local secret store.
+      </p>
+      <CodePanel
+        id="mcp-codex"
+        title="Codex CLI · Terminal"
+        command={codexSetup}
+      />
+      <p>
+        For Claude Code, merge this server entry into your project’s{' '}
+        <code>.mcp.json</code>. Keep the variable reference literal so Claude
+        Code can resolve it at launch.
+      </p>
+      <CodePanel
+        id="mcp-claude"
+        title="Claude Code · .mcp.json"
+        command={claudeSetup}
+      />
+      <p>
+        Codex completed the six-tool workflow against the local Worker. Hosted
+        credentials and Claude Code interoperability still require testing. HTTP
+        503 indicates that the operator should check server admission before
+        retrying.
       </p>
       <h3>Available tools</h3>
       <dl className="docs-mcp-tools">

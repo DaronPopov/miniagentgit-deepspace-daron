@@ -61,11 +61,8 @@ export function IntegrationPanel({
       integration.capability.state === 'requires-configuration' ? (
         <HttpSetup />
       ) : (
-        <a
-          className="site-button site-button-secondary"
-          href="/docs#quick-start"
-        >
-          Use the HTTP API instructions
+        <a className="site-button site-button-secondary" href="/docs#mcp-guide">
+          View native MCP setup
         </a>
       )}
     </div>

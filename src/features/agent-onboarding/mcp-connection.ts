@@ -4,7 +4,7 @@ import type { AgentConnection, SetupStep } from './contracts'
 export const mcpConnection = {
   transport: 'Stateless HTTP MCP (POST JSON-RPC)',
   qualification:
-    'Locally qualified with the DeepSpace SDK test client; hosted and actual coding-client connections are not yet verified.',
+    'The DeepSpace SDK client and Codex CLI passed locally. Hosted credentials and Claude Code still require qualification.',
   endpoint: '<TRUSTED_BASE_URL>/_deepspace/agent/mcp',
   authentication:
     'Origin-bound DeepSpace agent Bearer JWT for the account that owns the repository. Existing supported user Bearer JWTs also work. Agent scope alone grants no repository access.',

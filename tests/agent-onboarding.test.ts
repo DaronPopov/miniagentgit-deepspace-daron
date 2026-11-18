@@ -2,6 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, expectTypeOf, it, vi } from 'vitest'
 import Home from '../src/pages/index'
+import { McpGuide } from '../src/features/onboarding/components/mcp-guide'
 import {
   integrations,
   httpSteps,
@@ -48,7 +49,7 @@ it('explains locally qualified MCP without installation commands for inactive in
     )
     expect(html).toContain(integration.name)
     expect(html).toContain('Unavailable')
-    expect(html).toContain('locally qualified')
+    expect(html).toContain('passed locally')
     expect(html).toContain('Stateless HTTP MCP')
     for (const action of [
       'repository_create',
@@ -65,7 +66,7 @@ it('explains locally qualified MCP without installation commands for inactive in
     expect(html).toContain('Official ')
     expect(html).toContain('same verified account subject')
     expect(html).not.toContain('https://miniagentgit-deepspace-daron.app.space')
-    expect(html).toContain('href="/docs#quick-start"')
+    expect(html).toContain('href="/docs#mcp-guide"')
     expect(html).not.toMatch(
       /<pre|Copy command|npx |npm install|mcp add|mcpServers/,
     )
@@ -122,4 +123,16 @@ it('composes onboarding before capabilities while preserving diagrams, docs and 
   } finally {
     vi.unstubAllGlobals()
   }
+})
+
+it('renders native HTTP setup for both clients without embedding credentials', () => {
+  const html = renderToStaticMarkup(createElement(McpGuide))
+  expect(html).toContain('codex mcp add miniagentgit --url')
+  expect(html).toContain('--bearer-token-env-var MINIGIT_AGENT_TOKEN')
+  expect(html).toContain('&quot;type&quot;: &quot;http&quot;')
+  expect(html).toContain('Bearer ${MINIGIT_AGENT_TOKEN}')
+  expect(
+    html.match(/https:\/\/YOUR-TRUSTED-HOST\/_deepspace\/agent\/mcp/g),
+  ).toHaveLength(2)
+  expect(html).not.toMatch(/eyJ[A-Za-z0-9_-]+\./)
 })

@@ -74,3 +74,30 @@ also depends on upstream protection.
 These controls cannot bound edge requests, billable rejects, the provider
 queue before the admission object, static traffic or physical storage and
 CPU. A production perimeter and cost contract remain required.
+
+## Configure the existing production application
+
+While the application is offline, confirm the existing app ID with
+`deepspace status` and confirm the exact subject through a trusted DeepSpace
+account identity source. Use the signed account subject expected by the app,
+rather than an email address or display name. For the assigned MiniAgentGit
+app, use the production `prd` secrets config. From a trusted operator shell,
+with `approved_subject` already set to the verified subject:
+
+```bash
+: "${approved_subject:?Set the exact approved DeepSpace account subject first}"
+printf '%s' "$approved_subject" |
+  npx deepspace secrets set --app app_01M7N6X263TDDC26Y59Q1RK23P \
+    --config prd MINIGIT_TRUSTED_SUBJECTS --stdin
+unset approved_subject
+npx deepspace secrets list --app app_01M7N6X263TDDC26Y59Q1RK23P \
+  --config prd --only-names
+```
+
+The secret is applied on the next authorized deployment. Confirm managed OAuth
+and `GET /api/me` with the approved account, then verify native MCP with a
+platform-issued agent token for the exact HTTPS origin. Check a missing
+credential and an unapproved test identity before creating a repository. An
+admission-unavailable response points to missing or invalid policy or an
+unavailable ledger. Keep the production JWT verifier, owner enforcement and
+quotas enabled during these checks.
